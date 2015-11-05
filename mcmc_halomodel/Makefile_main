@@ -1,0 +1,38 @@
+# Makefile for the Light Cone codes
+#
+# Compiler options are set in the file make-options.$(HOST)
+#
+
+#---------------------------------------------------------
+
+include ./make.options
+
+#---------------------------------------------------------
+
+EXEC   = maintest.exe
+
+INCL   =  Makefile_main ./make.options
+
+OBJS   =  main.o halomodel.o read_gals.o read_fofs.o mpfit.o
+
+Optimize: $(OBJS) $(INCL)
+	$(CC) $(CFLAGS) $(OBJS) $(LIBS) -o $(EXEC)
+
+.o.c:
+	$(CC) $(CFLAGS) -c $*.c
+
+
+$(OBJS): $(INCL)
+
+#---------------------------------------------------------
+
+
+semiclean:
+	rm -f *.o core
+
+clean:
+	rm -f *.o *.exe core
+
+#---------------------------------------------------------
+
+

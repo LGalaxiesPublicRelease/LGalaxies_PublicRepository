@@ -1,0 +1,26 @@
+#Number of Parameters
+25
+#Name                          PropValue   PriorMin  PriorMax  Sampling_Switch
+SfrEfficiency                     0.0       0.001     0.1             1
+SfrColdCrit                       0.0       0.001     10.0            1
+SfrBurstEfficiency                0.0       0.1       1.0             1
+SfrBurstSlope                     0.0       0.1       2.0             1
+AgnEfficiency                     0.0       1.e-8     1.e-1           1
+BlackHoleGrowthRate               0.0       0.01      0.1             1
+BlackHoleDisruptGrowthRate        0.0       0.00001   0.1             0
+BlackHoleCutoffVelocity           0.0       1.        3000.           1
+FeedbackReheatingEpsilon          0.0       0.1       10.             1
+ReheatPreVelocity                 0.0       1.        1000.           1
+ReheatSlope                       0.0       0.1       5.              1
+FeedbackEjectionEfficiency        0.0       0.01      10.             1
+EjectPreVelocity                  0.0       1.        1000.           1
+EjectSlope                        0.0       0.1       5.0             1
+ReIncorporationFactor             0.0       1.e-7     1.e15           1
+Yield                             0.0       0.01      0.1             1
+ThreshMajorMerger                 0.0       0.1       0.5             0 
+MergerTimeMultiplier              0.0       0.1       10.             1 
+RamPressureStrip_CutOffMass       0.0       0.0       1.e6            1 
+RamPressureRadiusThreshold        0.0       0.0       1.0             0 
+ReincZpower                       0.0       0.1       10.             0
+ReincVelocitypower                0.0       0.1       10.             0
+

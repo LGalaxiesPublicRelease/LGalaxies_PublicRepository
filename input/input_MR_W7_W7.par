@@ -1,0 +1,215 @@
+%------------------------------------------
+%----- SA model output files --------------
+%------------------------------------------
+
+FileNameGalaxies      SA
+FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
+
+%SpecPhotDir              /galformod/data/L-Galaxies/Util/PhotTables_2.0/
+SpecPhotDir                /galformod/scratch/bnh20/workspace/SpecPhotTables/  
+PhotPrefix          M05_Chabrier ; M05_Chabrier ; M05_Chabrier ;BC03_Chabrier ;CB07_Chabrier 
+CoolFunctionsDir      ./CoolFunctions/
+FileWithFilterNames  ./input/Filter_Names.txt
+McFile				  ./input/Mc.txt
+
+FirstFile     0
+LastFile      47
+
+
+%-------------------------------------------------
+%----- Simulation input/output files  ------------
+%-------------------------------------------------
+
+%OutputDir           ./output/
+SimulationDir        /galformod/data/Millennium_WMAP7/modified_trees/
+OutputDir               /galformod/scratch/bmh20/SAM/new_test7/
+
+%-------------------------------------------------
+%-- Scaling options and cosmological parameters --
+%----------- Unscaled MS-7 -----------------------
+%-------------------------------------------------
+
+FileWithZList    ./input/zlist_MR7.txt 
+FileWithZList_OriginalCosm ./input/zlist_MR7.txt
+LastDarkMatterSnapShot    61
+ScalePos            1.
+ScaleMass           1.
+PartMass            0.093639456
+Sigma8              0.807
+Omega        	    0.272 
+OmegaLambda  	    0.728 
+BaryonFrac   	    0.167
+Hubble_h     	    0.704
+BoxSize             500.
+
+PartMass_OriginalCosm     0.093639456
+Omega_OriginalCosm        0.272
+OmegaLambda_OriginalCosm  0.728
+Hubble_h_OriginalCosm     0.704
+BoxSize_OriginalCosm      500.
+
+% Bits and bobs -------------------------------------
+Hashbits    8        ; needed for Peano hilb1ert key with the GALAXYTREE option
+MaxMemSize  1500
+
+%------------------------------------------------------------------
+%-----  Physical model recipe choices -----------------------------
+%-----  Note that some of these do not currently offer choice------
+%-----  but left in to ease future coding.-------------------------
+%-----  There is currently no guarantee that anything other than---
+%-----  the default choices indicated with a * will work.----------
+%------------------------------------------------------------------
+
+StarFormationRecipe             0   ;Star Formation recipe
+				                      %*0 -- Croton2006, Delucia2007, Guo2011 
+				                      % 1 -- No dependence on tdyn
+				                 
+FeedbackRecipe                  0   ; 
+                                      %*0 -- Guo 2010 (moderate Delucia 2004 ejection scheme
+                                              % used in delucia 2007, plus Vmax dependence)
+                                      % 1 -- testing
+EjectionRecipe                  1   ;choice of ejection of satellite galaxies. 
+                                      % 0 -- ejected gas of satellite galaxies contributes to 
+                                           % the ejected component of type 0 (Delucia2007); 
+                                      %*1 -- ejected gas of satellites distribute between type 1 and type 0, 
+                                           % according to the fraction of dark matter retained in subhalos (Guo2010).
+                                           % this also changes where the ejected gas from type 2 ends up in mergers 
+                                           % (maybe it should be a different option).
+                                         
+
+ReIncorporationRecipe           2   ;reincorporation time scale
+				                      % 0 -- Delucia2007, 
+				                      %*1 -- Guo2010 (suppression in small halos)
+				                      % 2 -- Henriques2012 (Mdot_eject=-gama_ej*M_ejected*M_vir)
+
+ReionizationOn          	    2	;
+                                      % 0 -- no reionization, 
+                                      % 1 -- Gnedin reionization (Delucia2007), 
+				                      %*2 -- Okamoto 2008 (Guo2010)
+
+BlackHoleGrowth                 0   ;How black hole growth from quasar mode is handled
+                                      %*0 -- instantaneous; accretion rate reported averaged over step
+                                      % 1 -- via accretion disk at some fraction of Eddington rate
+
+AGNRadioModeModel             	1	;if > 0 grow black hole during mergers, 
+                                      % 0 -- No cooling supression, 
+                                      %*1 -- Phenomenological AGN feedback scaling with Mvir as in Henriques2013b,
+                                      % 2 -- Phenomenological accretion & AGN feedback as in Croton 2006, 
+                                      % 3 -- Bondi-Hoyle accretion, 
+                                      % 4 -- Cold cloud accretion 
+
+DiskRadiusMethod        	    2	;method to calculate disk radius
+                                      % 0 -- disk_radius = Gal[p].Rvir / 10.0, 
+                                      % 1 -- use halo spin parameter to get disk scale radius, 
+                                      %*2 -- use each component (stellar or gas) spin to get disk radius
+
+TrackDiskInstability		    1	;allow bulges to form when the stellar disks become unstable
+
+BlackHoleGrowthInDiskInstability  0 ; cold gas moved into the balck hole in the same fraction as disk stars moved to bulge
+
+HotGasStripingModel             1   ;choice of stripping of satellite galaxies 
+                                      % 0 -- immediate stripping (Delucia2007)
+				                           % Ejected gas of satellite galaxies contributes to the 
+					                       % ejected component of type 0 if within Rvir
+                                      %*1 -- gradual stripping (cooling in type 1's) (Guo2010) 
+				                           % Ejected gas of satellites distributed between type 1 and type 0, 
+                                           % according to the fraction of dark matter retained in subhalos (Guo2010).
+                                           % This also determines where the ejected gas from type 2 ends up in mergers 
+                                           % (maybe it should be a different option).
+
+HotGasOnType2Galaxies           0   ;allowing hot gas to remain even on type two galaxies 
+                                     % 0 -- no hot gas on type 2's - normal tidal striping implmentation
+                                          % removes all the hot gas once the dark matter halo has been striped
+                                     % 1 -- allow hot gas on type 2's - only makes sense if tidal striping is modified
+
+
+StarBurstRecipe         	    0   ;recipe for starbursts during mergers
+                                      %*0 -- starbursts in major AND minor mergers as in Somerville 2001
+
+BulgeFormationInMinorMergersOn  1	;option for bulges to form in minor mergers as well as major
+                                      % 0 -- bulges only formed in major mergers 
+                                      %*1 -- bulge formation in major AND minor mergers
+
+MetallicityOption               1	;Photometric tables from SPS models 
+                                      % 0 -- only solar metallicity, 
+                                      %*1 -- range of metallicities; 
+
+%------------------------------------------
+%----- Parameters of physical model -------
+%------------------------------------------
+
+%% Reionization
+Reionization_z0	            8.0     ;These parameter choices give the best fit to Genedin (2000)
+Reionization_zr	            7.0	    ;using the analytic fit of Kravtsov et al. 2004 
+
+%% IMF
+Yield			    0.047    ;fraction of metals instantaneously returned after SF (produced by short lived massive stars)
+RecycleFraction             0.43    ;0.43 fraction of SF mass instantaneously recycled back to cold - IMF dependent
+
+
+%%Hot Gas stripping - only one of the next two parameters is used
+RamPressureStrip_CutOffMass  0.0 ;in code Units of 10^10 (mass above which there is stripping)
+RamPressureRadiusThreshold   0.0     ;efficiency of ram pressure stripping
+
+%% Star formation
+%SfrEfficiency              0.02    ;WMAP-1 efficiency of SF 0.03 Ori/ SN/ and SN2/ and 0.01 in SFR/
+SfrEfficiency               0.055   ;WMAP-7
+SfrLawPivotVelocity         1000.0
+SfrLawSlope                 0.0
+SfrColdCrit                 0.38; in units of 10^10Msun
+
+%% Mergers
+ThreshMajorMerger	    0.3     ;major merger when mass ratio gt this
+MergerTimeMultiplier    2.0         ;adjust the dynamical friction merging time
+
+%% Star formation bursts during mergers
+SfrBurstEfficiency          0.56 
+SfrBurstSlope               0.7
+
+%% SN feedback
+EnergySN		    1.0e51
+EtaSN			    8.0e-3
+FracZtoHot                  0.0	    ;fraction of metals returned to hot component
+
+% Introduced by Guo 10, the following 2 parameters limit star-formation in dwarfs.
+
+%ReheatPreVelocity	    70.     ;WMAP-1 normalization of SN feedback
+ReheatPreVelocity	    405     ;WMAP-7
+%ReheatSlope		    3.5	    ;WMAP-1 slope of the dependence of  SN feedback on Vvir 
+ReheatSlope		        0.921   ;WMAP-7
+% Heating of cold gas to hot
+%FeedbackReheatingEpsilon    6.5	;WMAP-1 mass of cold gas reheated due to SF (see Martin 1999) 
+FeedbackReheatingEpsilon    2.12    ;WMAP-7
+
+% Ejection of gas from halo
+%EjectPreVelocity	    70.		;WMAP-1 normalization of total SN 
+EjectPreVelocity	    336.	;WMAP-7
+%EjectSlope		    3.5		  ;WMAP-1 slope of total SN
+EjectSlope		    0.46	  ;WMAP-7 
+%FeedbackEjectionEfficiency  0.32	;WMAP-1 fraction of energy available for ejection of gas
+FeedbackEjectionEfficiency  0.645	;WMAP-7
+
+%% Black-hole growth
+%BlackHoleGrowthRate	    0.03    ;WMAP-1 fraction of cold gas added to the BH during mergers (AGNrecipeOn=1)
+BlackHoleGrowthRate	        0.0146  ;WMAP-7
+BlackHoleDisruptGrowthRate  0.0     ;amount of cold gas from disrupted satellites moved into central black holes
+BlackHoleSeedMass           1e-7    ; 1000 Msun/h
+BlackHoleAccretionRate      3.      ; fraction of M_BH/t_Edd.  If Eddington limited then = (1-e)/e where e is radiation efficiency.
+BlackHoleCutoffVelocity     280.
+
+%% AGN Feedback
+%AgnEfficiency              1.5e-3    ;WMAP-1 Passive accretion and cooling flow reheating
+AgnEfficiency               3.23e-03  ;WMAP-7
+
+%% Reincorporation of ejected material
+%ReIncorporationFactor	    0.30	    ;WMAP-1 fraction of ejected mass reincorporated per dynamical time to hot
+ReIncorporationFactor	    1.81e+10	;WMAP-7
+%% I don't think that the following two are used - PAT
+ReincZpower                 2.1
+ReincVelocitypower          2.7
+
+% Don't change these
+UnitLength_in_cm                   3.08568e+24		;Mpc - WATCH OUT, distances in the code are in Mpc/h
+UnitMass_in_g                      1.989e+43		;10^10Msun - WATCH OUT, masses in the code are in 10^10Msun/h
+UnitVelocity_in_cm_per_s           100000		;Km/s - WATCH OUT, this are the correct units in the code km/s
+

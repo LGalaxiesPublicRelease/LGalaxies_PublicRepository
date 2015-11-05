@@ -1,0 +1,150 @@
+# List of Makefile options
+# see also routine "check_options" in main.c...
+
+# Options that control the SA model
+# Ideally, these shoudl be set in the input parameter file
+OPT += -DUPDATETYPETWO       #  This updates the positions of type 2 galaxies when the galaxies are written to file
+OPT += -DDISRUPTION          # Instantaneously and completely disrupt type 2s
+#OPT += -DHT09_DISRUPTION     # Henriques & Thomas 2009 tidal disruption of stars in satellite galaxies 
+ifeq (HT09_DISRUPTION,$(findstring HT09_DISRUPTION,$(OPT)))
+OBJS  += ./code/recipe_HT09_disrupt.o
+endif
+OPT += -DMERGE01             # allows type 1s to merge with type 0s
+
+# Options that control output
+OPT += -DOVERWRITE_OUTPUT    # overwrite output files if they exist (otherwise will quit without overwriting)
+OPT += -DNOUT=28             #  This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
+#OPT += -DNOUT=11             #  This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
+#OPT += -DNOUT=1             #  This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
+
+
+#OPT += -DGALAXYTREE          #  This will enable output of full galaxy merger trees, implicitly sets NOUT to maximum value
+#OPT += -DLOADIDS             # Load dbids files
+#OPT += -DNO_PROPS_OUTPUTS    # only magnitudes outputted 
+
+# Options that control speed and memory usage
+OPT += -DSAVE_MEMORY         # we do NOT use the 64/68-elements array Sfr/SfrBulge when calculating galaxy trees.
+#OPT += -DPRELOAD_TREES       # this will load all the trees of a file in memory, and cache them (useful for MCMC)
+OPT += -DPARALLEL
+
+
+
+#OPT += -DMRII        
+
+#OPT += -DNIFTY
+#OPT += -DPHOENIX
+
+#OPT += -DGUO10
+#OPT += -DGUO13
+
+
+# record star formation histories - used for post-process mags and detailed chemical enrichment
+OPT += -DSTAR_FORMATION_HISTORY
+ifeq (STAR_FORMATION_HISTORY,$(findstring STAR_FORMATION_HISTORY,$(OPT)))
+#OPT += -DNORMALIZEDDB        # currently does not write sfh_time and sfh_dt to galaxies records, but writes separate CSV file with relevant bin information
+OBJS  += ./code/star_formation_history.o
+endif
+
+
+###########################
+### SPECPHOT_PROPERTIES ###
+###########################
+OPT += -DCOMPUTE_SPECPHOT_PROPERTIES
+ifeq (COMPUTE_SPECPHOT_PROPERTIES,$(findstring COMPUTE_SPECPHOT_PROPERTIES,$(OPT)))
+OBJS  += ./code/model_spectro_photometric.o
+
+OPT += -DOUTPUT_REST_MAGS    # output rest-frame magnitudes
+#OPT += -DCOMPUTE_OBS_MAGS    # compute observer-frame magnitudes
+#OPT += -DOUTPUT_OBS_MAGS     # adds observer-frame magnitudes to the standard outptus (either tree or snapshot formats)
+#OPT += -DOUTPUT_MOMAF_INPUTS # writes out extra files which are std. input files for MoMaF (works both with and without galaxytree option)
+#OPT += -DICL                 # output magnitudes for ICL
+#OPT += -DKITZBICHLER         # does MOMAF outputs with forward and backwards k-corrections
+
+### Options that control the Spectral synthesis
+
+OPT += -DM05 #use Maraston 2005 stellar populations need to change input.par
+#OPT += -DBC03 #use Bruzual & Charlot 2003 stellar populations need to change input.par
+#OPT += -DCB07 #use Charlot & Bruzual 2007 stellar populations need to change input.par
+
+OPT += -DPHOTTABLES_PRECOMPUTED     
+   
+#OPT += -DSPEC_PHOTABLES_ON_THE_FLY
+ifeq (SPEC_PHOTABLES_ON_THE_FLY,$(findstring SPEC_PHOTABLES_ON_THE_FLY,$(OPT)))
+#OPT += -DFULL_SPECTRA
+OPT += -DAB    #AB MAGNITUDES
+#OPT += -DVEGA #VEGA MAGNITUDES
+OBJS  += ./code/model_spectro_photometric_onthefly_initialize.o
+OBJS  += ./code/model_spectro_photometric_onthefly_misc.o
+endif
+
+### POST PROCESS MAGS 
+ifeq (STAR_FORMATION_HISTORY,$(findstring STAR_FORMATION_HISTORY,$(OPT)))
+OPT += -DPOST_PROCESS_MAGS
+ifeq (POST_PROCESS_MAGS,$(findstring POST_PROCESS_MAGS,$(OPT)))
+OBJS  += ./code/post_process_spec_mags.o
+endif
+endif # STAR_FORMATION_HISTORY
+
+#Define NMAG
+ifeq (FULL_SPECTRA,$(findstring FULL_SPECTRA,$(OPT)))
+ifeq (M05,$(findstring M05,$(OPT)))
+OPT += -DNMAG=1221
+endif
+ifeq (BC03,$(findstring BC03,$(OPT)))
+OPT += -DNMAG=1238
+endif
+ifeq (CB07,$(findstring CB07,$(OPT)))
+OPT += -DNMAG=1221
+endif
+else #IF NOT DEFINED FULL_SPECTRA -> **** STANDARD RUN ****
+OPT += -DNMAG=40
+#OPT += -DNMAG=20  #GALTREE
+#OPT += -DNMAG=6  #GALTREE+NIFTY (need small files to convert structures in idl)
+endif #FULL_SPECTRA
+
+
+endif ### COMPUTE_SPECPHOT_PROPERTIES
+
+
+# Chemical enrichment of individual element yields
+#OPT   += -DDETAILED_METALS_AND_MASS_RETURN 
+ifeq (DETAILED_METALS_AND_MASS_RETURN,$(findstring DETAILED_METALS_AND_MASS_RETURN,$(OPT)))
+OPT   += -DFEEDBACK_COUPLED_WITH_MASS_RETURN
+OPT   += -DINDIVIDUAL_ELEMENTS
+OBJS  += ./code/recipe_yields.o
+OBJS  += ./code/read_yield_tables.o
+OBJS  += ./code/elements.o
+OBJS  += ./code/yield_integrals.o
+ifeq (INDIVIDUAL_ELEMENTS,$(findstring INDIVIDUAL_ELEMENTS,$(OPT)))
+OBJS  += ./code/calc_SNe_rates.o
+#OPT  += -DMAINELEMENTS  #If on, then only H, He, O, Mg and Fe are tracked. If off, all elements are tracked (H,He,C,N,O,Ne,Mg,Si,S,Ca,Fe)
+endif
+OPT  += -DBULGE_TO_COLD
+#OPT  += -DSNIATOHOT
+#OPT  += -DNORMALIZE #(ONLY WORKS WITH MAINELEMENTS OFF) If on, elements and total metals are normlaised to total component masses.
+OPT  += -DPORTINARI #Use Portinari et al. (1998) SN-II yield tables.
+#OPT   += -DCHIEFFI #Use Chieffi & Limongi (2007) SN-II yield tables.
+OPT   += -DDTD #If on, a delay time distribution (DTD) is used for SNIa enrichment. If off, the Matteucci & Greggio (1986) formalism is used.
+ifeq (DTD,$(findstring DTD,$(OPT)))
+OPT  += -DBIMODALDTD #Use the Mannucci et al. (2006) delay time distribution. ~Half SNe-Ia die within ~100 Myrs. Rest distributed out to ~11 Gyrs.
+#OPT   += -DGAUSSIANDTD #Use a Gaussian delay time distribution, centered on 2 Gyrs.
+#OPT  += -DPOWERLAWDTD #Use a declining power-law delay time distribution of slope -1.12.
+#OPT   += -DINSTANTANEOUS_RECYCLE #Recycle all metals in one time step to resemble instantaneous recycling approximation 
+endif
+endif
+
+
+# Option to switch on MCMC parameter hunting
+#OPT += -DMCMC 
+ifeq (MCMC,$(findstring MCMC,$(OPT)))
+OBJS  += ./code/mcmc.o
+OBJS  += ./code/mcmc_likelihood.o 
+OBJS  += ./code/save_mcmc.o 
+INCL  += ./code/mcmc_vars.h 
+INCL  += ./code/mcmc_proto.h
+endif
+
+# Debugging options
+#OPT += -DDEBUG               # Switch on debug compilation flags
+#OPT += -DMASS_CHECKS         # Check for mass conservation at every stage of galaxy building
+

@@ -1,0 +1,111 @@
+# List of Makefile options
+# see also routine "check_options" in main.c...
+
+# Options that control the SA model
+
+# Options that control output
+OPT += -DOVERWRITE_OUTPUT    # overwrite output files if they exist (otherwise will quit without overwriting)
+OPT += -DNOUT=1              #  This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
+#OPT += -DGALAXYTREE          #  This will enable output of full galaxy merger trees, implicitly sets NOUT to maximum value
+
+#OPT += -DLIGHT_OUTPUT        # produces minimal output
+#OPT += -DMBPID               # writes out the most bound particle ID of the halo last occupied by this galaxy
+#OPT += -DHALOPROPERTIES      # Output halo spin and other properties
+#OPT += -DMETALS_SELF         # Keeps track of the fraction of metals that originate in the galaxy (as opposed to being accreted)
+#OPT += -DCONTINUOUS_TREES    # Make galaxy ids run in continuous stream
+#OPT += -DFIX_OUTPUT_UNITS    # if set, the outputs will have their units fixed so that no hidden factors of "little-h" remain.
+#OPT += -DTRACK_BURST # track amount of stars formed in bursts
+
+# Options that control speed and memory usage
+OPT += -DUPDATETYPETWO       #  This updates the positions of type 2 galaxies when the galaxies are written to file
+#OPT += -DPRELOAD_TREES       # this will load all the trees of a file in memory, and cache them (useful for MCMC)
+#OPT += -DPARALLEL
+#OPT += -DLOADIDS             # Load dbids files
+
+
+#OPT += -DGUO10
+#OPT += -DGUO13
+#OPT += -DHENRIQUES13
+
+#OPT += -DMRII        
+
+# record star formation histories - used for post-process mags and detailed chemical enrichment
+OPT += -DSTAR_FORMATION_HISTORY
+ifeq (STAR_FORMATION_HISTORY,$(findstring STAR_FORMATION_HISTORY,$(OPT)))
+OBJS  += ./code/star_formation_history.o
+endif
+
+
+###########################
+### SPECPHOT_PROPERTIES ###
+###########################
+OPT += -DCOMPUTE_SPECPHOT_PROPERTIES
+ifeq (COMPUTE_SPECPHOT_PROPERTIES,$(findstring COMPUTE_SPECPHOT_PROPERTIES,$(OPT)))
+OBJS  += ./code/model_spectro_photometric.o
+
+### POST PROCESS MAGS 
+ifeq (STAR_FORMATION_HISTORY,$(findstring STAR_FORMATION_HISTORY,$(OPT)))
+OPT += -DPOST_PROCESS_MAGS
+ifeq (POST_PROCESS_MAGS,$(findstring POST_PROCESS_MAGS,$(OPT)))
+OBJS  += ./code/post_process_spec_mags.o
+endif
+endif # STAR_FORMATION_HISTORY
+
+OPT += -DPHOTTABLES_PRECOMPUTED     
+   
+#OPT += -DSPEC_PHOTABLES_ON_THE_FLY
+ifeq (SPEC_PHOTABLES_ON_THE_FLY,$(findstring SPEC_PHOTABLES_ON_THE_FLY,$(OPT)))
+#OPT += -DFULL_SPECTRA
+OPT += -DAB    #AB MAGNITUDES
+#OPT += -DVEGA #VEGA MAGNITUDES
+OBJS  += ./code/model_spectro_photometric_onthefly_initialize.o
+OBJS  += ./code/model_spectro_photometric_onthefly_misc.o
+endif
+
+OPT += -DOUTPUT_REST_MAGS    # output rest-frame magnitudes
+#OPT += -DCOMPUTE_OBS_MAGS    # compute observer-frame magnitudes
+#OPT += -DOUTPUT_OBS_MAGS     # adds observer-frame magnitudes to the standard outptus (either tree or snapshot formats)
+#OPT += -DICL                 # output magnitudes for ICL
+#OPT += -DOUTPUT_MOMAF_INPUTS # writes out extra files which are std. input files for MoMaF (works both with and without galaxytree option)
+#OPT += -DKITZBICHLER         # does MOMAF outputs with forward and backwards k-corrections
+
+### Options that control the Spectral synthesis
+
+OPT += -DM05 #use Maraston 2005 stellar populations need to change input.par
+#OPT += -DBC03 #use Bruzual & Charlot 2003 stellar populations need to change input.par
+#OPT += -DCB07 #use Charlot & Bruzual 2007 stellar populations need to change input.par
+
+
+#Define NMAG
+ifeq (FULL_SPECTRA,$(findstring FULL_SPECTRA,$(OPT)))
+ifeq (M05,$(findstring M05,$(OPT)))
+OPT += -DNMAG=1221
+endif
+ifeq (BC03,$(findstring BC03,$(OPT)))
+OPT += -DNMAG=1238
+endif
+ifeq (CB07,$(findstring CB07,$(OPT)))
+OPT += -DNMAG=1221
+endif
+else #IF NOT DEFINED FULL_SPECTRA
+OPT += -DNMAG=5
+endif #FULL_SPECTRA
+
+endif ### COMPUTE_SPECPHOT_PROPERTIES
+
+
+
+# Option to switch on MCMC parameter hunting
+#OPT += -DMCMC 
+ifeq (MCMC,$(findstring MCMC,$(OPT)))
+OBJS  += ./code/mcmc.o
+OBJS  += ./code/mcmc_likelihood.o 
+OBJS  += ./code/save_mcmc.o 
+INCL  += ./code/mcmc_vars.h 
+INCL  += ./code/mcmc_proto.h
+endif
+
+# Debugging options
+#OPT += -DMASS_CHECKS         # Check for mass conservation at every stage of galaxy building
+
+

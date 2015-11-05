@@ -1,0 +1,308 @@
+%------------------------------------------
+%----- SA model output files --------------
+%------------------------------------------
+
+FileNameGalaxies      SA
+FileWithOutputRedshifts ./input/desired_output_redshifts_for_MCMC.txt
+
+SpecPhotDir               /galformod/scratch/bmh20/Workspace/SpecPhotTables/
+PhotPrefix                WMAP7_M05 ; WMAP7_BC03 ;WMAP7_CB07
+SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
+FileWithFilterNames      ./input/Filter_Names_for_MCMC.txt
+
+McFile				   ./input/Mc.txt
+CoolFunctionsDir       ./CoolFunctions/
+CosmologyTablesDir     /galformod/scratch/bmh20/Workspace/CosmologyTables/
+
+
+%Variables needed for the MCMC
+MCMCParameterPriorsAndSwitches        ./input/MCMCParameterPriorsAndSwitches.txt
+MCMCWeightsObsConstraints             ./input/MCMCWeightsObsConstraints.txt
+MCMCObsConstraints                    ./input/MCMCObsConstraints.txt
+ObsConstraintsDir                     ./ObsConstraints/
+
+
+%look at read_sample_info() to lear about the files that are read
+%MCMCSampleDir                     /galformod/data/L-Galaxies/Util/Samples/
+MCMCSampleDir                      /galformod/scratch/bmh20/Workspace/Sampling/Samples/
+
+
+MCMCSampleFilePrefix_MRII         optimal_MRII  ; % optimal_wx1_MRII 
+                                                          %*optimal_MRII 
+MCMCSampleFilePrefix_MR           cut_optimal  ; % optimal_marcel1 (MCMCSampleFileType = 3)  (310070)
+                                                 %*cut_optimal (MCMCSampleFileType = 2) 
+                                                 % optimal (MCMCSampleFileType = 1)   
+
+%210070 - 8000
+%230070 - 12000
+%2500300 - 12000
+%21000300 - 20000
+MCMCSampleFile_MR    300          ;File with IDs of sample of Dark matter trees to use as input 
+MCMCSampleFile_MRII  70          ;File with IDs of sample of Dark matter trees to use as input 
+MCMCSampleFileType     2          ;type of halo selection
+                                     % 1 - all halos selected (high computational cost, minor improve in sample quality)
+                                     %*2 - no selection of very massive halos
+                                     % 3 - optimum selection for clustering
+MCMCTreeSampleFile   230070      ;Sample of Dark Matter trees
+MCMCHaloModelDir                 ./mcmc_halomodel/
+                                   
+                                       
+ChainLength     1                  ;length of MCMC chains
+Sample_Physical_Parameters      1     ;set to zero to keep physical parameters at initial values
+Time_Dependant_PhysPar          0     ;set to zero to have the same physical parameters at all z 
+Sample_Cosmological_Parameters  0     ;set to zero to keep cosmological parameters at initial values
+MCMCMode                        0     ;acceptance rate option
+                                         %*0 for normal MCMC -> AcceptanceLogic = (ran < AcceptanceProbability) 
+                                         % 1 find a high likelihood -> AcceptanceLogic = (lhood2 > lhood1)
+                                          
+MCMC_LogStep_Size               0.0   ;size of log_normal step when proposing new parameters
+MCMC_Initial_Par_Displacement   0.0   ;size of log_normal displacement for the initial parameters in each chain
+MCMC_Minimum_Obs_Error          0.05  ;minimum value allowed for observation error bars (maximum level of agreement required)
+
+
+
+%-------------------------------------------------
+%----- Simulation input/output files  ------------
+%-------------------------------------------------
+
+SimulationDir	             /galformod/scratch/bmh20/Workspace/MergerTrees/
+LastDarkMatterSnapShot_MR    63
+LastDarkMatterSnapShot_MRII  67
+Hashbits                     8     ; needed for Peano hilbert key output with the GALAXYTREE option
+OutputDir                    ./output/
+
+MaxMemSize              20000
+MachineTimeOut          23.    ;time out for the computer cluster in hours
+
+
+JobSubmitCommand        qsub   ;qsub or bsub
+JobSubmitPipe           <      
+JobSubmitFile           odin ; L-Galaxies.bash, odin.bash or cosma.bash
+
+%-------------------------------------------------
+%-----   Scaling options    ----------------------
+%-------------------------------------------------
+
+%old
+%ScalePos            0.927545
+%ScaleMass           1.00548 
+
+%old inverted
+%ScalePos            1.0781148
+%ScaleMass           0.9945499
+
+%new inverted
+ScalePos            0.960558
+ScaleMass           1.11671
+
+
+
+--------------------------------------------------
+%----- Cosmological paramters --------------------
+%-------------------------------------------------
+
+BaryonFrac      0.155
+Sigma8          0.826
+
+%PLANCK
+Omega           0.315 
+OmegaLambda     0.685 
+Hubble_h        0.673
+
+%WMAP1
+Omega_OriginalCosm           0.25 
+OmegaLambda_OriginalCosm     0.75 
+Hubble_h_OriginalCosm        0.73
+
+
+%RELATED TO SIMULATION 
+
+
+FileWithZList_MR   ./input/zlist_planck_MR.txt
+PartMass_MR        0.0961104    ;should be changed according to the dark matter simulation being used ;new
+BoxSize_MR          480.279   ;new
+
+FileWithZList_OriginalCosm_MR   ./input/zlist_MR.txt
+PartMass_OriginalCosm_MR        0.0860657 ;should be changed according to the dark matter simulation being used
+BoxSize_OriginalCosm_MR         500.
+
+FileWithZList_MRII   ./input/zlist_planck_MRII.txt
+PartMass_MRII         0.000768884   ;should be changed according to the dark matter simulation being used
+BoxSize_MRII          96.0558
+
+FileWithZList_OriginalCosm_MRII   ./input/zlist_MRII.txt
+PartMass_OriginalCosm_MRII        0.000688526   ;should be changed according to the dark matter simulation being used
+BoxSize_OriginalCosm_MRII         100.
+
+
+
+
+
+%FileWithZList_MR   ./input/zlist_planck_MR.txt 
+%PartMass_MR         0.0865373   ;should be changed according to the dark matter simulation being used
+%BoxSize_MR          463.772
+
+%FileWithZList_OriginalCosm_MR   ./input/zlist_MR.txt
+%PartMass_OriginalCosm_MR        0.0860657 ;should be changed according to the dark matter simulation being used
+%BoxSize_OriginalCosm_MR         500.
+
+%FileWithZList_MRII   ./input/zlist_planck_MRII.txt 
+%PartMass_MRII         0.000692299   ;should be changed according to the dark matter simulation being used
+%BoxSize_MRII           92.7545
+
+%FileWithZList_OriginalCosm_MRII   ./input/zlist_MRII.txt
+%PartMass_OriginalCosm_MRII       0.000688526 ;should be changed according to the dark matter simulation being used
+%BoxSize_OriginalCosm_MRII         100.
+
+
+
+
+
+
+%------------------------------------------
+%----- Parameters of physical model -------
+%------------------------------------------
+
+StarFormationRecipe             0   ;Star Formation recipe
+				                      %*0 -- Croton2006, Delucia2007, Guo2011 
+				                      % 1 -- Fu2012 - No dependence on tdyn
+				                 
+FeedbackRecipe                  0   ; 
+                                      %*0 -- Guo 2010 (moderate Delucia 2004 ejection scheme
+                                           % used in delucia 2007, plus Vmax dependence)
+
+EjectionRecipe                  1   ;choice of ejection of satellite galaxies. 
+                                      % 0 -- ejected gas of satellite galaxies contributes to 
+                                           % the ejected component of type 0 (Delucia2007); 
+                                      %*1 -- ejected gas of satellites distribute between type 1 and type 0, 
+                                           % according to the fraction of dark matter retained in subhalos (Guo2010).
+                                           % this also changes where the ejected gas from type 2 ends up in mergers 
+                                           % (maybe it should be a different option).
+
+ReIncorporationRecipe           2   ;reincorporation time scale
+				                      % 0 -- Delucia2007, 
+				                      %*1 -- Guo2010 (suppression in small halos)
+				                      % 2 -- Henriques2012 (Mdot_eject=-gama_ej*M_ejected*M_vir)
+
+ReionizationOn          	    2	;
+                                      % 0 -- no reionization, 
+                                      % 1 -- Gnedin reionization (Delucia2007), 
+				                      %*2 -- Okamoto 2008 (Guo2010)
+
+BlackHoleGrowth                 0   ;How black hole growth from quasar mode is handled
+                                      %*0 -- instantaneous; accretion rate reported averaged over step
+                                      % 1 -- via accretion disk at some fraction of Eddington rate
+                                      
+AGNRadioModeModel             	1	;if > 0 grow black hole during mergers, 
+                                      % 0 -- No cooling supression, 
+                                      %*1 -- Phenomenological AGN feedback scaling with Mvir as in Henriques2013b,
+                                      % 2 -- Phenomenological accretion & AGN feedback as in Croton 2006, 
+                                      % 3 -- Bondi-Hoyle accretion, 
+                                      % 4 -- Cold cloud accretion 
+
+DiskRadiusMethod        	    2	;method to calculate disk radius
+                                      % 0 -- disk_radius = Gal[p].Rvir / 10.0, 
+                                      % 1 -- use halo spin parameter to get disk scale radius, 
+                                      %*2 -- use each component (stellar or gas) spin to get disk radius
+
+TrackDiskInstability		    1	;allow bulges to form when the stellar disks become unstable
+
+BlackHoleGrowthInDiskInstability  0 ; cold gas moved into the balck hole in the same fraction as disk stars moved to bulge
+
+HotGasStripingModel             1   ;choice of stripping of satellite galaxies 
+                                      % 0 -- immediate stripping (Delucia2007)
+				                           % Ejected gas of satellite galaxies contributes to the 
+					                       % ejected component of type 0 if within Rvir
+                                      %*1 -- gradual stripping (cooling in type 1's) (Guo2010) 
+				                           % Ejected gas of satellites distributed between type 1 and type 0, 
+                                           % according to the fraction of dark matter retained in subhalos (Guo2010).
+                                           % This also determines where the ejected gas from type 2 ends up in mergers 
+                                           % (maybe it should be a different option).
+                                           
+HotGasOnType2Galaxies           0   ;allowing hot gas to remain even on type two galaxies 
+                                     % 0 -- no hot gas on type 2's - normal tidal striping implmentation
+                                          % removes all the hot gas once the dark matter halo has been striped
+                                     % 1 -- allow hot gas on type 2's - only makes sense if tidal striping is modified
+
+
+
+StarBurstRecipe         	    0   ;recipe for starbursts during mergers
+                                      %*0 -- starbursts in major AND minor mergers as in Somerville 2001
+
+BulgeFormationInMinorMergersOn  1	;option for bulges to form in minor mergers as well as major
+                                      % 0 -- bulges only formed in major mergers 
+                                      %*1 -- bulge formation in major AND minor mergers
+
+MetallicityOption               1	;Photometric tables from SPS models 
+                                      % 0 -- only solar metallicity, 
+                                      %*1 -- range of metallicities; 
+
+%------------------------------------------
+%----- Parameters of physical model -------
+%------------------------------------------
+
+%% Reionization
+Reionization_z0	            8.0     ;These parameter choices give the best fit to Genedin (2000)
+Reionization_zr	            7.0	    ;using the analytic fit of Kravtsov et al. 2004 
+
+%% IMF
+Yield			            0.03    ;fraction of metals instantaneously returned after SF (produced by short lived massive stars)
+RecycleFraction             0.43    ;0.43 fraction of SF mass instantaneously recycled back to cold - IMF dependent
+
+%% Mergers
+ThreshMajorMerger	    0.1         ;major merger when mass ratio gt this
+MergerTimeMultiplier    2.0         ;adjust the dynamical friction merging time
+
+
+%%Hot Gas stripping - only one of the next two parameters needs to be used to reduce ram pressure strpping
+RamPressureStrip_CutOffMass  1.e-4     ;in code Units of 10^10 (mass above which there is stripping)
+RamPressureRadiusThreshold   0.0     ;efficiency of ram pressure stripping
+
+%% Star formation
+SfrEfficiency               0.02  
+SfrLawPivotVelocity         1000.0
+SfrLawSlope                 0.0
+SfrColdCrit                 0.38
+
+%% Star formation bursts during mergers
+SfrBurstEfficiency          0.56 
+SfrBurstSlope               0.7
+
+%% AGN feedback
+AgnEfficiency               4.34812e-3  ;Passive accretion and cooling flow reheating
+%% Black-hole Growth
+BlackHoleGrowthRate	        0.03    ;fraction of cold gas added to the BH during mergers (AGNrecipeOn=1)
+BlackHoleDisruptGrowthRate  0.0
+BlackHoleSeedMass           1e-7    ;1000 Msun/h
+BlackHoleAccretionRate      3.      ;fraction of M_BH/t_Edd.  If Eddington limited then = (1-e)/e where e is radiation efficiency.
+BlackHoleCutoffVelocity     280.
+
+%% SN feedback
+% Heating of cold gas to hot
+FeedbackReheatingEpsilon    6.5	    ;mass of cold gas reheated due to SF (see Martin 1999) 
+ReheatPreVelocity	        70.     ;normalization of SN feedback
+ReheatSlope		            3.5	    ;slope of the dependence of  SN feedback on Vvir 
+% Ejection of gas from halo
+EjectPreVelocity	        70.     ; normalization of total SN 
+EjectSlope		            3.5     ; slope of total SN
+FeedbackEjectionEfficiency  0.32    ; fraction of energy available for ejection of gas
+%Reincorporation
+ReIncorporationFactor	    0.3    ; fraction of ejected mass reincorporated per dynamical time to hot
+ReincZpower                 3.0
+ReincVelocitypower          -3.0
+
+FracZtoHot                  0.0	    ;fraction of metals returned to hot component
+EnergySN		    1.0e51
+EtaSN			    8.0e-3
+
+
+
+
+UnitLength_in_cm                   3.08568e+24		;Mpc - WATCH OUT, distances in the code are in Mpc/h
+UnitMass_in_g                      1.989e+43		;10^10Msun - WATCH OUT, masses in the code are in 10^10Msun/h
+UnitVelocity_in_cm_per_s           100000		    ;Km/s - WATCH OUT, this are the correct units in the code km/s
+
+
+
+
+
