@@ -53,7 +53,7 @@ plt.rcParams.update({'font.size': 18, 'xtick.labelsize': 18, 'ytick.labelsize': 
                      'ytick.minor.size': 3, 'ytick.minor.width': 1.})
 
 
-# In[149]:
+# In[181]:
 
 xmin=7.0
 xmax=12.5
@@ -70,6 +70,11 @@ grid = gridspec.GridSpec(2, 2)
 grid.update(wspace=0.0, hspace=0.0)
 
 for ii in range(0,4):
+    
+    if ii == 0 :
+        redshift=RedshiftList[ii]
+    else :  #avoid using z=0.4
+        redshift=RedshiftList[ii+1] 
     
     subplot=plt.subplot(grid[ii])
 
@@ -93,37 +98,45 @@ for ii in range(0,4):
     
     if ii==1 or ii == 3:
         plt.tick_params(axis='y', which='both', left='on', labelleft='off')
+           
     
-    #OBSERVATIONS
-    if ii == 0 :
-        char_redshift="%0.0f" % RedshiftList[ii]
-    else :  #avoid using z=0.4
-        char_redshift="%0.0f" % RedshiftList[ii+1]
-        
+    #OBSERVATIONS   
+    char_redshift="%0.0f" % redshift       
     file = Datadir + '/ObsConstraints/StellarMassFunction_z'+char_redshift+'.00.txt'
     obs = Table.read(file, format='ascii')
-    subplot.errorbar(obs['col1'], np.log10(obs['col3']),yerr=obs['col4'], 
+    
+    obs_xbin=obs['col1']+(obs['col2']-obs['col1'])/2.
+    asy_yerror = [np.log10(obs['col3']/(obs['col3']-obs['col4'])), 
+                  np.log10((obs['col3']+obs['col4'])/obs['col3'])]
+    subplot.errorbar(obs_xbin, np.log10(obs['col3']),yerr=asy_yerror,
              fmt='o', markersize=5, ecolor='blue', color='blue')
     #sub = plt.subplot(111)
-
+    
+    
     #MODEL
     if ii == 0 :
-        sel=G_MR['SnapNum']==SnapshotList[ii]
+        sel= (G_MR['SnapNum']==SnapshotList[ii])
     else :  #avoid using z=0.4    
-        sel=G_MR['SnapNum']==SnapshotList[ii+1]
-    G0_MR=G_MR[sel]
-    StellarMass=np.log10(G0_MR['StellarMass']*1.e10*Hubble_h)
+        sel=(G_MR['SnapNum']==SnapshotList[ii+1])
+    G0_MR=G_MR[sel]   
+    G0_MR=G0_MR[G0_MR['StellarMass']>0.]
+    StellarMass=(np.log10(G0_MR['StellarMass']*1.e10*Hubble_h) +
+                 np.random.randn(len(G0_MR['StellarMass']))*0.08*(1+redshift))
 
     bin_arr=np.arange(7.0,12.0+bin,bin)
-    hist=np.histogram(StellarMass, bins=bin_arr, range=(7.0,12.0))
+    hist=np.histogram(StellarMass, bins=bin_arr, range=(7.0,12.0))   
     subplot.plot(hist[1][0:len(hist[1][:])-1]+bin/2.,np.log10(hist[0][:]/(Volume_MR*bin)),
              color='red', linewidth=2)
 
 
     #LABELS
     if ii==0:
-        subplot.text(7.3, 0.0, 'Observations used in MCMC')
-        subplot.errorbar(7.2, 0.16, yerr=0.15, fmt='o', markersize=5, color='blue')
+        subplot.text(7.4, 0.0, 'Observations used in MCMC', fontsize= 13)
+        subplot.errorbar(7.3, 0.12, yerr=0.1, fmt='o', markersize=5, color='blue')
+        
+    if ii==3:
+        subplot.text(7.7, -5.0, 'This Work', fontsize= 13)
+        subplot.plot([7.3,7.6], [-4.9,-4.9], linestyle='-', linewidth=2, color='red')    
 #endfor
 
 
