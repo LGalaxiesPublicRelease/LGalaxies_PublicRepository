@@ -1,0 +1,138 @@
+This file contains descriptions of the IDL routines in this directory.
+
+There are four examples of how to read in data and create plots:
+      plot_lcone
+      plot_sfh
+      plot_snap
+      plot_squish
+
+There are two files used to read in data:
+      read_lgal     - note needs to be explicitly compiled before use
+      read_squish
+
+There is one general routine used to set up plotting parameters:
+      start_plot
+
+Plotting the whole data from a snapshot can be quite time-consuming
+and memory-hungry, so squish.pro can be run to convert the raw data
+files into a series of files each containing a single array for
+individual physical quantities.
+
+Peter Thomas
+29-Oct-10
+
+---------------------------------------------------------------------
+  
+pro plot_lcone,ps=ps
+
+;  Example procedure to read in L-galaxies light-cone data
+;  and create a mass function plot
+
+; Inputs:
+;   ps - keyword to cause the plot to be written to a postscript file.
+;        (by default the plot will be drawn on the screen)
+
+---------------------------------------------------------------------
+
+;  plot_sfh
+
+;  Example script to read in L-galaxies snapshot data
+;  with a star-formation history for the galaxies
+;  and produce an example plot of star-formation rate versus time.
+;  Assumes that all the galaxies are from a snap (ie all at the same time).
+
+---------------------------------------------------------------------
+
+pro plot_snap,ps=ps
+
+;  Example procedure to read in L-galaxies snapshot data 
+;  and create a luminosity function plot
+
+; Inputs:
+;   ps - keyword to cause the plot to be written to a postscript file.
+;        (by default the plot will be drawn on the screen)
+
+----------------------------------------------------------------------
+
+pro plot_squish,ps=ps
+
+; Example procedure to read in squished L-galaxies snapshot data
+; and create a metallicity plot.
+
+; Inputs:
+;   ps - keyword to cause the plot to be written to a postscript file.
+;        (by default the plot will be drawn on the screen)
+
+---------------------------------------------------------------------
+
+pro read_lgal,FileRoot, GalStructArray $
+             ,FileNr=Filenr, TreeNr=TreeNr, NGalsPerTree=NGalsPerTree $
+             ,FirstFile=FirstFile,LastFile=LastFile $
+             ,format=format $
+             ,swap_endian=swap_endian
+
+; Function to read in an L-galaxies output file and return as an
+; array of galaxy structures, GalStructArray
+; The only difference between Snaps and Light-cones is the quantities
+; stored in the galaxy structures: ditto DLB07 and HT09.
+; These different structures are passed using the 'format=' parameter
+; Needs to be explictly compiled before use or will fail to compile
+; the routine create_galstruct.
+
+
+; Input:
+;    FileRoot - root file name (will append .* where * runs over all
+;               numbers  between FirstFile and LastFile
+;    FirstFile - First file number
+;    LastFile - Last file number
+;    format - the name of the data format (compulsory)
+;    swap_endian - flag to swap the endianness of the data upon read
+; Output:
+;    GalStructArray - an array of Galaxy structures containing the
+;                     galaxy properties
+;    FileNr - the file corresponding to each galaxy
+;    TreeNr - the tree corresponding to each galaxy
+;    NGalsPerTree - the number of galaxies in each tree
+
+---------------------------------------------------------------------
+
+function read_squish,FileRoot,prop_name,type,swap_endian=swap_endian
+
+; Function to read in the data written by squish.pro
+
+; Inputs:
+;   FileRoot - Filename, excluding property name
+;   prop_name - property name
+;     (Fileroot+'_'+prop_name should give file name)
+;   type - property type
+;     (The type of a variable can be found from size(variable,/type))
+;   swap_endian - keyword to caused binary data to be read with
+;                 oppostive endianness
+; Output:
+;   An array containing the required data
+
+---------------------------------------------------------------------
+
+squish.pro
+	pro squish,dataset
+
+; Because the full data-set is so large, it can take a long time to
+; read in on many machines and can over-run memory.  This procedure
+; reads in the data a bit at a time and then write out desired
+; quantities into individual arrays which can later be read in by
+; read_squish
+; Currently this procedure must be edited by hand to specify the
+; source files, the destination directory, and the quantities that
+; are sought.  As it will only be run occasionally, I have not sought
+; to make it any cleverer.
+
+; Input:
+;   dataset - 'HT09' or 'DLB07', defines which dataset to use
+
+---------------------------------------------------------------------
+
+pro start_plot,thick=thick,size=size
+
+; Defines plotting symbol/character size and thickness
+; Also loads a simple colour table for line graphics
+

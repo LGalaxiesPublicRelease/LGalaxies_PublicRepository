@@ -1,0 +1,44 @@
+5
+c_johnson_U.dat 0.36 U
+c_johnson_V.dat 0.55 V
+vista_johnson_J.dat 1.26 J
+u_band_trans.dat 0.3551 us
+r_band_trans.dat 0.6165 rs
+
+1
+c_johnson_V.dat 0.55 V
+
+5
+c_johnson_U.dat 0.36 U
+c_johnson_V.dat 0.55 V
+vista_johnson_J.dat 1.26 J
+u_band_trans.dat 0.3551 us
+r_band_trans.dat 0.6165 rs
+
+3
+c_johnson_V.dat 0.55 V
+c_johnson_B.dat 0.435 B
+c_johnson_K.dat 2.22 K
+
+1
+c_johnson_V.dat 0.55 V
+
+5
+c_johnson_U.dat 0.36 U
+c_johnson_V.dat 0.55 V
+vista_johnson_J.dat 1.26 J
+u_band_trans.dat 0.3551 us
+r_band_trans.dat 0.6165 rs
+
+
+10
+c_johnson_U.dat 0.36 U
+c_johnson_B.dat 0.435 B
+c_johnson_V.dat 0.55 V
+vista_johnson_J.dat 1.26 J
+c_johnson_K.dat 2.22 K
+u_band_trans.dat 0.3551 us
+g_band_trans.dat 0.4686 gs
+r_band_trans.dat 0.6165 rs
+i_band_trans.dat 0.7481 is
+z_band_trans.dat 0.8931 zs

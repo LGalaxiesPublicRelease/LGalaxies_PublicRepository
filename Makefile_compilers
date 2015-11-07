@@ -1,0 +1,223 @@
+# List of compilers and flags.
+# Add your system in here.
+# Note that most entries currently in place will need editing to
+# accept the DEBUG flag
+
+# SYSTYPE = "COSM"
+# SYSTYPE = "ODIN"
+# SYSTYPE = "Darwin"
+# SYSTYPE = "cygwin"
+# SYSTYPE = "MPA"
+# SYSTYPE = "MPA-AMD"
+# SYSTYPE = "OPA-Cluster64"
+# SYSTYPE = "Regatta"
+# SYSTYPE = "RZG_LinuxCluster"
+# SYSTYPE = "RZG_LinuxCluster-gcc"
+# SYSTYPE = "Solaris"
+# SYSTYPE = "Sussex"
+# SYSTYPE = "VIP"
+# SYSTYPE = "COSMA"
+
+# Default set
+CC       = gcc                  # sets the C-compiler
+CC_MD    = gcc                  # for the metadata
+ifeq (DEBUG,$(findstring DEBUG,$(OPT)))
+OPTIMIZE =   -g -O3 -Wall	# optimization, debugging and warning flags
+else
+OPTIMIZE = -O3                  # optimization
+endif
+
+ifeq ($(SYSTYPE),"Sussex")
+ifeq (PARALLEL,$(findstring PARALLEL,$(OPT)))
+CC       =   gcc -pg
+else
+CC       =   cc 
+#CC       =   /opt/pgi/osx86/9.0-4/bin/pgcc
+endif
+GSL_INCL = -I/usr/local/include
+GSL_LIBS = -L/usr/local/lib -static-intel
+endif
+
+ifeq ($(SYSTYPE),"COSM")
+#add this in your .cshrc
+#module load gsl/1.14
+#module load fftw/2.1.5
+ifeq (PARALLEL,$(findstring PARALLEL,$(OPT)))
+CC       =  mpicc
+else
+#CC       =  icc -pg -static #-> for profiling
+CC       =  icc -wd981 -wd2259 -wd1572 -wd1418 -wd1419 -wd1338
+endif
+ifeq (DEBUG,$(findstring DEBUG,$(OPT)))
+OPTIMIZE =  -O3 -Wall -m64 -align
+else
+OPTIMIZE =  -O3 -m64 
+endif
+GSL_INCL =  -I$(GSL_HOME)/include
+GSL_LIBS =  -L$(GSL_HOME)/lib -Xlinker -R -Xlinker $(GSL_HOME)/lib 
+FFTW_INCL=  -I$(FFTW_HOME)/include
+FFTW_LIBS=  -L$(FFTW_HOME)/lib
+MPICHLIB =
+HDF5INCL =
+HDF5LIB  =  
+endif
+
+
+ifeq ($(SYSTYPE),"ODIN")
+##add this in your .cshrc
+#module load intel
+#module load impi
+#module load fftw/2.1.5
+#module load gsl/1.14
+#module load hdf5-serial
+#module load jdk/1.6
+ifeq (PARALLEL,$(findstring PARALLEL,$(OPT)))
+CC       =   mpicc
+else
+CC       =  icc 
+endif
+CXX      =   mpicxx
+OPTIMIZE =  -O3 -g -Wall -m64 # -wd981 -wd2259 -wd1572 -ipo4 -funroll-loops -finline -finline-functions -finline-limit=200 #-openmp
+GSL_INCL = -I$(GSL_INCDIR)
+GSL_LIBS = -L$(GSL_LIBDIR) -Xlinker -R -Xlinker $(GSL_LIBDIR)
+FFTW_INCL= -I$(FFTW_HOME)/include
+FFTW_LIBS= -L$(FFTW_HOME)/lib -Xlinker -R -Xlinker $(FFTW_HOME)/lib
+MPICHLIB =
+HDF5INCL = -I$(HDF5_HOME)/include
+HDF5LIB  = -L$(HDF5_HOME)/lib -Xlinker -R -Xlinker $(HDF5_HOME)/lib -lhdf5 -lz
+endif
+
+
+
+ifeq ($(SYSTYPE),"MPA-AMD")
+ifeq (PARALLEL,$(findstring PARALLEL,$(OPT)))
+CC       = /opt/openmpi-gnu-1.2.6/bin/mpicc  -m64  -L/opt/openmpi-gnu-1.2.6/lib  
+else
+CC       =   cc
+endif
+endif
+
+
+
+
+ifeq ($(SYSTYPE),"COSMA")
+CC       =   mpicc -m64        # sets the C-compiler (default)
+OPTIMIZE =   -O2     # optimization and warning flags (default)
+GSL_INCL=-I/opt/local/gsl/64/current/include
+GSL_LIBS=-L/opt/local/gsl/64/current/lib
+RLIBS = -R/opt/local/gsl/64/current/lib
+endif
+
+
+ifeq ($(SYSTYPE),"VIP")
+ifeq (PARALLEL,$(findstring PARALLEL,$(OPT)))
+CC       =  mpcc_r -g -qcpluscmt
+else
+CC       = mpcc -g -qcpluscmt
+endif
+OPTIMIZE =  -q64
+GSL_INCL = -I/afs/rzg/u/kud/include
+GSL_LIBS = -L/afs/rzg/u/kud/lib     -bstackpsize:64k -bdatapsize:64k -btextpsize:64k
+FFTW_INCL= -I/afs/rzg/u/kud/include
+FFTW_LIBS= -L/afs/rzg/u/kud/lib  -q64 # -qipa
+MPICHLIB =
+HDF5INCL =
+HDF5LIB  =
+endif
+
+
+ifeq ($(SYSTYPE),"OPA-Cluster64")
+CC       =  mpiccg
+ifeq (SOFTDOUBLEDOUBLE,$(findstring SOFTDOUBLEDOUBLE,$(OPT)))
+CC       =   mpiCCg -m64
+endif
+OPT     +=  -DNOCALLSOFSYSTEM
+OPTIMIZE =  -O3 -Wall -m64
+GSL_INCL =  -I/afs/rzg/bc-b/vrs/opteron64/include
+GSL_LIBS =  -L/afs/rzg/bc-b/vrs/opteron64/lib  -Wl,"-R /afs/rzg/bc-b/vrs/opteron64/lib"
+FFTW_INCL=  -I/afs/rzg/bc-b/vrs/opteron64/include
+FFTW_LIBS=  -L/afs/rzg/bc-b/vrs/opteron64/lib
+MPICHLIB =
+HDF5INCL =
+HDF5LIB  =  -lhdf5 -lz
+endif
+
+
+ifeq ($(SYSTYPE),"MPA")
+ifeq (PARALLEL,$(findstring PARALLEL,$(OPT)))
+CC       =   mpicc
+else
+CC       =   cc
+endif
+GSL_INCL = -I/usr/common/pdsoft/include
+GSL_LIBS = -L/usr/common/pdsoft/lib -static
+endif
+
+
+ifeq ($(SYSTYPE),"Opteron")
+ifeq (PARALLEL,$(findstring PARALLEL,$(OPT)))
+CC       =   mpicc
+else
+CC       =   cc
+endif
+GSL_INCL = -I/usr/local/include
+GSL_LIBS = -L/usr/local/lib -static
+endif
+
+
+
+ifeq ($(SYSTYPE),"Regatta")
+ifeq (PARALLEL,$(findstring PARALLEL,$(OPT)))
+CC       =   mpcc_r
+else
+CC       =   cc_r
+endif
+OPTIMIZE =   -g -q64 -qflttrap=zerodivide:invalid:enable  #  -O5 -qstrict -qipa 
+GSL_INCL = -I/afs/ipp-garching.mpg.de/u/vrs/gsl_psi64/include  -I/afs/rzg/@sys/lib/include
+GSL_LIBS = -L/afs/ipp-garching.mpg.de/u/vrs/gsl_psi64/lib                
+endif
+
+ifeq ($(SYSTYPE),"Darwin")
+CC       =  mpicc -g -O2 -Wall
+OPTIMIZE =
+GSL_INCL = -I/sw/include -I/opt/local/include 
+GSL_LIBS = -L/sw/lib     -L/opt/local/lib
+endif
+
+
+ifeq ($(SYSTYPE),"RZG_LinuxCluster")
+ifeq (PARALLEL,$(findstring PARALLEL,$(OPT)))
+CC       =   mpicci
+else
+CC       =   icc
+endif
+OPTIMIZE =   -O3 
+GSL_INCL = -I/afs/ipp-garching.mpg.de/u/vrs/gsl_linux/include
+GSL_LIBS = -L/afs/ipp-garching.mpg.de/u/vrs/gsl_linux/lib                -static
+endif
+
+ifeq ($(SYSTYPE),"RZG_LinuxCluster-gcc")
+ifeq (PARALLEL,$(findstring PARALLEL,$(OPT)))
+CC       =   mpiccg
+else
+CC       =   gcc
+endif
+OPTIMIZE =   -O3 
+GSL_INCL = -I/afs/ipp-garching.mpg.de/u/vrs/gsl_linux_gcc3.2/include
+GSL_LIBS = -L/afs/ipp-garching.mpg.de/u/vrs/gsl_linux_gcc3.2/lib
+endif
+
+ifeq ($(SYSTYPE),"Solaris")
+CC       =   cc   # sets the C-compiler
+OPTIMIZE =   -i -fast -xvector -xarch=v9b -xchip=ultra3 -xcache=64/32/4:8192/512/1 -I/opt/local/include
+endif
+
+ifeq ($(SYSTYPE),"cygwin")
+CC       =   gcc   # sets the C-compiler
+GSL_INCL = -I/usr/local/include
+GSL_LIBS = -L/usr/local/lib -static
+#GSL_INCL = -I/usr/include
+#GSL_LIBS = -L/usr/lib -static
+endif
+
+
