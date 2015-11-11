@@ -128,7 +128,7 @@ DisruptionModel                0   ;tidal disruption of type 2 galaxies
                                       %*0 -- disruption of stars and cold gas in type 2 galaxies as in Guo11
                                       % 1-- no disruption
                                       
-StarBurstRecipe         	   0   ;recipe for starbursts during mergers
+StarBurstModel          	   0   ;recipe for starbursts during mergers
                                        %*0 -- starbursts in major AND minor mergers as in Somerville 2001
 
 BulgeFormationInMinorMergersOn 1   ;option for bulges to form in minor mergers as well as major

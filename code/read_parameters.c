@@ -382,8 +382,8 @@ void read_parameter_file(char *fname)
   addr[nt] = &DisruptionModel;
   id[nt++] = INT;
 
-  strcpy(tag[nt], "StarBurstRecipe");
-  addr[nt] = &StarBurstRecipe;
+  strcpy(tag[nt], "StarBurstModel");
+  addr[nt] = &StarBurstModel;
   id[nt++] = INT;
 
   strcpy(tag[nt], "BulgeFormationInMinorMergersOn");

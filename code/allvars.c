@@ -132,7 +132,7 @@ int DiskInstabilityModel;
 int BHGrowthInDiskInstabilityModel;
 int HotGasStripingModel;
 int DisruptionModel;
-int StarBurstRecipe;
+int StarBurstModel;
 int BulgeFormationInMinorMergersOn;
 int MetallicityOption;
 

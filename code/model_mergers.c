@@ -74,7 +74,7 @@
  *           {1+(280\,\mathrm{km\,s}^{-1}/V_{\rm vir})^2}.\f$
 
  *       - Finally the burst of star formation due to the merger is treated.
- *           - If StarBurstRecipe = 0 (since Croton2006), the Somerville 2001
+ *           - If StarBurstModel = 0 (since Croton2006), the Somerville 2001
  *           model of bursts is used collisional_starburst_recipe(). The burst
  *           can happen for both major and minor mergers, with a fraction of
  *           the added cold gas from the satellite and central being consumed:
@@ -240,7 +240,7 @@ void deal_with_galaxy_merger(int p, int merger_centralgal, int centralgal, doubl
  *         one, form a bulge at the central galaxy with the stars from the
  *         satellite in a minor merger if BulgeFormationInMinorMergersOn=1.
  *         Grows black hole through accretion from cold gas "quasar mode".
- *         If StarBurstRecipe = 0, the Somerville 2001 model
+ *         If StarBurstModel = 0, the Somerville 2001 model
  *         of bursts is used, SN Feedback from starformation is computed and
  *         the sizes of bulge and disk followed. When a major merger occurs,
  *         the disk of both merging galaxies is completely destroyed to form
@@ -333,7 +333,7 @@ void deal_with_galaxy_merger(int p, int merger_centralgal, int centralgal, doubl
   mass_checks("deal_with_galaxy_merger #3",merger_centralgal);
   mass_checks("deal_with_galaxy_merger #3",centralgal);
 
-  if (StarBurstRecipe == 0)
+  if (StarBurstModel == 0)
     {
     /* Starburst as in Somerville 2001, with feedback computed inside. */
   	/* All star formation happens in the disk, but in a major merger this will then
@@ -605,7 +605,7 @@ void make_bulge_from_burst(int p)
 double collisional_starburst_recipe(double mass_ratio, int merger_centralgal, int centralgal,
 				  double time, double deltaT)
 {
-  /** @brief If StarBurstRecipe = 1 (since Croton2006), the Somerville 2001
+  /** @brief If StarBurstModel = 1 (since Croton2006), the Somerville 2001
    *         model of bursts is used. The burst can happen for both major
    *         and minor mergers, with a fraction of the added cold gas from
    *         the satellite and central being consumed. SN Feedback from

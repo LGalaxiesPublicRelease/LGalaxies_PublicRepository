@@ -155,18 +155,18 @@ HotGasStripingModel            0   ;choice of stripping of satellite galaxies
 				                           % Ejected gas of satellite galaxies contributes to the 
 					                       % ejected component of type 0 if within Rvir
                                      
-DisruptionModel            0       ;tidal disruption of type 2 galaxies
+DisruptionModel               0    ;tidal disruption of type 2 galaxies
                                       %*0 -- disruption of stars and cold gas in type 2 galaxies as in Guo11
                                       % 1-- no disruption
 
-StarBurstRecipe         	    0  ;recipe for starbursts during mergers
+StarBurstModel          	   0   ;recipe for starbursts during mergers
                                        %*0 -- starbursts in major AND minor mergers as in Somerville 2001
 
-BulgeFormationInMinorMergersOn  1  ;option for bulges to form in minor mergers as well as major
+BulgeFormationInMinorMergersOn 1   ;option for bulges to form in minor mergers as well as major
                                       % 0 -- bulges only formed in major mergers 
                                       %*1 -- bulge formation in major AND minor mergers
 
-MetallicityOption               1  ;Photometric tables from SPS models 
+MetallicityOption              1   ;Photometric tables from SPS models 
                                       % 0 -- only solar metallicity, 
                                       %*1 -- range of metallicities; 
 

@@ -709,7 +709,7 @@ extern int DiskInstabilityModel;
 extern int BHGrowthInDiskInstabilityModel;
 extern int HotGasStripingModel;
 extern int DisruptionModel;
-extern int StarBurstRecipe;
+extern int StarBurstModel;
 extern int BulgeFormationInMinorMergersOn;
 extern int MetallicityOption;
 
