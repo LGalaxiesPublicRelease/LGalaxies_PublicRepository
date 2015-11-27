@@ -86,10 +86,6 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
   	stars = Gal[p].ColdGas;
 #endif
 
-  /*  update the star formation rate */
-  /*Sfr=stars/(dt*steps)=strdot*dt/(dt*steps)=strdot/steps -> average over the STEPS*/
-  Gal[p].Sfr += stars / (dt * STEPS);
-
   mass_checks("recipe_starform #1",p);
   mass_checks("recipe_starform #1.1",centralgal);
 
@@ -110,6 +106,9 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
   mass_checks("recipe_starform #2",p);
   mass_checks("recipe_starform #2.1",centralgal);
 
+  /*  update the star formation rate */
+   /*Sfr=stars/(dt*steps)=strdot*dt/(dt*steps)=strdot/steps -> average over the STEPS*/
+   Gal[p].Sfr += stars / (dt * STEPS);
 
   // update_from_star_formation can only be called
   // after SD_feeedback recipe since stars need to be re_set once the reheated mass is known
