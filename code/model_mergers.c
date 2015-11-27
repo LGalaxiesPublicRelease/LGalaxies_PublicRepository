@@ -394,24 +394,28 @@ void grow_black_hole(int merger_centralgal, double mass_ratio, double deltaT)
 
   if(Gal[merger_centralgal].ColdGas > 0.0)
     {
-    BHaccrete = BlackHoleGrowthRate * mass_ratio
-      / (1.0 + pow2((BlackHoleCutoffVelocity / Gal[merger_centralgal].Vvir))) * Gal[merger_centralgal].ColdGas;
-    /* redshift dependent accretion, not published */
-    /* BHaccrete = BlackHoleGrowthRate * (1.0 + ZZ[Halo[halonr].SnapNum]) * mass_ratio */
+      BHaccrete = BlackHoleGrowthRate * mass_ratio
+	  / (1.0 + pow2((BlackHoleCutoffVelocity / Gal[merger_centralgal].Vvir))) * Gal[merger_centralgal].ColdGas;
+      /* redshift dependent accretion, not published */
+      /* BHaccrete = BlackHoleGrowthRate * (1.0 + ZZ[Halo[halonr].SnapNum]) * mass_ratio */
 
-    /* cannot accrete more gas than is available! */
-    if(BHaccrete > Gal[merger_centralgal].ColdGas)
-      BHaccrete = Gal[merger_centralgal].ColdGas;
+      /* cannot accrete more gas than is available! */
+      if(BHaccrete > Gal[merger_centralgal].ColdGas)
+	BHaccrete = Gal[merger_centralgal].ColdGas;
 
-    fraction=BHaccrete/Gal[merger_centralgal].ColdGas;
+      fraction=BHaccrete/Gal[merger_centralgal].ColdGas;
 
-    Gal[merger_centralgal].BlackHoleMass += BHaccrete;
-    Gal[merger_centralgal].QuasarAccretionRate += BHaccrete / deltaT;
+      Gal[merger_centralgal].BlackHoleMass += BHaccrete;
+      Gal[merger_centralgal].QuasarAccretionRate += BHaccrete / deltaT;
 
-    Gal[merger_centralgal].ColdGas -= BHaccrete;
-    Gal[merger_centralgal].MetalsColdGas=
-      metals_add(Gal[merger_centralgal].MetalsColdGas, Gal[merger_centralgal].MetalsColdGas,-fraction);
+      Gal[merger_centralgal].ColdGas -= BHaccrete;
+      Gal[merger_centralgal].MetalsColdGas=
+	  metals_add(Gal[merger_centralgal].MetalsColdGas, Gal[merger_centralgal].MetalsColdGas,-fraction);
 
+#ifdef INDIVIDUAL_ELEMENTS
+      Gal[merger_centralgal].ColdGas_elements =
+	  elements_add(Gal[merger_centralgal].ColdGas_elements, Gal[merger_centralgal].ColdGas_elements,-fraction);
+#endif
   }
 }
 
@@ -605,7 +609,7 @@ void make_bulge_from_burst(int p)
 double collisional_starburst_recipe(double mass_ratio, int merger_centralgal, int centralgal,
 				  double time, double deltaT)
 {
-  /** @brief If StarBurstModel = 1 (since Croton2006), the Somerville 2001
+  /** @brief If StarBurstModel = 0 (since Croton2006), the Somerville 2001
    *         model of bursts is used. The burst can happen for both major
    *         and minor mergers, with a fraction of the added cold gas from
    *         the satellite and central being consumed. SN Feedback from
@@ -628,6 +632,12 @@ double collisional_starburst_recipe(double mass_ratio, int merger_centralgal, in
   if(mstars < 0.0)
     mstars = 0.0;
 
+  //otherwise there is another check inside SN_feedback
+#ifdef FEEDBACK_COUPLED_WITH_MASS_RETURN
+  if(mstars > Gal[merger_centralgal].ColdGas)
+        mstars = Gal[merger_centralgal].ColdGas;
+#endif
+
   /*  update the star formation rate */
   Gal[merger_centralgal].Sfr += mstars / deltaT;
 
@@ -649,9 +659,10 @@ double collisional_starburst_recipe(double mass_ratio, int merger_centralgal, in
 
   update_massweightage(merger_centralgal, mstars, time);
 
+#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
   if (mstars > 0.)
-  	SN_feedback(merger_centralgal, centralgal, mstars, "ColdGas");
-
+    SN_feedback(merger_centralgal, centralgal, mstars, "ColdGas");
+#endif
 
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
 #ifndef POST_PROCESS_MAGS

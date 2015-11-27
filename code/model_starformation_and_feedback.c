@@ -80,6 +80,12 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
   if(stars < 0.0)
     terminate("***error stars<0.0***\n");
 
+//otherwise cold gas and stars share material in update_stars_due_to_reheat
+#ifdef FEEDBACK_COUPLED_WITH_MASS_RETURN
+  if(stars > Gal[p].ColdGas)
+  	stars = Gal[p].ColdGas;
+#endif
+
   /*  update the star formation rate */
   /*Sfr=stars/(dt*steps)=strdot*dt/(dt*steps)=strdot/steps -> average over the STEPS*/
   Gal[p].Sfr += stars / (dt * STEPS);
@@ -113,9 +119,13 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
 
   update_massweightage(p, stars, time);
 
+
+#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
+  /* ifdef FEEDBACK_COUPLED_WITH_MASS_RETURN feedback is only called
+   * when stars die, inside DETAILED_METALS_AND_MASS_RETURN */
   if (stars > 0.)
     SN_feedback(p, centralgal, stars, "ColdGas");
-
+#endif
 
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
 #ifndef POST_PROCESS_MAGS
@@ -175,12 +185,14 @@ void update_stars_due_to_reheat(int p, int centralgal, double *stars)
       reheated_mass =  ALTERNATIVE Reheating LAW ;
     }*/
 
+#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
   if((*stars + reheated_mass) > Gal[p].ColdGas)
     {
       fac = Gal[p].ColdGas / (*stars + reheated_mass);
       *stars *= fac;
       reheated_mass *= fac;
     }
+#endif
 
 }
 
@@ -193,46 +205,67 @@ void update_from_star_formation(int p, double stars, bool flag_burst, int nstep)
 {
   int i;
   double fraction;
-  double stars_nett=0.;
+  double stars_to_add=0.;
 
   if(Gal[p].ColdGas <= 0. || stars <= 0.) {
     printf("update_from_star_formation: Gal[p].ColdGas <= 0. || stars <= 0.\n");
     exit(0);
   }
 
-  stars_nett=(1 - RecycleFraction) * stars;
-  /* Update the Stellar Spin when forming stars */
-  if (Gal[p].DiskMass+stars_nett > 1.e-8)
+  /* If DETAILED_METALS_AND_MASS_RETURN, no longer an assumed instantaneous
+   * recycled fraction. Mass is returned over time via SNe and AGB winds.
+   * Update the Stellar Spin when forming stars */
+#ifndef DETAILED_METALS_AND_MASS_RETURN
+  stars_to_add=(1 - RecycleFraction) * stars;
+#else
+  stars_to_add=stars;
+#endif
+
+  if (Gal[p].DiskMass+stars_to_add > 1.e-8)
     for (i = 0; i < 3; i++)
-      Gal[p].StellarSpin[i]=((Gal[p].StellarSpin[i])*(Gal[p].DiskMass)+stars_nett*Gal[p].GasSpin[i])/(Gal[p].DiskMass+stars_nett);
+      Gal[p].StellarSpin[i]=((Gal[p].StellarSpin[i])*(Gal[p].DiskMass) + stars_to_add*Gal[p].GasSpin[i])/(Gal[p].DiskMass+stars_to_add);
 
     /*  Update Gas and Metals from star formation */
   mass_checks("update_from_star_formation #0",p);
 
-  fraction=stars_nett/Gal[p].ColdGas;
+  fraction=stars_to_add/Gal[p].ColdGas;
+
 
 #ifdef STAR_FORMATION_HISTORY
-  Gal[p].sfh_DiskMass[Gal[p].sfh_ibin]+=stars_nett; //ROB: Add amount of stars formed to SFH history of the disk. (NOTE: ALL SF OCCURS IN THE DISK. sfh_BulgeMass only increases when stars are transferred to the bulge before they explode)
+  Gal[p].sfh_DiskMass[Gal[p].sfh_ibin]+=stars_to_add; //ROB: Now, all SF gas is put in SFH array ("recycled' mass will return to gas phase over time)
   Gal[p].sfh_MetalsDiskMass[Gal[p].sfh_ibin] = metals_add(Gal[p].sfh_MetalsDiskMass[Gal[p].sfh_ibin],Gal[p].MetalsColdGas,fraction);
-#ifdef TRACK_BURST
-  if (flag_burst) Gal[p].sfh_BurstMass[Gal[p].sfh_ibin]+=stars_nett;
+#ifdef INDIVIDUAL_ELEMENTS
+  Gal[p].sfh_ElementsDiskMass[Gal[p].sfh_ibin] = elements_add(Gal[p].sfh_ElementsDiskMass[Gal[p].sfh_ibin],Gal[p].ColdGas_elements,fraction);
 #endif
-#endif //STAR_FORMATION_HISTORY
+#ifdef TRACK_BURST
+  if (flag_burst) Gal[p].sfh_BurstMass[Gal[p].sfh_ibin]+=stars_to_add;
+#endif
+#endif
+
 
   Gal[p].MetalsDiskMass=metals_add(Gal[p].MetalsDiskMass,Gal[p].MetalsColdGas,fraction);
   Gal[p].MetalsColdGas=metals_add(Gal[p].MetalsColdGas,Gal[p].MetalsColdGas,-fraction);
 
-  Gal[p].DiskMass += stars_nett;
-  Gal[p].ColdGas -= stars_nett;
+  //GLOBAL PROPERTIES
+  Gal[p].DiskMass += stars_to_add;
+  Gal[p].ColdGas -= stars_to_add;
+#ifdef INDIVIDUAL_ELEMENTS
+  Gal[p].DiskMass_elements=elements_add(Gal[p].DiskMass_elements,Gal[p].ColdGas_elements,fraction);
+  Gal[p].ColdGas_elements=elements_add(Gal[p].ColdGas_elements,Gal[p].ColdGas_elements,-fraction);
+#endif
 #ifdef TRACK_BURST
-  if (flag_burst) Gal[p].BurstMass+=stars_nett;
+  if (flag_burst) Gal[p].BurstMass+=stars_to_add;
 #endif
 
   mass_checks("update_from_star_formation #1",p);
 
   /* Formation of new metals - instantaneous recycling approximation - only SNII
    * Also recompute the metallicity of the cold phase.*/
+#ifndef DETAILED_METALS_AND_MASS_RETURN
+  /* stars used because the Yield is defined as a fraction of
+   * all stars formed, not just long lived */
   Gal[p].MetalsColdGas += Yield * stars;
+#endif
 
   if (DiskRadiusModel == 0)
     get_stellar_disk_radius(p);
@@ -437,7 +470,11 @@ void update_massweightage(int p, double stars, double time)
   for(outputbin = 0; outputbin < NOUT; outputbin++)
     {
       age = time - NumToTime(ListOutputSnaps[outputbin]);
-      Gal[p].MassWeightAge[outputbin] += age * stars * (1. - RecycleFraction);
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+	   	Gal[p].MassWeightAge[outputbin] += age * stars;
+#else
+	   	Gal[p].MassWeightAge[outputbin] += age * stars * (1. - RecycleFraction);
+#endif
     }
 }
 

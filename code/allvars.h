@@ -89,32 +89,51 @@
 
 
 #ifdef STAR_FORMATION_HISTORY
-//#define SFH_NMERGE 2
-//#define SFH_NBIN 12
 #define SFH_NMERGE 3  //  SFH_NMERGE=Nmax+1 (Nmax used in Shamshiri2014)
 #define SFH_NBIN 20
 //#define SFH_NMERGE 5
 //#define SFH_NBIN 35
-
-//if NSTEPS=100
-//#define SFH_NMERGE 2
-//#define SFH_NBIN 14
-//#define SFH_NMERGE 3
-//#define SFH_NBIN 25
-//#define SFH_NMERGE 5
-//#define SFH_NBIN 44
-
-
-/* SFH_ is the reference structure for storing the star formation histories in
- * logarithmic bins. It is computed in init.c generating a binning structure for
- * each snapshot/time step. In the code galaxy structures are adjusted with respect
- * to this structure at each step. */
-extern double SFH_t[MAXSNAPS][STEPS][SFH_NBIN]; //Time to present at the lower edge of the bin (code units)
-extern double SFH_dt[MAXSNAPS][STEPS][SFH_NBIN]; //Time width of the bin (code units)
-extern int SFH_Nbins[MAXSNAPS][STEPS][SFH_NBIN]; //Number of bins merged in each bin (only useful for the merging algorithm)
-extern int SFH_ibin[MAXSNAPS][STEPS]; //Last active bin
 #endif //STAR_FORMATION_HISTORY
 
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+struct metals
+{
+  float type1a;
+  float type2;
+  float agb;
+};
+
+#ifdef INDIVIDUAL_ELEMENTS
+//Individual element histories:
+struct elements
+{
+  float H;
+  float He;
+#ifndef MAINELEMENTS
+  float Cb; //NOTE: Carbon (C) is stored as Cb here
+  float N;
+#endif
+  float O;
+#ifndef MAINELEMENTS
+  float Ne;
+#endif
+  float Mg;
+#ifndef MAINELEMENTS
+  float Si;
+  float S;
+  float Ca;
+#endif
+  float Fe;
+};
+//Number of chemical elements tracked:
+#ifndef MAINELEMENTS
+#define NUM_ELEMENTS 11 //All: [H][He][C][N][O][Ne][Mg][Si][S][Ca][Fe]
+#else
+#define NUM_ELEMENTS 5 //Only [H][He][O][Mg][Fe]
+#endif
+
+#endif //INDIVIDUAL_ELEMENTS
+#endif //DETAILED_METALS_AND_MASS_RETURN
 
 /**
  * Galaxy structure for output
@@ -221,6 +240,17 @@ struct GALAXY_OUTPUT
   float BlackHoleMass; // 10^10/h Msun - Mass in black hole
   /* ICL magnitude and mass*/
   float ICM;            // mass in intra-cluster stars, for type 0,1
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+  struct metals MetalsColdGas; // 10^10/h Msun -	Mass in metals in cold gas.
+  struct metals MetalsBulgeMass; // 10^10/h Msun -	Mass in metals in the bulge
+  struct metals MetalsDiskMass; // 10^10/h Msun -       Mass in metals in the disk
+  struct metals MetalsHotGas; // 10^10/h Msun -	Mass in metals in the hot gas
+  struct metals MetalsEjectedMass; // 10^10/h Msun -	Mass in metals in the ejected gas
+  struct metals MetalsICM;  // total mass in metals in intra-cluster stars, for type 0,1
+#ifdef METALS_SELF
+  struct metals MetalsHotGasSelf; // hot gas metals that come from self
+#endif
+#else
   float MetalsColdGas; // 10^10/h Msun -	Mass in metals in cold gas.
   float MetalsStellarMass; // 10^10/h Msun -	Mass in metals in the bulge+disk
   float MetalsBulgeMass; // 10^10/h Msun -	Mass in metals in the bulge
@@ -231,7 +261,7 @@ struct GALAXY_OUTPUT
 #ifdef METALS_SELF
   float MetalsHotGasSelf; // hot gas metals that come from self
 #endif
-
+#endif //DETAILED_METALS_AND_MASS_RETURN
 #ifdef TRACK_BURST
   float BurstMass; // Mass formed in starbursts
 #endif
@@ -302,13 +332,33 @@ struct GALAXY_OUTPUT
   float sfh_DiskMass[SFH_NBIN];
   float sfh_BulgeMass[SFH_NBIN];
   float sfh_ICM[SFH_NBIN];
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+  struct metals sfh_MetalsDiskMass[SFH_NBIN]; // Metals locked up in stars in disk.
+  struct metals sfh_MetalsBulgeMass[SFH_NBIN]; // Metals locked up in stars in bulge.
+  struct metals sfh_MetalsICM[SFH_NBIN]; // Metals locked up in stars in ICM.
+#else
   float sfh_MetalsDiskMass[SFH_NBIN]; // Metals locked up in stars in disk.
   float sfh_MetalsBulgeMass[SFH_NBIN]; //Metals locked up in stars in bulge.
   float sfh_MetalsICM[SFH_NBIN]; // Metals locked up in stars in ICM.
+#endif
 #ifdef TRACK_BURST
   float sfh_BurstMass[SFH_NBIN]; // Mass formed in starbursts
 #endif
 #endif //STAR_FORMATION_HISTORY
+
+#ifdef INDIVIDUAL_ELEMENTS
+  struct elements sfh_ElementsDiskMass[SFH_NBIN];
+  struct elements sfh_ElementsBulgeMass[SFH_NBIN];
+  struct elements sfh_ElementsICM[SFH_NBIN];
+
+  //float DiskMass_elements[ELEMENT_NUM];
+  struct elements DiskMass_elements;
+  struct elements BulgeMass_elements;
+  struct elements ColdGas_elements;
+  struct elements HotGas_elements;
+  struct elements ICM_elements;
+  struct elements EjectedMass_elements;
+#endif //INDIVIDUAL_ELEMENTS
 };
 
 // next only of interest to DB output, which generally requires complete tree
@@ -322,12 +372,32 @@ struct SFH_BIN {
   float sfh_DiskMass;
   float sfh_BulgeMass;
   float sfh_ICM;
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+  struct metals sfh_MetalsDiskMass; // Metals locked up in stars in disk.
+  struct metals sfh_MetalsBulgeMass; // Metals locked up in stars in bulge.
+  struct metals sfh_MetalsICM; // Metals locked up in stars in ICM.
+#else
   float sfh_MetalsDiskMass; // Metals locked up in stars in disk.
   float sfh_MetalsBulgeMass; //Metals locked up in stars in bulge.
   float sfh_MetalsICM; // Metals locked up in stars in ICM.
+#endif
 #ifdef TRACK_BURST
   float sfh_BurstMass; // Mass formed in starbursts
 #endif
+
+#ifdef INDIVIDUAL_ELEMENTS
+  struct elements sfh_ElementsDiskMass;
+  struct elements sfh_ElementsBulgeMass;
+  struct elements sfh_ElementsICM;
+
+  //float DiskMass_elements[ELEMENT_NUM];
+  struct elements DiskMass_elements;
+  struct elements BulgeMass_elements;
+  struct elements ColdGas_elements;
+  struct elements HotGas_elements;
+  struct elements ICM_elements;
+  struct elements EjectedMass_elements;
+#endif //INDIVIDUAL_ELEMENTS
 };
 
 struct SFH_Time
@@ -409,7 +479,16 @@ struct GALAXY			/* Galaxy data */
   float HotGas;
   float EjectedMass;
   float BlackHoleMass;
-  /* metals (a la Gabriella) */
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+  struct metals MetalsColdGas;
+  struct metals MetalsBulgeMass;
+  struct metals MetalsDiskMass;
+  struct metals MetalsHotGas;
+  struct metals MetalsEjectedMass;
+#ifdef METALS_SELF
+  struct metals MetalsHotGasSelf;
+#endif
+#else
   float MetalsColdGas;
   float MetalsBulgeMass;
   float MetalsDiskMass;
@@ -418,6 +497,7 @@ struct GALAXY			/* Galaxy data */
 #ifdef METALS_SELF
   float MetalsHotGasSelf;
 #endif
+#endif //DETAILED_METALS_AND_MASS_RETURN
 #ifdef TRACK_BURST
   float BurstMass;
 #endif
@@ -452,8 +532,11 @@ struct GALAXY			/* Galaxy data */
   float DistanceToCentralGal[3];
   int MergeOn;
   float ICM;
-  float MetalsICM;
-
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+   struct metals MetalsICM;
+ #else
+   float MetalsICM;
+ #endif
 
   /* luminosities in various bands */
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
@@ -505,13 +588,32 @@ struct GALAXY			/* Galaxy data */
   float sfh_DiskMass[SFH_NBIN]; //Stellar mass in disk, in bin in standard units
   float sfh_BulgeMass[SFH_NBIN]; //Stellar mass in bulge, in bin in standard units
   float sfh_ICM[SFH_NBIN]; //Stellar mass in ICM, in bin in standard units
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+  struct metals sfh_MetalsDiskMass[SFH_NBIN]; //Metals locked up in stars in disk.
+  struct metals sfh_MetalsBulgeMass[SFH_NBIN]; //Metals locked up in stars in bulge.
+  struct metals sfh_MetalsICM[SFH_NBIN]; //Metals locked up in stars in ICM.
+#else
   float sfh_MetalsDiskMass[SFH_NBIN]; //Metals locked up in stars in disk.
   float sfh_MetalsBulgeMass[SFH_NBIN]; //Metals locked up in stars in bulge.
   float sfh_MetalsICM[SFH_NBIN]; //Metals locked up in stars in ICM.
+#endif
 #ifdef TRACK_BURST
   float sfh_BurstMass[SFH_NBIN]; //Stellar mass formed in bursts, in standard units.
 #endif
 #endif //STAR_FORMATION_HISTORY
+
+#ifdef INDIVIDUAL_ELEMENTS
+  struct elements sfh_ElementsDiskMass[SFH_NBIN];
+  struct elements sfh_ElementsBulgeMass[SFH_NBIN];
+  struct elements sfh_ElementsICM[SFH_NBIN];
+
+  struct elements DiskMass_elements;
+  struct elements BulgeMass_elements;
+  struct elements ColdGas_elements;
+  struct elements HotGas_elements;
+  struct elements ICM_elements;
+  struct elements EjectedMass_elements;
+#endif //INDIVIDUAL_ELEMENTS
 } *Gal, *HaloGal;
 
 
@@ -747,6 +849,9 @@ extern double
 	UnitEnergy_in_cgs,
 	UnitTime_in_Megayears, //Using time as stored in the code, this gives Myr/h
 	UnitTime_in_years,
+#ifdef HALOMODEL
+	RhoCrit,
+#endif
 	G,
 	Hubble,
 	a0, ar;
@@ -770,6 +875,139 @@ extern int    NumMergers;
 
 
 /*  tabulated stuff */
+
+#ifdef STAR_FORMATION_HISTORY
+/* SFH_ is the reference structure for storing the star formation histories in
+ * logarithmic bins. It is computed in init.c generating a binning structure for
+ * each snapshot/time step. In the code galaxy structures are adjusted with respect
+ * to this structure at each step. */
+extern double SFH_t[MAXSNAPS][STEPS][SFH_NBIN]; //Time to present at the lower edge of the bin (code units)
+extern double SFH_dt[MAXSNAPS][STEPS][SFH_NBIN]; //Time width of the bin (code units)
+extern int SFH_Nbins[MAXSNAPS][STEPS][SFH_NBIN]; //Number of bins merged in each bin (only useful for the merging algorithm)
+extern int SFH_ibin[MAXSNAPS][STEPS]; //Last active bin
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+extern double tau_t[STEPS*MAXSNAPS]; //Time-to-z=0 of every timestep in the code. (Used for SNe rates in yield_integrals.c)
+extern double tau_dt[STEPS*MAXSNAPS];//Width of every timestep in the code. (Used for SNe rates in yield_integrals.c)
+#endif
+#endif //STAR_FORMATION_HISTORY
+
+
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+
+//Number of interpolated points within the mass ranges for the four types of yield table:
+#define LIFETIME_MASS_NUM 150
+#define LIFETIME_Z_NUM 6
+#define AGB_MASS_NUM 59 //55 //ROB: 59, when going from 0.85 to 7 Msun
+#define AGB_Z_NUM 3
+#ifdef PORTINARI
+#define SNII_MASS_NUM 85  //ROB: 85, from 6 <= M[Msun] <= 120. Change SNII_MIN_MASS and SNII_MAX_MASS for shorter ranges.
+#define SNII_Z_NUM 5
+#endif
+#ifdef CHIEFFI
+#define SNII_MASS_NUM 81 //ROB: 56 if 7 <= M[Msun] <= 50. 81 if 7 <= M[Msun] <= 120. (NB: You can set SNII_MASS_NUM 81, and SNII_MAX_MASS 50. But DON"T put SNII_MASS_NUM > 81 ever!)
+#define SNII_Z_NUM 6
+#endif
+#define SNIA_MASS_NUM 83 //48 //Number increased after extending range to cover M2 masses (07-02-12)
+
+//Mass ranges for the different modes of ejection:
+#define AGB_MIN_MASS 0.85
+#define AGB_MAX_MASS 7.0 //6.0
+#define SNIA_MIN_MASS 3.0
+#define SNIA_MAX_MASS 16.0
+#ifdef PORTINARI
+#define SNII_MIN_MASS 7.0 //6.0
+#define SNII_MAX_MASS 120.0
+#endif
+#ifdef CHIEFFI
+#define SNII_MIN_MASS 7.0
+#define SNII_MAX_MASS 120.0 //50.0
+#endif
+
+int ELETOBIGCOUNTA;
+int FRACCOUNTA;
+
+//Arrays that yield tables are written to:
+float lifetimeMasses[LIFETIME_MASS_NUM];
+float lifetimeMetallicities[LIFETIME_Z_NUM];
+float lifetimes[LIFETIME_Z_NUM][LIFETIME_MASS_NUM];
+float AGBMasses[AGB_MASS_NUM]; //Initial star masses [Msun]
+float AGBMetallicities[AGB_Z_NUM]; //Initial star metallicities [Msun]
+float AGBEjectedMasses[AGB_Z_NUM][AGB_MASS_NUM]; //Total mass ejected [Msun]
+float AGBTotalMetals[AGB_Z_NUM][AGB_MASS_NUM]; //Total metal YIELD ejected [Msun]
+float AGBYields[AGB_Z_NUM][11][AGB_MASS_NUM]; //YIELD ejected, for each element [Msun]
+float SNIIMasses[SNII_MASS_NUM];
+float SNIIMetallicities[SNII_Z_NUM];
+float SNIIEjectedMasses[SNII_Z_NUM][SNII_MASS_NUM];
+float SNIITotalMetals[SNII_Z_NUM][SNII_MASS_NUM];
+float SNIIYields[SNII_Z_NUM][11][SNII_MASS_NUM];
+#ifndef DTD
+float SNIaMasses[SNIA_MASS_NUM];
+float SNIaEjectedMasses[SNIA_MASS_NUM];
+float SNIaTotalMetals[SNIA_MASS_NUM];
+float SNIaYields[42][SNIA_MASS_NUM];
+#else
+float SNIaYields[42];
+#endif
+
+//Integrated yields arrays:
+float NormSNIIMassEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
+float NormSNIIMetalEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
+#ifdef INDIVIDUAL_ELEMENTS
+float NormSNIIYieldRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM][NUM_ELEMENTS];
+#endif
+float NormAGBMassEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
+float NormAGBMetalEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
+#ifdef INDIVIDUAL_ELEMENTS
+float NormAGBYieldRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM][NUM_ELEMENTS];
+#endif
+float NormSNIaMassEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
+float NormSNIaMetalEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
+#ifdef INDIVIDUAL_ELEMENTS
+float NormSNIaYieldRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM][NUM_ELEMENTS];
+#endif
+
+//Arrays used to plot SNe rates from SFH bins (yield_integrals.c):
+float TheSFH[SFH_NBIN];
+float SNIIRate[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
+float SNIaRate[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
+float AGBRate[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
+//Arrays used to plot SNe rates from SFH-timesteps (calc_SNe_rates.c):
+float TheSFH2[STEPS*MAXSNAPS];
+float SNIIRate2[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
+float SNIaRate2[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
+float AGBRate2[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
+
+//SNIa parameters:
+#define A_FACTOR 0.04 //Fraction of mass from all objects between SNIa_MIN_MASS and SNIA_MAX_MASS that comes from SN-Ia.
+//#define FRAC2HOT 0.9 //Fraction of material released by disk stars that goes straight into the HotGas. Res goes in ColdGas.
+#ifdef DTD
+//#define KALPHA 1.4765 //1.59203 //Now set in yield_integrals.c
+//#define	F316 0.0384 //Integral of the IMF (by number) from 3.0 - 16.0 Msun //Now set in yield_integrals.c
+#define SNIAEJECMASS 1.2300971 //Total mass (and total metals) ejected by a SNIa explosion in Msun //Value form original yield table (42 elements): 1.3740855. //Value when only considering 11 elements: 1.2300971
+#ifdef BIMODALDTD
+	#define DTD_NORM 0.903206 //For P98 Z=0.02 lifetimes (26Myrs - 21Gyrs)
+#endif
+#ifdef CUSTOMDTD
+	#define DTD_NORM 0.524836 //For P98 Z=0.02 lifetimes (26Myrs - 21Gyrs)
+#endif
+#ifdef GAUSSIANDTD
+	#define DTD_NORM = 1.0
+	#define TAUCHARAC 1.0 //Characteristic delay time for SNe-Ia (i.e. peak of Gaussian distribution) in Gyrs //default: 2.0
+	#define SIGMA_TD 0.2*TAUCHARAC //0.2 for narrow-DTD, 0.5 for wide_DTD
+#endif
+#ifdef POWERLAWDTD
+	#define DTD_NORM 7.21863 //For P98 Z=0.02 lifetimes (26Myrs - 21Gyrs)
+	#define DTD_SLOPE -1.12 //Slope of power law, according to Maoz et al. (2012)
+#endif
+#ifdef RUITERDTD
+	#define DTD_NORM 1.09545 //For P98 Z=0.02 lifetimes (26Myrs - 21Gyrs)
+	#define TAUCHARAC 0.5 //Peak of Gaussian (prompt) component [in Gyrs]
+	#define SIGMA_TD 0.2*TAUCHARAC //Width of Gaussian (prompt) component
+	#define DTD_SLOPE -2.0 //Slope of power law (delayed) component (see Ruiter et al. 2012)
+#endif
+#endif
+
+#endif //DETAILED_METALS_AND_MASS_RETURN
 
 
 #ifdef COMPUTE_SPECPHOT_PROPERTIES

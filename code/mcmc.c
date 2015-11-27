@@ -88,6 +88,12 @@ void Senna()
 
   MCMCseed = -((ThisTask+FirstChainNumber) * 100 + 25);
 
+#ifdef HALOMODEL //to compute correlation function for MCMC
+  initialize_halomodel();
+  printf("halo model initialized\n");
+#endif
+
+
   //This file will have the values for the parameters
   //It will be the output from the mcmc sampling used in the analysis
   //it is also where the parameters are read from, using previous chains
@@ -195,6 +201,17 @@ void Senna()
 
   myfree(MCMC_Obs);
 
+#ifdef HALOMODEL //to compute correlation function for MCMC
+    gsl_spline_free(FofSpline);
+    gsl_interp_accel_free(FofAcc);
+    gsl_spline_free(SigmaSpline);
+    gsl_interp_accel_free(SigmaAcc);
+    gsl_spline_free(ellipSpline);
+    gsl_interp_accel_free(ellipAcc);
+    gsl_spline_free(PowSpline);
+#endif
+
+
   printf("\nFinal acceptance rate of this chain=%f%%\n", ((float) TotAcceptRate / ChainLength) * 100);
   printf("\n\nMCMC OVER\n\n");
 
@@ -271,8 +288,8 @@ void print_parameters (int AcceptanceLogic, FILE *fmcmc)
 /* initialize MCMC_PAR.Value and MCMC_PAR.PropValue with the same values
  *
  * the number of parameters, limits and switches (whitch to sample) are
- * read from MCMCParameterPriorsAndSwitches while the actual values are read from
- * previous output in fmcmc
+ * read from MCMCParaPriorsAndSwitchesFile while the actual values are read from
+ * previous output or MCMCStartingParFile
  *  */
 void initialize_mcmc_par_and_lhood (FILE *fmcmc)
 {
@@ -281,7 +298,7 @@ void initialize_mcmc_par_and_lhood (FILE *fmcmc)
   char buf[1000];
   FILE *fa;
 
-  sprintf(buf, "%s", MCMCParameterPriorsAndSwitches);
+  sprintf(buf, "%s", MCMCParPriorsAndSwitchesFile);
   if(!(fa = fopen(buf, "r")))
     {
       char sbuf[1000];
@@ -303,7 +320,7 @@ void initialize_mcmc_par_and_lhood (FILE *fmcmc)
 	     &MCMC_PAR[i].PriorMin, &MCMC_PAR[i].PriorMax, &MCMC_PAR[i].Sampling_Switch);
     }
 
-  fclose(fa);  //done reading from MCMCParameterPriorsAndSwitches
+  fclose(fa);  //done reading from MCMCParPriorsAndSwitchesFile
 
 
   //read actual values from previous outputs and check if are inside priors
@@ -334,7 +351,7 @@ void initialize_mcmc_par_and_lhood (FILE *fmcmc)
   //if there is nothing in that file read from backup file 00
   if(jj==0)
   {
-      sprintf(buf, "./input/senna_00.txt");
+      sprintf(buf, "%s", MCMCStartingParFile);
       if((fa = fopen(buf, "r")) == NULL)
   	{
 	  char sbuf[1000];
@@ -621,6 +638,10 @@ void read_sample_info (void)
 	{
 	  fscanf(fa, "%lld %d %d %lg\n", &MCMC_FOF[i].FoFID[snap], &DumbTreeNrColector, &DumbFileNrColector, &MCMC_FOF[i].Weight[snap]);
 	  MCMC_FOF[i].Weight[snap]/=BoxSize*BoxSize*BoxSize;
+#ifdef HALOMODEL
+	  MCMC_FOF[i].NGalsInFoF[snap]=0;
+	  MCMC_FOF[i].IndexOfCentralGal[snap]=-1;
+#endif
 	}
 
       fclose(fa);
@@ -882,6 +903,11 @@ void change_dark_matter_sim(char SimName[])
 #endif
 #endif
 
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+  init_integrated_yields();
+  integrate_yields();
+#endif
+
   /*After all the millennium trees have been done read sample for MRII trees
    * from treenr=NTrees_MR to NTrees_MR+NTrees_MRII=Ntrees */
   if (strcmp(SimName,"MR")==0)
@@ -901,6 +927,34 @@ void change_dark_matter_sim(char SimName[])
     }
 
   read_sample_info();
+
+}
+#endif
+
+#ifdef HALOMODEL
+void assign_FOF_masses(snapnum, treenr)
+{
+  int fof,snap, halonr;
+
+  for(halonr = 0; halonr < TreeNHalos[treenr]; halonr++)
+    if(HaloAux[halonr].DoneFlag == 0 && Halo[halonr].SnapNum == snapnum)
+      {
+        for(snap=0;snap<NOUT;snap++)
+          {
+            if(snapnum==ListOutputSnaps[snap])
+              {
+                for(fof=0;fof<NFofsInSample[snap]; fof++)
+                  if(HaloIDs[halonr].FirstHaloInFOFgroup == MCMC_FOF[fof].FoFID[snap])
+                    {
+                      MCMC_FOF[fof].M_Crit200[snap] = log10(Halo[halonr].M_Crit200*1.e10);
+                      MCMC_FOF[fof].M_Mean200[snap] = log10(Halo[halonr].M_Mean200*1.e10);
+#ifdef MCRIT
+                      MCMC_FOF[fof].M_Mean200[snap] = log10(Halo[halonr].M_Crit200*1.e10);
+#endif
+                    }
+              }
+          }
+      }
 
 }
 #endif

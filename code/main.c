@@ -73,6 +73,9 @@ int main(int argc, char **argv)
  if (ThisTask == 0)
    printf("%s\n",COMPILETIMESETTINGS); 
 
+ /* check compatibility of some Makefile Options*/
+  check_options();
+
   /*Reads the parameter file, given as an argument at run time. */
   read_parameter_file(argv[1]);
 
@@ -97,8 +100,6 @@ int main(int argc, char **argv)
 
   //time(&start);
 
-  /* check compatibility of some Makefile Options*/
-  check_options();
 
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
   //for dust_model
@@ -208,8 +209,17 @@ void SAM(int filenr)
 #else
   if(CurrentMCMCStep==1)
   	read_sample_info();
-#endif
-#endif
+#ifdef HALOMODEL
+  else
+    {
+      int snap, ii;
+      for(snap=0;snap<NOUT;snap++)
+	for(ii=0;ii<NFofsInSample[snap];ii++)
+	  MCMC_FOF[ii].NGalsInFoF[snap]=0;
+    }
+#endif //HALOMODEL
+#endif //MR_PLUS_MRII
+#endif //MCMC
 
   //to be used when we have tables for the scaling in any cosmology
   //read_scaling_parameters();
@@ -263,6 +273,11 @@ void SAM(int filenr)
     	  /* read the appropriate parameter list for current snapnum
     	   * into the parameter variables to be used in construct_galaxies */
     	  read_mcmc_par(snapnum);
+#ifdef HALOMODEL
+          //because we need halo masses even for FOFs
+          //with no galaxies it needs to be done here
+          assign_FOF_masses(snapnum, treenr);
+#endif
 #endif
     	  for(halonr = 0; halonr < TreeNHalos[treenr]; halonr++)
     	  	if(HaloAux[halonr].DoneFlag == 0 && Halo[halonr].SnapNum == snapnum)
@@ -776,6 +791,13 @@ void evolve_galaxies(int halonr, int ngal, int treenr, int cenngal)
 		}
 	    }
 	}//loop on all galaxies to detect mergers
+
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+      //DELAYED ENRICHMENT AND MASS RETURN + FEEDBACK: No fixed yield or recycling fraction anymore. FB synced with enrichment
+      for (p = 0; p < ngal; p++)
+	update_yields_and_return_mass(p, centralgal, deltaT/STEPS, nstep);
+#endif
+
     }/* end move forward in interval STEPS */
 
   for(p = 0; p < ngal; p++)
@@ -982,73 +1004,83 @@ void output_galaxy(int treenr, int heap_index)
 void check_options() {
 #ifdef OUTPUT_OBS_MAGS
 #ifndef COMPUTE_OBS_MAGS
-  printf("> Error : option OUTPUT_OBS MAGS requires option COMPUTE_OBS_MAGS \n");
+  printf("\n\n> Error : Makefile option OUTPUT_OBS MAGS requires option COMPUTE_OBS_MAGS \n");
   exit(32);
 #endif
 #endif
 
 #ifdef OUTPUT_MOMAF_INPUTS
 #ifndef COMPUTE_OBS_MAGS 
-  printf("> Error : option OUTPUT_MOMAF_INPUTS requires option COMPUTE_OBS_MAGS \n");
+  printf("\n\n> Error : Makefile option OUTPUT_MOMAF_INPUTS requires option COMPUTE_OBS_MAGS \n");
   exit(32);
 #endif
 #endif
 
 #ifdef KITZBICHLER
 #ifndef OUTPUT_MOMAF_INPUTS
-  printf("> Error : option KITZBICHLER requires option OUTPUT_MOMAF_INPUTS \n");
+  printf("\n\n> Error : Makefile option KITZBICHLER requires option OUTPUT_MOMAF_INPUTS \n");
   exit(32);
 #endif
 #ifndef POST_PROCESS_MAGS
-  printf("> Error : option KITZBICHLER requires option POST_PROCESS_MAGS \n");
+  printf("\n\n> Error : Makefile option KITZBICHLER requires option POST_PROCESS_MAGS \n");
   exit(32);
 #endif
 #endif
 
 #ifdef OUTPUT_L_CONE_INPUTS
 #ifndef OUTPUT_OBS_MAGS
-  printf("> Error : option OUTPUT_L_CONE_INPUTS requires option OUTPUT_OBS_MAGS \n");
+  printf("\n\n> Error : Makefile option OUTPUT_L_CONE_INPUTS requires option OUTPUT_OBS_MAGS \n");
   exit(32);
 #endif
 #endif
 
 #ifdef OUTPUT_L_CONE_INPUTS
 #ifndef GALAXYTREE
-  printf("> Error : option OUTPUT_L_CONE_INPUTS requires option GALAXYTREE \n");
+  printf("\n\n> Error : Makefile option OUTPUT_L_CONE_INPUTS requires option GALAXYTREE \n");
   exit(32);
 #endif
 #endif
 
 #ifndef LOADIDS
 #ifdef GALAXYTREE
-terminate("> Warning : GALAXYTREE requires LOADIDS \n");
+terminate("\n\n> Error : Makefile option GALAXYTREE requires LOADIDS \n");
 #endif
 #endif
 
 #ifndef STAR_FORMATION_HISTORY
 #ifdef POST_PROCESS_MAGS
-terminate("> Warning : POST_PROCESS_MAGS  requires STAR_FORMATION_HISTORY \n");
+terminate("\n\n> Error : Makefile option POST_PROCESS_MAGS  requires STAR_FORMATION_HISTORY \n");
 #endif
 #endif
 
 #ifdef MCMC
 #ifndef LOADIDS
-terminate("> Warning : MCMC  requires LOADIDS \n");
+terminate("\n\n> Error : Makefile option MCMC  requires LOADIDS \n");
 #endif
 #endif
 
+#ifdef HALOMODEL
+#ifdef MR_PLUS_MRII
+  terminate("\n\n> Error : Makefile option HALOMODEL doesn't work yet with MR_PLUS_MRII\n");
+#endif
+#ifdef MRII
+  terminate("\n\n> Error : Makefile option HALOMODEL doesn't work yet with MRII\n");
+#endif
+#endif
+
+
 #ifdef PHOTTABLES_PRECOMPUTED
 #ifdef SPEC_PHOTABLES_ON_THE_FLY
-terminate("> Warning : PHOTTABLES_PRECOMPUTED cannot run with SPEC_PHOTABLES_ON_THE_FLY\n");
+terminate("\n\n> Error : Makefile option PHOTTABLES_PRECOMPUTED cannot run with SPEC_PHOTABLES_ON_THE_FLY\n");
 #endif
 #endif
 
 #ifdef LIGHT_OUTPUT
 #ifdef POST_PROCESS_MAGS
-terminate("> Warning : LIGHT_OUTPUT cannot run with POST_PROCESS_MAGS \n");
+terminate("\n\n> Error : Makefile option LIGHT_OUTPUT cannot run with POST_PROCESS_MAGS \n");
 #endif
 #ifdef OUTPUT_MOMAF_INPUTS
-terminate("> Warning : LIGHT_OUTPUT cannot run with OUTPUT_MOMAF_INPUTS \n");
+terminate("\n\n> Error : Makefile option LIGHT_OUTPUT cannot run with OUTPUT_MOMAF_INPUTS \n");
 #endif
 #endif //LIGHT_OUTPUT
 

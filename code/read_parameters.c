@@ -95,8 +95,12 @@ void read_parameter_file(char *fname)
 
 //Variables used in the MCMC
 #ifdef MCMC
-  strcpy(tag[nt], "MCMCParameterPriorsAndSwitches");
-  addr[nt] = MCMCParameterPriorsAndSwitches;
+  strcpy(tag[nt], "MCMCStartingParFile");
+  addr[nt] = MCMCStartingParFile;
+  id[nt++] = STRING;
+
+  strcpy(tag[nt], "MCMCParPriorsAndSwitchesFile");
+  addr[nt] = MCMCParPriorsAndSwitchesFile;
   id[nt++] = STRING;
 
   strcpy(tag[nt], "MCMCObsConstraints");
@@ -139,6 +143,12 @@ void read_parameter_file(char *fname)
   strcpy(tag[nt], "MCMCSampleFile");
   addr[nt] = &MCMCSampleFile;
   id[nt++] = INT;
+#endif
+
+#ifdef HALOMODEL
+  strcpy(tag[nt], "MCMCHaloModelDir");
+  addr[nt] = MCMCHaloModelDir;
+  id[nt++] = STRING;
 #endif
 
   strcpy(tag[nt], "MCMCTreeSampleFile");

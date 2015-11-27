@@ -21,7 +21,7 @@ ifeq (MCMC,$(findstring MCMC,$(OPT)))
 OPT += -DMR_PLUS_MRII
 OBJS  += ./code/mcmc.o
 OBJS  += ./code/mcmc_likelihood.o 
-OBJS  += ./code/save_mcmc.o 
+OBJS  += ./code/mcmc_save.o 
 INCL  += ./code/mcmc_vars.h 
 INCL  += ./code/mcmc_proto.h
 endif # end MCMC

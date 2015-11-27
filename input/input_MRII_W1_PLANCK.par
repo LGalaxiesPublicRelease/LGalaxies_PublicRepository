@@ -43,7 +43,7 @@ ScaleMass           1.11671
 %NEW COSMOLOGY: PLANCK1
 BaryonFrac      0.155
 Sigma8          0.826
-FileWithZList   ./input/zlist_planck_MRII.txt 
+FileWithZList   ./input/zlists/zlist_planck_MRII.txt 
 PartMass        0.000768884   ;should be changed according to the dark matter simulation being used
 BoxSize         96.0558
 Omega           0.315 
@@ -51,7 +51,7 @@ OmegaLambda     0.685
 Hubble_h        0.673
 
 %ORIGINAL COSMOLOGY: WMAP1
-FileWithZList_OriginalCosm    ./input/zlist_MRII.txt
+FileWithZList_OriginalCosm    ./input/zlists/zlist_MRII.txt
 PartMass_OriginalCosm         0.000688526 ;should be changed according to the dark matter simulation being used
 BoxSize_OriginalCosm          100.
 Omega_OriginalCosm            0.25 
@@ -129,7 +129,7 @@ DisruptionModel                0   ;tidal disruption of type 2 galaxies
                                       %*0 -- disruption of stars and cold gas in type 2 galaxies as in Guo11
                                       % 1-- no disruption
                                       
-StarBurstModel          	   0   ;recipe for starbursts during mergers
+StarBurstModel           	   0   ;recipe for starbursts during mergers
                                        %*0 -- starbursts in major AND minor mergers as in Somerville 2001
 
 BulgeFormationInMinorMergersOn 1   ;option for bulges to form in minor mergers as well as major

@@ -1,0 +1,136 @@
+#
+# Compiler options for the sorce codes.
+# Should work on Oberon.
+#
+#MACHINE  = quintor
+#MACHINE  = titania
+#MACHINE  = cordelia
+#MACHINE  = rosalind
+#MACHINE = "OPA-Cluster64"
+#MACHINE = MPA
+#MACHINE = "Ubuntu"
+#MACHINE="JSC"
+MACHINE="COSM"
+
+ifeq ($(MACHINE),"Ubuntu")
+CC       =  mpicc -Wall
+OPTIMIZE =
+GSL_INCL =
+GSL_LIBS =
+FFTW_INCL=  -I/usr/include
+FFTW_LIBS= -L/usr/lib
+MPICHLIB = -L/usr/lib/mpi/gcc/openmpi/lib -Xlinker -R -Xlinker /usr/lib/mpi/gcc/openmpi/lib -lmpi
+HDF5INCL =
+HDF5LIB  =
+endif
+
+ifeq ($(MACHINE),"COSM")
+CC       =  mpiicc
+OPT =  -g -O3 -Wall -m64 -wd981 -wd2259 -wd1572 -ipo
+GSL_INCL =  -I$(GSL_HOME)/include
+GSL_LIBS =  -L$(GSL_HOME)/lib -Xlinker -R -Xlinker $(GSL_HOME)/lib -lgsl -lgslcblas 
+FFTW_INCL=  -I$(FFTW_HOME)/include
+FFTW_LIBS=  -L$(FFTW_HOME)/lib -lsrfftw_mpi -lsfftw_mpi -lsrfftw -lsfftw
+MPICHLIB =
+HDF5INCL =
+HDF5LIB  =
+endif
+
+ifeq ($(MACHINE),"JSC")
+CC       =  mpicc   # sets the C-compiler
+#CC       = /opt/parastation/mpi2-intel-mt/bin/mpicc
+OPTIMIZE =  -g -O3 -Wall -sox
+ifeq (OPENMP,$(findstring OPENMP,$(OPT)))
+OPTIMIZE +=  -openmp
+endif
+GSL_INCL = -I/lustre/jwork1/vsk021/libs/include/gsl/
+GSL_LIBS = -L/lustre/jwork1/vsk021/libs/lib -Xlinker -R -Xlinker /lustre/jwork1/vsk021/libs/lib -lgsl -lgslcblas
+FFTW_INCL= -I/lustre/jwork1/vsk021/libs/include
+FFTW_LIBS= -L/lustre/jwork1/vsk021/libs/lib -Xlinker -R -Xlinker /lustre/jwork1/vsk021/libs/lib -lsrfftw_mpi -lsfftw_mpi -lsrfftw -lsfftw -lsrfftw_threads -lsfftw_threads 
+MPICHLIB = -L/opt/parastation/mpi2-intel/lib/ -Xlinker -R -Xlinker /opt/parastation/mpi2-intel/lib/ -lmpi
+MPICHINC = -I/opt/parastation/mpi2-intel/include/
+endif
+
+
+ifeq ($(MACHINE),"OPA-Cluster64")
+	CC       =   mpicc -m64
+	OPT =  -g -O3
+#	OPT += -DFORMAT2
+	OPT += -Wmissing-prototypes 
+#	OPT += -ansi -pedantic -Werror -Wall -W \
+#        -Wmissing-prototypes -Wstrict-prototypes
+#       -Wtraditional -Wconversion -Wshadow \
+#       -Wpointer-arith -Wcast-qual -Wcast-align \
+#       -Wwrite-strings -Wnested-externs \
+#       -fshort-enums -fno-common -Dinline= 
+
+
+	GSL_INCL =  -I/afs/rzg/home/v/vrs/Libs/opteron64/mvapich2-0.9.3/include
+	GSL_LIBS =  -L/afs/rzg/home/v/vrs/Libs/opteron64/mvapich2-0.9.3/lib # -Wl,"-R /afs/rzg/home/v/vrs/Libs/opteron64/mvapich2-0.9.3/lib"
+	FFTW_INCL=  -I/afs/rzg/home/v/vrs/Libs/opteron64/mvapich2-0.9.3/include
+	FFTW_LIBS=  -L/afs/rzg/home/v/vrs/Libs/opteron64/mvapich2-0.9.3/lib -lsrfftw_mpi -lsfftw_mpi -lsrfftw -lsfftw 
+#	FFTW_LIBS=  -L/afs/rzg/home/v/vrs/Libs/opteron64/mvapich2-0.9.3/lib -ldrfftw_mpi -ldfftw_mpi -ldrfftw -ldfftw 
+	HDF5INCL =  -I/afs/rzg/home/v/vrs/Libs/opteron64/mvapich2-0.9.3/include
+	HDF5LIB  =  -L/afs/rzg/home/v/vrs/Libs/opteron64/mvapich2-0.9.3/lib  -lhdf5 -lz
+	R_PATH    =  $(GSL_LIBS) $(FFTW_LIBS) -Xlinker -R -Xlinker /afs/rzg/home/v/vrs/Libs/opteron64/mvapich2-0.9.3/lib -lgsl -lgslcblas
+endif
+
+
+ifeq ($(MACHINE),rosalind)
+	CC	  =  mpicc # -DDEBUG #-g 
+	OPT       = -m64 -xtarget=ultra4plus -xcache=64/32/4:2048/64/4:32768/64/4 
+	OPT       += -DSWAPENDIAN
+	FFTW_INCL = $(FFTW64INCL)
+	FFTW_LIBS = $(FFTW64LIB) -lsrfftw -lsfftw -lsrfftw_mpi -lsfftw_mpi
+	GSL_INCL  = $(GSL64INCL)
+	GSL_LIBS  = $(GSL64LIB) -lgsl -lgslcblas
+    OMPILIB   = -R/opt/SUNWhpc/lib/sparcv9 -L/opt/SUNWhpc/lib/sparcv9 -R/opt/studio12/SUNWspro/prod/lib/amd64/crt1x.o 
+	R_PATH    = $(R64LIB) $(OMPILIB) $(GSL_LIBS) $(FFTW_LIBS) -lmpi
+	#R_PATH    = -L/opt/SUNWhpc/lib/amd64  $(GSL_LIBS) $(FFTW_LIBS)
+endif
+
+ifeq ($(HOST),oberon)
+	CC	  =  mpicc  -DDEBUG -g 
+	#OPT       = -fast -xvector=simd  
+	OPT       = -m64 -xarch=sse2a 
+	OPT      += -DHR1
+	OPT       += -DSWAPENDIAN
+	OPT       += -DSWAP_TREE
+	FFTW_INCL = $(FFTW64INCL)
+	FFTW_LIBS = $(FFTW64LIB) -lsrfftw -lsfftw -lsrfftw_mpi -lsfftw_mpi
+	GSL_INCL  = -I/opt/local/gsl/64/1.9/include/
+	GSL_LIBS  = -L/opt/local/gsl/64/1.9/lib -lgsl -lgslcblas
+    OMPILIB   = -R/opt/SUNWhpc/lib/amd64 -L/opt/SUNWhpc/lib/amd64 -R/opt/studio12/SUNWspro/prod/lib/amd64/crt1x.o 
+	R_PATH    = $(R64LIB) $(OMPILIB) $(GSL_LIBS) $(FFTW_LIBS) -lmpi
+	#R_PATH    = -L/opt/SUNWhpc/lib/amd64  $(GSL_LIBS) $(FFTW_LIBS)
+endif
+
+ifeq ($(MACHINE),titania)
+	CC   = mpcc
+	OPT  = -DDEBUG -DSWAPENDIAN -i -fast -xvector -xarch=v9b -I/opt/local/include
+	GSL_INCL = $(GSL64INCL)
+	GSL_LIBS = $(GSL64LIB)
+	FFTW_INCL= $(FFTW64INCL)
+	FFTW_LIBS= $(FFTW64LIB)
+	#R_PATH = -R/opt/gm/lib/sparcv9 $(R64LIB) $(GSL_LIBS) $(FFTW_LIBS) -lmpi -lgsl -lgslcblas -lm -lsrfftw_mpi -lsfftw_mpi -lsrfftw -lsfftw
+    OMPILIB   = -R/opt/SUNWhpc/lib/amd64 -L/opt/SUNWhpc/lib/amd64
+	R_PATH = -L/opt/SUNWhpc/lib/amd64 -lmpi -R/opt/SUNWhpc/lib/amd64 -lm -lgsl -lgslcblas -lsrfftw_mpi -lsfftw_mpi -lsrfftw -lsfftw
+endif
+
+ifeq ($(MACHINE),quintor)
+	CC   = /opt/SUNWhpc/bin/mpicc 
+	OPT  = -DDEBUG -DSWAPENDIAN -i -fast -xvector -xarch=v9b -xchip=ultra3i -I/opt/local/include 
+#	OPT  = -DDEBUG -DSWAPENDIAN -xO3 -i -fast -xvector -xarch=v9b -I/opt/local/include 
+	#OPT  = -DDEBUG -DSWAPENDIAN -i -fast -xcache=64/32/4:1024/64/4 -xarch=v9b  -xvector -I/opt/local/include
+	GSL_INCL = $(GSL64INCL)
+	GSL_LIBS = $(GSL64LIB)
+	FFTW_INCL= $(FFTW64INCL)
+	FFTW_LIBS= $(FFTW64LIB)
+	#R_PATH = -R/opt/gm/lib/sparcv9 $(R64LIB) $(GSL_LIBS) $(FFTW_LIBS) -lmpi -lgsl -lgslcblas -lm -lsrfftw_mpi -lsfftw_mpi -lsrfftw -lsfftw
+	R_PATH = $(R64LIB) $(GSL_LIBS) $(FFTW_LIBS) -L/opt/SUNWhpc/lib/sparcv9 -lmpi -lgsl -lgslcblas -lm -lsrfftw_mpi -lsfftw_mpi -lsrfftw -lsfftw
+endif
+
+	INCLUDE   = $(GSL_INCL) $(FFTW_INCL) 
+	CFLAGS    = $(OPT) $(INCLUDE)
+	LIBS      = $(R_PATH) $(GSL_LIBS) $(FFTW_LIBS) -lm
+

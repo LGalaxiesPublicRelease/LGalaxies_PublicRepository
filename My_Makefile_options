@@ -88,4 +88,30 @@ endif #FULL_SPECTRA
 
 endif ### COMPUTE_SPECPHOT_PROPERTIES
 
-
+# Chemical enrichment of individual element yields
+#OPT   += -DDETAILED_METALS_AND_MASS_RETURN
+ifeq (DETAILED_METALS_AND_MASS_RETURN,$(findstring DETAILED_METALS_AND_MASS_RETURN,$(OPT)))
+OPT   += -DFEEDBACK_COUPLED_WITH_MASS_RETURN
+OPT   += -DINDIVIDUAL_ELEMENTS
+#OPT   += -DMETALRICHWIND
+OBJS  += ./code/model_yields.o
+OBJS  += ./code/yields_read_tables.o
+OBJS  += ./code/yields_elements.o
+OBJS  += ./code/yields_integrals.o
+OBJS  += ./code/yields_calc_SNe_rates.o
+ifeq (INDIVIDUAL_ELEMENTS,$(findstring INDIVIDUAL_ELEMENTS,$(OPT)))
+#OPT  += -DMAINELEMENTS  #If on, then only H, He, O, Mg and Fe are tracked. If off, all elements are tracked (H,He,C,N,O,Ne,Mg,Si,S,Ca,Fe)
+endif
+#OPT  += -DSNIATOHOT
+#OPT  += -DNORMALIZE #(ONLY WORKS WITH MAINELEMENTS OFF) If on, elements and total metals are normlaised to total component masses.
+OPT  += -DPORTINARI #Use Portinari et al. (1998) SN-II yield tables.
+#OPT   += -DCHIEFFI #Use Chieffi & Limongi (2007) SN-II yield tables.
+OPT   += -DDTD #If on, a delay time distribution (DTD) is used for SNIa enrichment. If off, the Matteucci & Greggio (1986) formalism is used.
+ifeq (DTD,$(findstring DTD,$(OPT)))
+OPT  += -DBIMODALDTD #Use the Mannucci et al. (2006) delay time distribution. ~Half SNe-Ia die within ~100 Myrs. Rest distributed out to ~11 Gyrs.
+#OPT   += -DGAUSSIANDTD #Use a Gaussian delay time distribution, centered on 2 Gyrs.
+#OPT  += -DPOWERLAWDTD #Use a declining power-law delay time distribution of slope -1.12.
+#OPT  += -DRUITERDTD
+#OPT  += -DINSTANTANEOUS_RECYCLE #Recycle all metals in one time step to resemble instantaneous recycling approximation 
+endif
+endif

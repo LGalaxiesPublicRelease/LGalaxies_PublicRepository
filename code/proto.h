@@ -254,7 +254,6 @@ int set_merger_center(int fofhalo);
 
 void transfer_stars(int p, char cp[], int q, char cq[], double fraction);
 void transfer_gas(int p, char cp[], int q, char cq[], double fraction, char call_function[], int line);
-void transfer_gas_to_stars(int p, char cp[], int q, char cq[], double fraction);
 void deal_with_satellites(int centralgal, int ngal);
 void mass_checks(char string[], int igal) ;
 
@@ -267,12 +266,74 @@ void create_sfh_bins();
 void write_sfh_bins();
 #endif //STAR_FORMATION_HISTORY
 
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+struct metals metals_add(struct metals m1,
+	       struct metals m2,
+	       float fraction);
+struct metals metals_init();
+void metals_print(char s[],struct metals m);
+float metals_total(struct metals m);
+#else
 float metals_add(float m1, 
 		 float m2,
 		 float fraction);
 float metals_init();
 void metals_print(char s[], float m);
 float metals_total(float m);
+#endif
+
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+//in read_yield_tables.c:
+void read_yield_tables();
+double Chabrier_IMF(double M);
+
+//in calc_SNe_rates.c:
+#ifdef INDIVIDUAL_ELEMENTS
+void SNe_rates();
+#endif
+
+//in yield_integrals.c:
+void init_integrated_yields();
+void integrate_yields();
+int find_initial_metallicity_comp(int Zi, int sfh_bin, int table_type);
+int find_initial_mass(double lifetime, int Zi_bin);
+int max_Mi_lower(int Mi_lower, int channel_type);
+int min_Mi_upper(int Mi_upper, int channel_type);
+int find_SNII_mass_bin(double masslimit);
+int find_agb_mass_bin(double masslimit);
+#ifdef DTD
+double DTDcalc (double timevalue);
+#endif
+#ifdef INDIVIDUAL_ELEMENTS
+void find_actual_ejecta_limits(int channel_type, double Mi_lower_actual, double Mi_upper_actual, int Mi_lower, int Mi_upper, int Zi,
+		double* EjectedMasses_lower_actual, double* EjectedMasses_upper_actual, double* TotalMetals_lower_actual, double* TotalMetals_upper_actual,
+		double* Yields_lower_actual, double* Yields_upper_actual);
+#else
+void find_actual_ejecta_limits(int channel_type, double Mi_lower_actual, double Mi_upper_actual, int Mi_lower, int Mi_upper, int Zi,
+		double* EjectedMasses_lower_actual, double* EjectedMasses_upper_actual, double* TotalMetals_lower_actual, double* TotalMetals_upper_actual);
+#endif
+
+void print_galaxy(char string[], int p, int halonr);
+
+
+//in elements.c:
+struct elements elements_add(struct elements ele1, struct elements ele2, float fraction);
+struct elements elements_init();
+void elements_print(char s[],struct elements ele);
+double elements_total(struct elements ele);
+double metal_elements_total(struct elements ele);
+
+//in recipe_yields.c:
+void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep);
+int find_initial_metallicity(int p, int sfh_bin, int table_type, int component_type);
+#ifdef INSTANTANEOUS_RECYCLE
+void reset_ejection_rates(int i, int sfh_ibin,
+		 double *NormSNIIMassEjecRate_actual, double *NormSNIIMetalEjecRate_actual,
+		 double *NormSNIaMassEjecRate_actual, double *NormAGBMassEjecRate_actual,
+		 double *NormSNIaMetalEjecRate_actual, double *NormAGBMetalEjecRate_actual);
+#endif
+
+#endif //DETAILED_METALS_AND_MASS_RETURN
 
 void print_galaxy(char string[], int p, int halonr);
 

@@ -12,7 +12,7 @@ else
 
 	processors=$1
 	simulation=$2
-	var1="./input/input_Henriques2015_"
+	var1="./input/input_Henriques15_"
 	var2="_W1_PLANCK.par"
 	echo $simulation
 	

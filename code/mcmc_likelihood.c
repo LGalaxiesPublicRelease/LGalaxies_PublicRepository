@@ -9,6 +9,9 @@
 
 #include "mcmc_vars.h"
 #include "mcmc_proto.h"
+#ifdef HALOMODEL
+#include "mcmc_halomodel.h"
+#endif
 
 #define FPMIN 1.0e-30
 #define ASWITCH 100
@@ -82,14 +85,20 @@ double get_likelihood()
   int i, j, snap;
   double color_UV, color_VJ;
   //BEST FIT TO MODEL CUT
+#ifndef HALOMODEL
   double offset_color_cut[NOUT]={0.00, 1.085, 1.1, 1.0, 1.15}; //not used at z=0
   double slope_color_cut[NOUT]={0.00, 0.5, 0.48, 0.38, 0.18};
+#else
+  double offset_color_cut[NOUT]={0.00}; //not used at z=0
+  double slope_color_cut[NOUT]={0.00};
+#endif
+  FILE *fa;
+  char buf[1000];
 
   /* Bin samdata into binsamdata according to observational constraints.
    * The first argument of the bin functions and of the likelihood
-   * function (Chi^2 ot MLM) indicates the observational data set to use.*/
-
-  //ALL Luminosity Function to be compared in units of M-5logh and phi(Mpc-3h-3mag-1)
+   * function (Chi^2 ot MLM) indicates the observational data set to use.
+   * ALL Luminosity Function to be compared in units of M-5logh and phi(Mpc-3h-3mag-1) */
 
   final_probability=1.;
   for(snap=0;snap<NOUT;snap++)
@@ -99,6 +108,10 @@ double get_likelihood()
 
       if((samdata = malloc(sizeof(double) * TotMCMCGals[snap])) == NULL)
 	terminate("get_likelihood");
+
+#ifdef HALOMODEL
+      correct_for_correlation(snap);
+#endif
 
       for(i=0;i<MCMCNConstraints;i++)
 	{
@@ -198,7 +211,41 @@ double get_likelihood()
 			binsamdata[0]+=MCMC_GAL[j].Sfr[snap]*MCMC_GAL[j].Weight[snap];
 		    }
 
+#ifdef HALOMODEL
+		  //Correlation Function - requires more than just binning
+		  if(strncmp(MCMC_Obs[i].Name,"Clustering_MassBins_8.77_9.27",28)==0)
+		    compute_correlation_func(i, binsamdata, snap, 8.77, 9.27);
+		  if(strncmp(MCMC_Obs[i].Name,"Clustering_MassBins_9.27_9.77",28)==0)
+		    compute_correlation_func(i, binsamdata, snap, 9.27, 9.77);
+		  if(strncmp(MCMC_Obs[i].Name,"Clustering_MassBins_9.77_10.27",28)==0)
+		    compute_correlation_func(i, binsamdata, snap, 9.77, 10.27);
+		  if(strncmp(MCMC_Obs[i].Name,"Clustering_MassBins_10.27_10.77",28)==0)
+		    compute_correlation_func(i, binsamdata, snap, 10.27, 10.77);
+		  if(strncmp(MCMC_Obs[i].Name,"Clustering_MassBins_10.77_11.27",28)==0)
+		    compute_correlation_func(i, binsamdata, snap, 10.77, 11.27);
+		  if(strncmp(MCMC_Obs[i].Name,"Clustering_MassBins_11.27_11.47",28)==0)
+		    compute_correlation_func(i, binsamdata, snap, 11.27, 11.77);
+#endif
+
+
 		  current_probability=chi_square_probability(i, binsamdata, snap);
+
+#ifndef PARALLEL
+		  //print comparison with observations into file (over-write, only makes sense if not PARALLEL)
+		  sprintf(buf, "%s/mcmc_plus_obs%d_z%1.2f.txt",OutputDir,i,(double)((int)((MCMCConstraintsZZ[snap]*10)+0.5)/10.));
+		  if(!(fa = fopen(buf, "w")))
+		    {
+		      char sbuf[1000];
+		      sprintf(sbuf, "can't open file `%s'\n", buf);
+		      terminate(sbuf);
+		    }
+		  int ii;
+		  for(ii = 0; ii < Nbins[snap][i]; ii++)
+		    fprintf(fa, "%g %g %g %g\n",
+			    MCMC_Obs[i].Bin_low[snap][ii]+(MCMC_Obs[i].Bin_high[snap][ii]-MCMC_Obs[i].Bin_low[snap][ii])/2.,
+			    MCMC_Obs[i].Obs[snap][ii], MCMC_Obs[i].Error[snap][ii], binsamdata[ii]);
+		  fclose(fa);
+#endif
 
 		}//end chi_sq tests
 
@@ -260,6 +307,10 @@ double get_likelihood()
 
       final_probability*=redshift_probability;
       free(samdata);
+#ifdef HALOMODEL
+      free(MCMC_FOF2);
+      free(HashTable);
+#endif
     }//end loop on snaps
 
 
@@ -291,7 +342,7 @@ void bin_function(int ObsNr, double *binsamdata, double *samdata, int snap)
   FILE *fa;
   char buf[1000];
 
-#ifndef PARALLEL
+/*#ifndef PARALLEL
   sprintf(buf, "%s/mcmc_plus_obs%d_z%1.2f.txt",OutputDir,ObsNr,(double)((int)((MCMCConstraintsZZ[snap]*10)+0.5)/10.));
   if(!(fa = fopen(buf, "w")))
     {
@@ -299,7 +350,7 @@ void bin_function(int ObsNr, double *binsamdata, double *samdata, int snap)
       sprintf(sbuf, "can't open file `%s'\n", buf);
       terminate(sbuf);
     }
-#endif
+#endif*/
 
   //because of the convolution with a random error, when masses are involved
   //we would get a different output for the same model parameters. Therefore
@@ -338,15 +389,15 @@ void bin_function(int ObsNr, double *binsamdata, double *samdata, int snap)
     {
       fprintf(FILE_MCMC_PredictionsPerStep[snap][ObsNr], " %0.5e", binsamdata[ii]);
 #ifndef PARALLEL
-      fprintf(fa, "%g %g %g %g\n", MCMC_Obs[ObsNr].Bin_low[snap][ii]+(MCMC_Obs[ObsNr].Bin_high[snap][ii]-MCMC_Obs[ObsNr].Bin_low[snap][ii])/2.,
-	      MCMC_Obs[ObsNr].Obs[snap][ii], MCMC_Obs[ObsNr].Error[snap][ii], binsamdata[ii]);
+   /*   fprintf(fa, "%g %g %g %g\n", MCMC_Obs[ObsNr].Bin_low[snap][ii]+(MCMC_Obs[ObsNr].Bin_high[snap][ii]-MCMC_Obs[ObsNr].Bin_low[snap][ii])/2.,
+	      MCMC_Obs[ObsNr].Obs[snap][ii], MCMC_Obs[ObsNr].Error[snap][ii], binsamdata[ii]);*/
 #endif
 
       //printf("%g %g %g %g\n", MCMC_Obs[ObsNr].Bin_low[snap][i]+(MCMC_Obs[ObsNr].Bin_high[snap][i]-MCMC_Obs[ObsNr].Bin_low[snap][i])/2., MCMC_Obs[ObsNr].Obs[snap][i],
       //	  	                   MCMC_Obs[ObsNr].Error[snap][i], binsamdata[i]);
     }
 #ifndef PARALLEL
-  fclose(fa);
+  //fclose(fa);
 #endif
 }
 
@@ -362,8 +413,13 @@ void bin_red_fraction(int ObsNr, double *binredfraction, int snap)
   //double offset_color_cut[snap]={0.00, 0.69, 0.59, 0.59, 0.59}; //not used at z=0
   //double slope_color_cut[snap]={0.00, 0.88, 0.88, 0.88, 0.88};
   //BEST FIT TO MODEL CUT
+#ifndef HALOMODEL
   double offset_color_cut[NOUT]={0.00, 1.085, 1.1, 1.0, 1.15}; //not used at z=0
   double slope_color_cut[NOUT]={0.00, 0.5, 0.48, 0.38, 0.18};
+#else
+  double offset_color_cut[NOUT]={0.00}; //not used at z=0
+  double slope_color_cut[NOUT]={0.00};
+#endif
 
   FILE *fa;
   char buf[1000];
@@ -663,6 +719,7 @@ double chi_square_probability(int ObsNr, double *samdata, int snap)
 
       if(obs < 0.0 || (obs == 0 && samdata[i] > 0))
     	printf("Bad expected number in chsone\n");
+
       if(obs == 0 && samdata[i] == 0)
 	--df;
       else
@@ -677,7 +734,6 @@ double chi_square_probability(int ObsNr, double *samdata, int snap)
          // printf("OBS[%d] snap=%d bin=%f sam=%f obs=%f error=%f chsq=%f\n",
          // 		ObsNr, snap, MCMC_Obs[ObsNr].Bin_low[snap][i]+(MCMC_Obs[ObsNr].Bin_high[snap][i]-MCMC_Obs[ObsNr].Bin_low[snap][i])/2.,
          // 		samdata[i], obs, obserror,(temp*temp)/(obserror*obserror));
-        }
     }
 
 
@@ -726,6 +782,123 @@ double binomial_probability(int ObsNr, double *samup, double *samdown, int snap)
   //printf("\nBinomial Probability=%f\n",prob);
   return prob;
 }
+
+
+
+#ifdef HALOMODEL
+void correct_for_correlation(int snap)
+{
+  int fof, jj, kk, *CumulativeNgals;
+
+  if((HashTable = malloc(sizeof(int) * TotMCMCGals[snap])) == NULL)
+    terminate("correct_for_correlation");
+
+  MCMC_FOF2 = malloc(sizeof(struct MCMC_FOF_struct) * NFofsInSample[snap]);
+  CumulativeNgals = malloc(sizeof(int) * NFofsInSample[snap]);
+
+  CumulativeNgals[0]=0;
+
+  for(fof=0;fof<NFofsInSample[snap]; fof++)
+    {
+      if (fof<NFofsInSample[snap]-1)
+	CumulativeNgals[fof+1] = CumulativeNgals[fof]+MCMC_FOF[fof].NGalsInFoF[snap];
+      MCMC_FOF2[fof].M_Crit200[snap] = MCMC_FOF[fof].M_Crit200[snap];
+      MCMC_FOF2[fof].M_Mean200[snap] = MCMC_FOF[fof].M_Mean200[snap];
+      if(MCMC_FOF[fof].NGalsInFoF[snap]>0)
+	{
+	  MCMC_FOF2[fof].NGalsInFoF[snap] = MCMC_FOF[fof].NGalsInFoF[snap];
+	  MCMC_FOF2[fof].IndexOfCentralGal[snap] = MCMC_FOF[fof].IndexOfCentralGal[snap];
+	}
+      else
+	{
+	  MCMC_FOF2[fof].NGalsInFoF[snap] = 0;
+	  MCMC_FOF2[fof].IndexOfCentralGal[snap] = -1;
+	}
+    }
+  UsedFofsInSample[snap]=NFofsInSample[snap];
+
+  //BUILD HASHTABLE
+  for(jj=0;jj<TotMCMCGals[snap];jj++)
+    HashTable[jj]=-1;
+
+  for(fof=0;fof<NFofsInSample[snap]; fof++)
+    {
+      for(jj=0;jj<TotMCMCGals[snap];jj++)
+	{
+	  if(MCMC_GAL[jj].fofid[snap]==fof)
+	    {
+	      MCMC_GAL[jj].ngal[snap]=MCMC_FOF2[fof].NGalsInFoF[snap];
+	      //if type=0 it gets the first place in hashtable for this group (CumulativeNgals[fof])
+	      if(MCMC_GAL[jj].Type[snap]==0)
+		{
+		  HashTable[CumulativeNgals[fof]]=jj;
+		  MCMC_FOF2[fof].IndexOfCentralGal[snap]=CumulativeNgals[fof];
+		}
+	      //if not gets the first available place in hashtable for this group (CumulativeNgals[fof]+kk)
+	      else
+		for(kk=1;kk<MCMC_FOF2[fof].NGalsInFoF[snap];kk++)
+		  if(HashTable[CumulativeNgals[fof]+kk]==-1)
+		    {
+		      HashTable[CumulativeNgals[fof]+kk]=jj;
+		      break;
+		    }
+	    }
+	}
+    }//loop on fof to get hashtable
+
+	free(CumulativeNgals);
+}
+
+
+
+
+void compute_correlation_func(int ObsNr, double *binsamdata, int snap, float mingalmass, float maxgalmass)
+{
+  double *r,*proj,*r_tmp,*proj_tmp;
+  int ibin, ii, jj;
+  char buf[1000];
+  FILE *fa;
+  gsl_spline *Proj_Spline;
+  gsl_interp_accel *Proj_SplineAcc;
+
+  NR=60;
+  r=malloc(NR*sizeof(double));
+  proj=malloc(NR*sizeof(double));
+
+  halomodel(r,proj,mingalmass,maxgalmass,snap);
+
+  Proj_Spline=gsl_spline_alloc(gsl_interp_cspline,NR);
+  Proj_SplineAcc=gsl_interp_accel_alloc();
+  gsl_spline_init(Proj_Spline,r,proj,NR);
+
+  for(ii=0;ii<Nbins[snap][ObsNr]-1;ii++)
+    binsamdata[ii]=gsl_spline_eval(Proj_Spline,MCMC_Obs[ObsNr].Bin_low[snap][ii]+(MCMC_Obs[ObsNr].Bin_high[snap][ii]-MCMC_Obs[ObsNr].Bin_low[snap][ii])/2.,Proj_SplineAcc);
+
+#ifndef PARALLEL
+  //full3 - full PLANCK
+  sprintf(buf, "%s/correlation_guo10_bug_fix_Mmean_z0.00_%0.2f_%0.2f.txt",OutputDir, mingalmass,maxgalmass);
+  if(!(fa = fopen(buf, "w")))
+    {
+      char sbuf[1000];
+      sprintf(sbuf, "can't open file `%s'\n", buf);
+      terminate(sbuf);
+    }
+  for(ii=0;ii<Nbins[snap][ObsNr]-1;ii++)
+    fprintf(fa, "%g %g %g\n", MCMC_Obs[ObsNr].Bin_low[snap][ii]+(MCMC_Obs[ObsNr].Bin_high[snap][ii]-MCMC_Obs[ObsNr].Bin_low[snap][ii])/2.,
+	    binsamdata[ii],binsamdata[ii]*0.1);
+  fclose(fa);
+#endif
+  free(r);
+  free(proj);
+  gsl_spline_free(Proj_Spline);
+  gsl_interp_accel_free(Proj_SplineAcc);
+}
+#endif //HALOMODEL
+
+
+
+
+
 
 
 double gammp(double a, double x)

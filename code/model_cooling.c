@@ -303,8 +303,11 @@ void do_AGN_heating(double dt, int ngal)
 	  Gal[p].HotGas -= AGNaccreted;
 	  Gal[p].MetalsHotGas = metals_add(Gal[p].MetalsHotGas,Gal[p].MetalsHotGas, -fraction);
 
+#ifdef INDIVIDUAL_ELEMENTS
+	  Gal[p].HotGas_elements = elements_add(Gal[p].HotGas_elements,Gal[p].HotGas_elements,-fraction);
+#endif
 #ifdef METALS_SELF
-      	Gal[p].MetalsHotGasSelf = 	metals_add(Gal[p].MetalsHotGasSelf,Gal[p].MetalsHotGasSelf,-fraction);
+	  Gal[p].MetalsHotGasSelf = 	metals_add(Gal[p].MetalsHotGasSelf,Gal[p].MetalsHotGasSelf,-fraction);
 #endif	
 
 	}

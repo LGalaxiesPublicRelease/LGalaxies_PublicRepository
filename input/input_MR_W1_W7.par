@@ -43,7 +43,7 @@ ScaleMass           1.23488
 %NEW COSMOLOGY: WMAP7
 BaryonFrac      0.167
 Sigma8          0.807
-FileWithZList   ./input/zlist_wmap7_MR.txt 
+FileWithZList   ./input/zlists/zlist_wmap7_MR.txt 
 PartMass        0.106281     ;should be changed according to the dark matter simulation being used
 BoxSize         521.555  
 Omega           0.272 
@@ -51,7 +51,7 @@ OmegaLambda     0.728
 Hubble_h        0.704
 
 %ORIGINAL COSMOLOGY: WMAP1
-FileWithZList_OriginalCosm    ./input/zlist_MR.txt
+FileWithZList_OriginalCosm    ./input/zlists/zlist_MR.txt
 PartMass_OriginalCosm         0.0860657 ;should be changed according to the dark matter simulation being used
 Omega_OriginalCosm            0.25 
 OmegaLambda_OriginalCosm      0.75 

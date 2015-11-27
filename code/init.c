@@ -147,9 +147,15 @@ void init(void)
 #ifdef SPEC_PHOTABLES_ON_THE_FLY
   setup_Spec_LumTables_onthefly();
 #endif
-#endif
-#endif
+#endif //COMPUTE_SPECPHOT_PROPERTIES
+#endif //MR_PLUS_MRII
 
+//READ IN THE YIELD TABLES, AND FORM NORMALISED YIELD ARRAYS:
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+  read_yield_tables();
+  init_integrated_yields();
+  integrate_yields();
+#endif
 
 }
 
@@ -443,8 +449,9 @@ void set_units(void)
   // Would make much more sense to define this including the h100 factor.
   Hubble = HUBBLE * UnitTime_in_s;//100.000
 
-  //RhoCrit = 3 * Hubble * Hubble / (8 * M_PI * G);//27.75505 (h^2.10^10Msun.Mpc^-3)
-
+#ifdef HALOMODEL
+  RhoCrit = 3 * Hubble * Hubble / (8 * M_PI * G);//27.75505 (h^2.10^10Msun.Mpc^-3)
+#endif
 }
 
 

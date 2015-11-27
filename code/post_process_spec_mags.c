@@ -97,9 +97,15 @@ void post_process_spec_mags(struct GALAXY_OUTPUT *o)
 
 	      /* The stellar populations tables have magnitudes for all the mass
 	       * formed in stars including what will be shortly lost by SNII   */
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+	      diskmass = sfh_bins[ll].sfh_DiskMass* 0.1 / Hubble_h / N_AgeBin;
+	      bulgemass = sfh_bins[ll].sfh_BulgeMass* 0.1 / Hubble_h / N_AgeBin;
+	      icmmass = sfh_bins[ll].sfh_ICM* 0.1 / Hubble_h / N_AgeBin;
+#else
 	      diskmass = sfh_bins[ll].sfh_DiskMass* 0.1 / (Hubble_h * (1-RecycleFraction) ) / N_AgeBin;
 	      bulgemass = sfh_bins[ll].sfh_BulgeMass* 0.1 / (Hubble_h * (1-RecycleFraction) ) / N_AgeBin;
 	      icmmass = sfh_bins[ll].sfh_ICM* 0.1 / (Hubble_h * (1-RecycleFraction) ) / N_AgeBin;
+#endif //DETAILED_METALS_AND_MASS_RETURN
 
 	      diskmetals = metals_total(sfh_bins[ll].sfh_MetalsDiskMass) / sfh_bins[ll].sfh_DiskMass;
 	      bulgemetals = metals_total(sfh_bins[ll].sfh_MetalsBulgeMass) / sfh_bins[ll].sfh_BulgeMass;

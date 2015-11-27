@@ -12,7 +12,6 @@ struct halo_aux_data		/* auxiliary halo data */
 
 struct halo_ids_data *HaloIDs, *HaloIDs_Data;
 
-
 int FirstFile;			/* first and last file for processing */
 int LastFile;
 
@@ -169,6 +168,9 @@ double UnitTime_in_s,
   UnitEnergy_in_cgs,
   UnitTime_in_Megayears,
   UnitTime_in_years,
+#ifdef HALOMODEL
+  RhoCrit,
+#endif
   G,
   Hubble,
   a0, ar;
@@ -200,6 +202,10 @@ double SFH_t[MAXSNAPS][STEPS][SFH_NBIN];
 double SFH_dt[MAXSNAPS][STEPS][SFH_NBIN];
 int SFH_Nbins[MAXSNAPS][STEPS][SFH_NBIN];
 int SFH_ibin[MAXSNAPS][STEPS];
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+double tau_t[STEPS*MAXSNAPS]; //Time-to-z=0 of every timestep in the code. (Used for SNe rates in yield_integrals.c)
+double tau_dt[STEPS*MAXSNAPS];//Width of every timestep in the code. (Used for SNe rates in yield_integrals.c)
+#endif
 #endif //STAR_FORMATION_HISTORY
 
 #ifdef COMPUTE_SPECPHOT_PROPERTIES

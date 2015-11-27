@@ -90,6 +90,11 @@ void sfh_initialise(int p)
     Gal[p].sfh_MetalsDiskMass[i]=metals_init();
     Gal[p].sfh_MetalsBulgeMass[i]=metals_init();
     Gal[p].sfh_MetalsICM[i]=metals_init();
+#ifdef INDIVIDUAL_ELEMENTS
+    Gal[p].sfh_ElementsDiskMass[i]=elements_init();
+    Gal[p].sfh_ElementsBulgeMass[i]=elements_init();
+    Gal[p].sfh_ElementsICM[i]=elements_init();
+#endif
 #ifdef TRACK_BURST
     Gal[p].sfh_BurstMass[i]=0.;
 #endif
@@ -135,6 +140,14 @@ void sfh_merge(int p, int p1)
     Gal[p1].sfh_MetalsDiskMass[i]=metals_init();
     Gal[p1].sfh_MetalsBulgeMass[i]=metals_init();
     Gal[p1].sfh_MetalsICM[i]=metals_init();
+#ifdef INDIVIDUAL_ELEMENTS
+    Gal[p].sfh_ElementsDiskMass[i] = elements_add(Gal[p].sfh_ElementsDiskMass[i],Gal[p1].sfh_ElementsDiskMass[i],1.);
+    Gal[p].sfh_ElementsBulgeMass[i] = elements_add(Gal[p].sfh_ElementsBulgeMass[i],Gal[p1].sfh_ElementsBulgeMass[i],1.);
+    Gal[p].sfh_ElementsICM[i] = elements_add(Gal[p].sfh_ElementsICM[i],Gal[p1].sfh_ElementsICM[i],1.);
+    Gal[p1].sfh_ElementsDiskMass[i]=elements_init();
+    Gal[p1].sfh_ElementsBulgeMass[i]=elements_init();
+    Gal[p1].sfh_ElementsICM[i]=elements_init();
+#endif
 #ifdef TRACK_BURST
     Gal[p].sfh_BurstMass[i]+=Gal[p1].sfh_BurstMass[i];
     Gal[p1].sfh_BurstMass[i]=0.;
@@ -159,6 +172,9 @@ void sfh_print(int p) {
     if (Gal[p].sfh_dt[i]!=0) {
       printf("%5d %5e %5e %12f\n",i,Gal[p].sfh_dt[i],Gal[p].sfh_t[i],(Gal[p].sfh_DiskMass[i]+Gal[p].sfh_BulgeMass[i]));
       metals_print("..",metals_add(Gal[p].sfh_MetalsDiskMass[i],Gal[p].sfh_MetalsBulgeMass[i],1.));
+#ifdef INDIVIDUAL_ELEMENTS
+      elements_print("..",elements_add(Gal[p].sfh_ElementsDiskMass[i],Gal[p].sfh_ElementsBulgeMass[i],1.));
+#endif
       printf(".......................\n");
     }
 }
@@ -339,6 +355,11 @@ void sfh_update_bins(int p, int snap, int step, double time)
 	  Gal[p].sfh_MetalsDiskMass[i]=metals_add(Gal[p].sfh_MetalsDiskMass[i],Gal[p].sfh_MetalsDiskMass[i+1],1.);
 	  Gal[p].sfh_MetalsBulgeMass[i]=metals_add(Gal[p].sfh_MetalsBulgeMass[i],Gal[p].sfh_MetalsBulgeMass[i+1],1.);
 	  Gal[p].sfh_MetalsICM[i]= metals_add(Gal[p].sfh_MetalsICM[i],Gal[p].sfh_MetalsICM[i+1],1.);
+#ifdef INDIVIDUAL_ELEMENTS
+	  Gal[p].sfh_ElementsDiskMass[i] = elements_add(Gal[p].sfh_ElementsDiskMass[i],Gal[p].sfh_ElementsDiskMass[i+1],1.);
+	  Gal[p].sfh_ElementsBulgeMass[i] = elements_add(Gal[p].sfh_ElementsBulgeMass[i],Gal[p].sfh_ElementsBulgeMass[i+1],1.);
+	  Gal[p].sfh_ElementsICM[i] = elements_add(Gal[p].sfh_ElementsICM[i],Gal[p].sfh_ElementsICM[i+1],1.);
+#endif
 #ifdef TRACK_BURST
 	  Gal[p].sfh_BurstMass[i]+=Gal[p].sfh_BurstMass[i+1];
 #endif
@@ -352,6 +373,11 @@ void sfh_update_bins(int p, int snap, int step, double time)
 	    Gal[p].sfh_MetalsDiskMass[j]=Gal[p].sfh_MetalsDiskMass[j+1];
 	    Gal[p].sfh_MetalsBulgeMass[j]=Gal[p].sfh_MetalsBulgeMass[j+1];
 	    Gal[p].sfh_MetalsICM[j]=Gal[p].sfh_MetalsICM[j+1];
+#ifdef INDIVIDUAL_ELEMENTS
+	    Gal[p].sfh_ElementsDiskMass[j]=Gal[p].sfh_ElementsDiskMass[j+1];
+	    Gal[p].sfh_ElementsBulgeMass[j]=Gal[p].sfh_ElementsBulgeMass[j+1];
+	    Gal[p].sfh_ElementsICM[j]=Gal[p].sfh_ElementsICM[j+1];
+#endif
 #ifdef TRACK_BURST
 	    Gal[p].sfh_BurstMass[j]=Gal[p].sfh_BurstMass[j+1];
 #endif
@@ -367,6 +393,11 @@ void sfh_update_bins(int p, int snap, int step, double time)
 	  Gal[p].sfh_MetalsDiskMass[j]=metals_init();
 	  Gal[p].sfh_MetalsBulgeMass[j]=metals_init();
 	  Gal[p].sfh_MetalsICM[j]=metals_init();
+#ifdef INDIVIDUAL_ELEMENTS
+	  Gal[p].sfh_ElementsDiskMass[j]=elements_init();
+	  Gal[p].sfh_ElementsBulgeMass[j]=elements_init();
+	  Gal[p].sfh_ElementsICM[j]=elements_init();
+#endif
 #ifdef TRACK_BURST
 	  Gal[p].sfh_BurstMass[j]=0.;
 #endif
@@ -395,6 +426,11 @@ void sfh_update_bins(int p, int snap, int step, double time)
 	  Gal[p].sfh_MetalsDiskMass[j]=metals_init();
 	  Gal[p].sfh_MetalsBulgeMass[j]=metals_init();
 	  Gal[p].sfh_MetalsICM[j]=metals_init();
+#ifdef INDIVIDUAL_ELEMENTS
+	  Gal[p].sfh_ElementsDiskMass[j]=elements_init();
+	  Gal[p].sfh_ElementsBulgeMass[j]=elements_init();
+	  Gal[p].sfh_ElementsICM[j]=elements_init();
+#endif
 #ifdef TRACK_BURST
 	  Gal[p].sfh_BurstMass[j]=0.;
 #endif

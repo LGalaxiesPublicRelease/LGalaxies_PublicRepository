@@ -1,10 +1,12 @@
-OPT += -DUPDATETYPETWO       #  This updates the positions of type 2 galaxies when the galaxies are written to file
-OPT 
+# List of Makefile options
+
+ 
 # Options that control speed and memory usage
 OPT += -DPRELOAD_TREES       # this will load all the trees of a file in memory, and cache them (useful for MCMC)
 OPT += -DLOADIDS             # Load dbids files
 #OPT += -DPARALLEL
 #OPT += -DGALAXYTREE          #  This will enable output of full galaxy merger trees, implicitly sets NOUT to maximum value
+OPT += -DUPDATETYPETWO       #  This updates the positions of type 2 galaxies when the galaxies are written to file
 
 # Options that control output
 OPT += -DOVERWRITE_OUTPUT    # overwrite output files if they exist (otherwise will quit without overwriting)
@@ -21,9 +23,18 @@ ifeq (MCMC,$(findstring MCMC,$(OPT)))
 OPT += -DMR_PLUS_MRII
 OBJS  += ./code/mcmc.o
 OBJS  += ./code/mcmc_likelihood.o 
-OBJS  += ./code/save_mcmc.o 
+OBJS  += ./code/mcmc_save.o 
 INCL  += ./code/mcmc_vars.h 
 INCL  += ./code/mcmc_proto.h
+
+#OPT += -DHALOMODEL
+#to compute correlation functions for MCMC
+ifeq (HALOMODEL,$(findstring HALOMODEL,$(OPT)))
+OBJS  += ./code/mcmc_halomodel.o
+OBJS  += ./code/mcmc_mpfit.o
+INCL  += ./code/mcmc_halomodel.h
+INCL  += ./code/mcmc_mpfit.h
+endif
 endif # end MCMC
 
 # record star formation histories - used for post-process mags and detailed chemical enrichment
@@ -37,7 +48,7 @@ OPT += -DCOMPUTE_SPECPHOT_PROPERTIES
 ifeq (COMPUTE_SPECPHOT_PROPERTIES,$(findstring COMPUTE_SPECPHOT_PROPERTIES,$(OPT)))
 OBJS  += ./code/model_spectro_photometric.o
 
-OPT += -DNMAG=5
+OPT += -DNMAG=7
 
 # Options that control the Spectral synthesis
 OPT += -DM05 #use Maraston 2005 stellar populations need to change input.par

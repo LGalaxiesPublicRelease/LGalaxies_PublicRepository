@@ -250,7 +250,7 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
   o->MergeOn = g->MergeOn;
 
 //METALS
-
+#ifndef   DETAILED_METALS_AND_MASS_RETURN
   o->MetalsColdGas = CORRECTDBFLOAT(g->MetalsColdGas);
   o->MetalsStellarMass = CORRECTDBFLOAT(g->MetalsDiskMass)+ CORRECTDBFLOAT(g->MetalsBulgeMass);
   o->MetalsDiskMass = CORRECTDBFLOAT(g->MetalsDiskMass);
@@ -259,6 +259,16 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
   o->MetalsEjectedMass = CORRECTDBFLOAT(g->MetalsEjectedMass);   
 #ifdef METALS_SELF
   o->MetalsHotGasSelf = CORRECTDBFLOAT(g->MetalsHotGasSelf);
+#endif
+#else
+  o->MetalsColdGas = g->MetalsColdGas;
+  o->MetalsDiskMass = g->MetalsDiskMass;
+  o->MetalsBulgeMass = g->MetalsBulgeMass;
+  o->MetalsHotGas = g->MetalsHotGas;
+  o->MetalsEjectedMass = g->MetalsEjectedMass;
+#ifdef METALS_SELF
+  o->MetalsHotGasSelf = g->MetalsHotGasSelf;
+#endif
 #endif
 
 #ifdef TRACK_BURST
@@ -279,6 +289,11 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
  	  o->sfh_MetalsDiskMass[j]=g->sfh_MetalsDiskMass[j];
  	  o->sfh_MetalsBulgeMass[j]=g->sfh_MetalsBulgeMass[j];
  	  o->sfh_MetalsICM[j]=g->sfh_MetalsICM[j];
+#ifdef INDIVIDUAL_ELEMENTS
+	  o->sfh_ElementsDiskMass[j]=g->sfh_ElementsDiskMass[j];
+	  o->sfh_ElementsBulgeMass[j]=g->sfh_ElementsBulgeMass[j];
+	  o->sfh_ElementsICM[j]=g->sfh_ElementsICM[j];
+#endif
 #ifdef TRACK_BURST
 	  o->sfh_BurstMass[j]=g->sfh_BurstMass[j];
 #endif
@@ -293,11 +308,25 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
 	  o->sfh_MetalsDiskMass[j]=metals_init();
 	  o->sfh_MetalsBulgeMass[j]=metals_init();
 	  o->sfh_MetalsICM[j]=metals_init();
+#ifdef INDIVIDUAL_ELEMENTS
+	  o->sfh_ElementsDiskMass[j]=elements_init();
+	  o->sfh_ElementsBulgeMass[j]=elements_init();
+	  o->sfh_ElementsICM[j]=elements_init();
+#endif
 #ifdef TRACK_BURST
 	  o->sfh_BurstMass[j]=0.;
 #endif
   }
 #endif //STAR_FORMATION_HISTORY
+
+#ifdef INDIVIDUAL_ELEMENTS
+  o->DiskMass_elements = g->DiskMass_elements;
+  o->BulgeMass_elements = g->BulgeMass_elements;
+  o->ColdGas_elements = g->ColdGas_elements;
+  o->HotGas_elements = g->HotGas_elements;
+  o->EjectedMass_elements = g->EjectedMass_elements;
+  o->ICM_elements = g->ICM_elements;
+#endif
 
   o->PrimordialAccretionRate = CORRECTDBFLOAT(g->PrimordialAccretionRate * UNITMASS_IN_G / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS);
   o->CoolingRate = CORRECTDBFLOAT(g->CoolingRate * UNITMASS_IN_G / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS);
