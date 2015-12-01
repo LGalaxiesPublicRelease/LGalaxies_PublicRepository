@@ -159,8 +159,8 @@ void read_parameter_file(char *fname)
   addr[nt] = &ChainLength;
   id[nt++] = INT;
 
-  strcpy(tag[nt], "Time_Dependant_PhysPar");
-  addr[nt] = &Time_Dependant_PhysPar;
+  strcpy(tag[nt], "Time_Dependent_PhysPar");
+  addr[nt] = &Time_Dependent_PhysPar;
   id[nt++] = INT;
 
   strcpy(tag[nt], "MCMCMode");

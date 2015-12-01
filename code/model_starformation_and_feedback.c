@@ -110,6 +110,7 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
    /*Sfr=stars/(dt*steps)=strdot*dt/(dt*steps)=strdot/steps -> average over the STEPS*/
    Gal[p].Sfr += stars / (dt * STEPS);
 
+
   // update_from_star_formation can only be called
   // after SD_feeedback recipe since stars need to be re_set once the reheated mass is known
   // (star formation and feedback share the same fraction of cold gas)

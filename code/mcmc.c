@@ -237,7 +237,7 @@ void print_parameters (int AcceptanceLogic, FILE *fmcmc)
     {
       if(MCMC_PAR[i].Sampling_Switch==1)
 	{
-	  if(Time_Dependant_PhysPar==1)
+	  if(Time_Dependent_PhysPar==1)
 	    for(snap=0;snap<NOUT;snap++)
 	      fprintf(fmcmc," %0.6f", log10(MCMC_PAR[i].Value[snap]));
 	  else
@@ -257,7 +257,7 @@ void print_parameters (int AcceptanceLogic, FILE *fmcmc)
       for(i=0;i<MCMCNpar;++i)
 	if(MCMC_PAR[i].Sampling_Switch==1)
 	  {
-	    if(Time_Dependant_PhysPar==1)
+	    if(Time_Dependent_PhysPar==1)
 	      for(snap=0;snap<NOUT;snap++)
 		printf("%0.2g ",MCMC_PAR[i].PropValue[snap]);
 	    else
@@ -271,7 +271,7 @@ void print_parameters (int AcceptanceLogic, FILE *fmcmc)
       for(i=0;i<MCMCNpar;++i)
 	if(MCMC_PAR[i].Sampling_Switch==1)
 	  {
-	    if(Time_Dependant_PhysPar==1)
+	    if(Time_Dependent_PhysPar==1)
 	      for(snap=0;snap<NOUT;snap++)
 		printf("%0.6f ",log10(MCMC_PAR[i].PropValue[snap]));
 	    else
@@ -393,7 +393,7 @@ void initialize_mcmc_par_and_lhood (FILE *fmcmc)
     {
       for(snap=0;snap<NOUT;snap++)
 	{
-	  if(Time_Dependant_PhysPar==1 || snap==0)
+	  if(Time_Dependent_PhysPar==1 || snap==0)
 	    {
 	      if(MCMC_PAR[i].Sampling_Switch==1)
 		{
@@ -408,7 +408,7 @@ void initialize_mcmc_par_and_lhood (FILE *fmcmc)
 
 	      MCMC_PAR[i].PropValue[snap] = MCMC_PAR[i].Value[snap];
 	    }
-	  else //if(Time_Dependant_PhysPar==0 || snap>0)
+	  else //if(Time_Dependent_PhysPar==0 || snap>0)
 	    {
 	      MCMC_PAR[i].Value[snap] = MCMC_PAR[i].Value[0];
 	      MCMC_PAR[i].PropValue[snap] = MCMC_PAR[i].Value[0];
@@ -417,7 +417,7 @@ void initialize_mcmc_par_and_lhood (FILE *fmcmc)
   }
 
   //LOAD INTITIAL VALUES FOR ALL PARAMETERS FROM A DIFFERENT FILE
-  if(Time_Dependant_PhysPar==1)
+  if(Time_Dependent_PhysPar==1)
   {
       sprintf(buf, "./input/mcmc_allz_par.txt");
       if(!(fa = fopen(buf, "r")))
@@ -466,7 +466,7 @@ double propose_new_parameters ()
       {
 	for(snap=0;snap<NOUT;snap++)
 	  {
-	    if(Time_Dependant_PhysPar==0 && snap>0)
+	    if(Time_Dependent_PhysPar==0 && snap>0)
 	      MCMC_PAR[i].PropValue[snap] = MCMC_PAR[i].PropValue[0];
 	    else
 	      {

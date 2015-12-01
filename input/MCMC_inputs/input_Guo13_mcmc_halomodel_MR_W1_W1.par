@@ -18,15 +18,15 @@ FileWithFilterNames       ./input/MCMC_inputs/Filter_Names_for_MCMC.txt
 %---     Variables needed for the MCMC         ---
 %-------------------------------------------------
 
-MCMCStartingParFile              ./input/MCMC_inputs/MCMCStartingPar.txt
 MCMCParPriorsAndSwitchesFile     ./input/MCMC_inputs/HaloModel_MCMCParPriorsAndSwitches.txt
+MCMCStartingParFile              ./input/MCMC_inputs/MCMCStartingPar.txt
 MCMCObsConstraints               ./input/MCMC_inputs/HaloModel_MCMCObsConstraints.txt
 MCMCWeightsObsConstraints        ./input/MCMC_inputs/HaloModel_MCMCWeightsObsConstraints.txt
 ObsConstraintsDir                ./MCMC/ObsConstraints/
 MCMCHaloModelDir                 ./MCMC/HaloModel/
 
 ChainLength                      1000 ;length of MCMC chains
-Time_Dependant_PhysPar           0    ;set to zero to have the same physical parameters at all z 
+Time_Dependent_PhysPar           0    ;set to zero to have the same physical parameters at all z 
 MCMCMode                         0    ;acceptance rate option
                                          %*0 for normal MCMC -> AcceptanceLogic = (ran < AcceptanceProbability) 
                                          % 1 find a high likelihood -> AcceptanceLogic = (lhood2 > lhood1)

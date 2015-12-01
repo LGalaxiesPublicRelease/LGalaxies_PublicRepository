@@ -200,6 +200,7 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
 
   o->BulgeSize = g->BulgeSize;
   o->EjectedMass = CORRECTDBFLOAT(g->EjectedMass);
+  o->ICM = g->ICM;
 
   for(j = 0; j < 3; j++)
     {
@@ -220,9 +221,7 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
   o->GasDiskRadius = g->GasDiskRadius;
   o->StellarDiskRadius = g->StellarDiskRadius;
   o->CoolingRadius = g->CoolingRadius;
-  o->ICM = g->ICM;
-  //o->MetalsICM = CORRECTDBFLOAT(g->MetalsICM);
-  o->MetalsICM = g->MetalsICM;
+
   o->QuasarAccretionRate = g->QuasarAccretionRate * UNITMASS_IN_G / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;
   o->RadioAccretionRate = g->RadioAccretionRate * UNITMASS_IN_G / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;
   o->CosInclination = g->CosInclination;
@@ -256,7 +255,8 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
   o->MetalsDiskMass = CORRECTDBFLOAT(g->MetalsDiskMass);
   o->MetalsBulgeMass = CORRECTDBFLOAT(g->MetalsBulgeMass);
   o->MetalsHotGas = CORRECTDBFLOAT(g->MetalsHotGas);
-  o->MetalsEjectedMass = CORRECTDBFLOAT(g->MetalsEjectedMass);   
+  o->MetalsEjectedMass = CORRECTDBFLOAT(g->MetalsEjectedMass);
+  o->MetalsICM = CORRECTDBFLOAT(g->MetalsICM);
 #ifdef METALS_SELF
   o->MetalsHotGasSelf = CORRECTDBFLOAT(g->MetalsHotGasSelf);
 #endif
@@ -266,6 +266,7 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
   o->MetalsBulgeMass = g->MetalsBulgeMass;
   o->MetalsHotGas = g->MetalsHotGas;
   o->MetalsEjectedMass = g->MetalsEjectedMass;
+  o->MetalsICM = g->MetalsICM;
 #ifdef METALS_SELF
   o->MetalsHotGasSelf = g->MetalsHotGasSelf;
 #endif

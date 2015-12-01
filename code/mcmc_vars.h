@@ -66,7 +66,7 @@ char MCMCHaloModelDir[512];
 int  MCMCTreeSampleFile;
 int  ChainLength;
 int  FirstChainNumber;
-int  Time_Dependant_PhysPar;
+int  Time_Dependent_PhysPar;
 int  MCMCMode;
 double MCMC_LogStep_Size;
 double MCMC_Initial_Par_Displacement;
