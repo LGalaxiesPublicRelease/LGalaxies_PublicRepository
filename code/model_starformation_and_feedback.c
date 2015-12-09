@@ -392,7 +392,7 @@ void update_from_feedback(int p, int centralgal, double reheated_mass, double ej
 	{
 	  transfer_gas(p,"Hot",p,"Cold",((float)reheated_mass)/Gal[p].ColdGas,"update_from_feedback", __LINE__);
 	}
-      else
+      else if(Gal[p].Type <3)
 	{
 	  if(Gal[p].Type ==1)
 	    merger_centre=centralgal;
