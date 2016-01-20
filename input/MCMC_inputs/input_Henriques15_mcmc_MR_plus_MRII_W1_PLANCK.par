@@ -33,6 +33,7 @@ MCMCMode                         0    ;acceptance rate option
 MCMC_LogStep_Size                0.0   ;size of log_normal step when proposing new parameters
 MCMC_Initial_Par_Displacement    0.0   ;size of log_normal displacement for the initial parameters in each chain
 MCMC_Minimum_Obs_Error           0.05  ;minimum value allowed for observation error bars (maximum level of agreement required)
+AddedErrOnMass                   0.08  ;observational scatter on masses with which theoretical masses are convolved to compensate for Eddignton bias
 
 %sample files read in read_sample_info(), files available: 210070, 230070, 2500300 
 MCMCSampleDir                    ./MCMC/Samples/

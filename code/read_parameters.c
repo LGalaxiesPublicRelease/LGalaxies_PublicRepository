@@ -179,6 +179,10 @@ void read_parameter_file(char *fname)
   addr[nt] = &MCMC_Minimum_Obs_Error;
   id[nt++] = DOUBLE;
 
+  strcpy(tag[nt], "AddedErrOnMass");
+  addr[nt] = &AddedErrOnMass;
+  id[nt++] = DOUBLE;
+
   strcpy(tag[nt], "MachineTimeOut");
   addr[nt] = &MachineTimeOut;
   id[nt++] = DOUBLE;

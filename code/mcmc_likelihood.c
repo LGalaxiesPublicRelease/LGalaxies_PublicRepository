@@ -337,20 +337,10 @@ double get_likelihood()
 /**@brief Bin Luminosity or Stellar Mass Function*/
 void bin_function(int ObsNr, double *binsamdata, double *samdata, int snap)
 {
-  int ii, jj, kk, Nsamples;
+  int ii, jj, kk, Nsamples, AddErrors;
   double aux_binsamdata, aux_samdata;
   FILE *fa;
   char buf[1000];
-
-/*#ifndef PARALLEL
-  sprintf(buf, "%s/mcmc_plus_obs%d_z%1.2f.txt",OutputDir,ObsNr,(double)((int)((MCMCConstraintsZZ[snap]*10)+0.5)/10.));
-  if(!(fa = fopen(buf, "w")))
-    {
-      char sbuf[1000];
-      sprintf(sbuf, "can't open file `%s'\n", buf);
-      terminate(sbuf);
-    }
-#endif*/
 
   //because of the convolution with a random error, when masses are involved
   //we would get a different output for the same model parameters. Therefore
@@ -361,9 +351,15 @@ void bin_function(int ObsNr, double *binsamdata, double *samdata, int snap)
       strcmp(MCMC_Obs[ObsNr].Name,"StellarMassFunctionActive")==0	||
       strcmp(MCMC_Obs[ObsNr].Name,"StellarMassFunctionRed")==0 ||
       strcmp(MCMC_Obs[ObsNr].Name,"StellarMassFunctionBlue")==0)
-    Nsamples=1000;
+    {
+      AddErrors=1;
+      Nsamples=1000;
+    }
   else
-    Nsamples=1;
+    {
+      AddErrors=0;
+      Nsamples=1;
+    }
 
   for(ii = 0; ii < Nbins[snap][ObsNr]; ii++)
     {
@@ -375,8 +371,9 @@ void bin_function(int ObsNr, double *binsamdata, double *samdata, int snap)
 	  aux_binsamdata = 0.;
 	  for(kk=0;kk<TotMCMCGals[snap];kk++)
 	    {
-
-	      aux_samdata=samdata[kk]+gassdev(&MCMCseed)*0.08*(1+MCMCConstraintsZZ[snap]);
+	      aux_samdata=samdata[kk];
+	      if(AddErrors==1)
+		aux_samdata+=gassdev(&MCMCseed)*AddedErrOnMass*(1+MCMCConstraintsZZ[snap]);
 	      if(aux_samdata>=MCMC_Obs[ObsNr].Bin_low[snap][ii] && aux_samdata <= MCMC_Obs[ObsNr].Bin_high[snap][ii])
 		aux_binsamdata+=MCMC_GAL[kk].Weight[snap];
 	    }
@@ -388,17 +385,12 @@ void bin_function(int ObsNr, double *binsamdata, double *samdata, int snap)
   for(ii = 0; ii < Nbins[snap][ObsNr]; ii++)
     {
       fprintf(FILE_MCMC_PredictionsPerStep[snap][ObsNr], " %0.5e", binsamdata[ii]);
-#ifndef PARALLEL
+//#ifndef PARALLEL
    /*   fprintf(fa, "%g %g %g %g\n", MCMC_Obs[ObsNr].Bin_low[snap][ii]+(MCMC_Obs[ObsNr].Bin_high[snap][ii]-MCMC_Obs[ObsNr].Bin_low[snap][ii])/2.,
 	      MCMC_Obs[ObsNr].Obs[snap][ii], MCMC_Obs[ObsNr].Error[snap][ii], binsamdata[ii]);*/
-#endif
-
-      //printf("%g %g %g %g\n", MCMC_Obs[ObsNr].Bin_low[snap][i]+(MCMC_Obs[ObsNr].Bin_high[snap][i]-MCMC_Obs[ObsNr].Bin_low[snap][i])/2., MCMC_Obs[ObsNr].Obs[snap][i],
-      //	  	                   MCMC_Obs[ObsNr].Error[snap][i], binsamdata[i]);
+//#endif
     }
-#ifndef PARALLEL
-  //fclose(fa);
-#endif
+
 }
 
 /**@brief Bin fraction of red galaxies.

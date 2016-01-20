@@ -71,6 +71,7 @@ int  MCMCMode;
 double MCMC_LogStep_Size;
 double MCMC_Initial_Par_Displacement;
 double MCMC_Minimum_Obs_Error;
+double AddedErrOnMass;
 double MachineTimeOut;
 char JobSubmitCommand[512];
 char JobSubmitPipe[512];
