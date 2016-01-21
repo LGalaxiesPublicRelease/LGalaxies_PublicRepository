@@ -3,8 +3,8 @@
 %------------------------------------------
 
 FileNameGalaxies          SA
-FirstFile         0
-LastFile	      0
+FirstFile         5
+LastFile	      5
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
 McFile				      ./input/Mc.txt
