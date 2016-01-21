@@ -8,7 +8,7 @@ FileWithOutputRedshifts   ./input/MCMC_inputs/desired_output_redshifts_for_MCMC.
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               /net/bootes/export/data1//Workspace/SpecPhotTables/
+SpecPhotDir               ./SpecPhotTables/
 PhotPrefix                PLANCK_M05 ; WMAP7_BC03 ;WMAP7_CB07
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/MCMC_inputs/Filter_Names_for_MCMC.txt
@@ -48,7 +48,7 @@ MCMCTreeSampleFile               56000         ;Sample of Dark Matter trees
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	          /net/bootes/export/data1/Workspace/MergerTrees/
+SimulationDir	          ./MergerTrees/MCMC/
 
 LastDarkMatterSnapShot    63
 Hashbits                  8     ; needed for Peano hilbert key output with the GALAXYTREE option

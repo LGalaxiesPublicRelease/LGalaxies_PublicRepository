@@ -3,14 +3,14 @@
 %------------------------------------------
 
 FileNameGalaxies          SA
-FirstFile         40
-LastFile          40
+FirstFile         0
+LastFile          0
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               /net/bootes/export/data1/Workspace/SpecPhotTables/
+SpecPhotDir               ./SpecPhotTables/
 PhotPrefix                PLANCK_M05 ; WMAP7_BC03 ;WMAP7_CB07
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/Filter_Names.txt
@@ -20,12 +20,12 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        /net/bootes/export/data1/Millennium/modified_trees/
+SimulationDir	        ./MergerTrees/MR/
 
 LastDarkMatterSnapShot  63
 Hashbits                8     ; needed for Peano hilbert key output with the GALAXYTREE option
 
-OutputDir               /net/bootes/export/data1/SAM/test2/MR/
+OutputDir               ./output/
 
 MaxMemSize              3000
 

@@ -3,14 +3,14 @@
 %------------------------------------------
 
 FileNameGalaxies          SA
-FirstFile         40
-LastFile	      40
+FirstFile         0
+LastFile	      0
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               /galformod/data/L-Galaxies/Util/SpecPhotTables/
+SpecPhotDir               .SpecPhotTables/
 PhotPrefix                WMAP1_M05 ; BC03; CB07 
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/Filter_Names.txt
@@ -20,7 +20,7 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        /galformod/data/Millennium2/BigRun/modified_trees/
+SimulationDir	        ./MergerTrees/MRII/
 
 LastDarkMatterSnapShot  67
 Hashbits                8       ;needed for Peano hilbert key output with the GALAXYTREE option
