@@ -52,23 +52,23 @@ tidy:
 # and generate different representations of use for post-processing the result 	
 metadata:
 	${CC_MD} ${OPT} ${CFLAGS} -E ./code/allvars.h -o ./code/allvars.i
-	awk -f ./awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./awk/GALAXY_OUTPUT_2_TypeString.awk > ./awk/L-Galaxies_Types.txt
-	awk -f ./awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./awk/GALAXY_OUTPUT_2_DDL.awk > ./awk/L-Galaxies_DDL.sql	
+	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_TypeString.awk > ./AuxCode/awk/L-Galaxies_Types.txt
+	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_DDL.awk > ./AuxCode/awk/L-Galaxies_DDL.sql	
 ifeq (NORMALIZEDDB,$(findstring NORMALIZEDDB,$(OPT)))
-	awk -f ./awk/extractSFH_BIN.awk ./code/allvars.i |awk -f ./awk/SFH_BIN_2_DDL.awk >> ./awk/L-Galaxies_DDL.sql
+	awk -f ./AuxCode/awk/extractSFH_BIN.awk ./code/allvars.i |awk -f ./AuxCode/awk/SFH_BIN_2_DDL.awk >> ./AuxCode/awk/L-Galaxies_DDL.sql
 else
-	awk -f ./awk/extractSFH_Time.awk ./code/allvars.i |awk -f ./awk/SFH_Time_2_DDL.awk >> ./awk/L-Galaxies_DDL.sql
+	awk -f ./AuxCode/awk/extractSFH_Time.awk ./code/allvars.i |awk -f ./AuxCode/awk/SFH_Time_2_DDL.awk >> ./AuxCode/awk/L-Galaxies_DDL.sql
 endif	
-	awk -f ./awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./awk/idl/GALAXY_OUTPUT_2_IDL_struct.awk >  ./awk/idl/LGalaxy.pro
-	awk -f ./awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./awk/idl/GALAXY_OUTPUT_2_IDL_hists.awk > ./awk/idl/LGalaxy_plot.pro
-	awk -f ./awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./awk/idl/GALAXY_OUTPUT_2_IDL_testfloats.awk > ./awk/idl/LGalaxy_testfloats.pro
-	awk -f ./awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./awk/idl/GALAXY_OUTPUT_2_IDL_zerofloats.awk > ./awk/idl/LGalaxy_zerofloats.pro
-	awk -f ./awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./awk/GALAXY_OUTPUT_2_LGalaxy.awk > ./awk/L-Galaxies.h
-	awk -f ./awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./awk/GALAXY_OUTPUT_2_FileFormat.awk > ./awk/L-Galaxies_FileFormat.csv
-	awk -f ./awk/extractSFH_BIN.awk ./code/allvars.i |awk -f ./awk/MOMAF_INPUT_2_MoMaFGalaxy.awk >> ./awk/L-Galaxies.h
+	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/idl/GALAXY_OUTPUT_2_IDL_struct.awk >  ./AuxCode/awk/idl/LGalaxy.pro
+	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/idl/GALAXY_OUTPUT_2_IDL_hists.awk > ./AuxCode/awk/idl/LGalaxy_plot.pro
+	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/idl/GALAXY_OUTPUT_2_IDL_testfloats.awk > ./AuxCode/awk/idl/LGalaxy_testfloats.pro
+	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/idl/GALAXY_OUTPUT_2_IDL_zerofloats.awk > ./AuxCode/awk/idl/LGalaxy_zerofloats.pro
+	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_LGalaxy.awk > ./AuxCode/awk/L-Galaxies.h
+	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_FileFormat.awk > ./AuxCode/awk/L-Galaxies_FileFormat.csv
+	awk -f ./AuxCode/awk/extractSFH_BIN.awk ./code/allvars.i |awk -f ./AuxCode/awk/MOMAF_INPUT_2_MoMaFGalaxy.awk >> ./AuxCode/awk/L-Galaxies.h
 
 metadata_db:
-	awk -f ./awk/extract_struct_metals.awk ./code/allvars.i > ./awk/structs.dat
-	awk -f ./awk/extract_struct_elements.awk ./code/allvars.i >> ./awk/structs.dat
-	awk -f ./awk/extract_struct_GALAXY_OUTPUT.awk ./code/allvars.i >> ./awk/structs.dat
+	awk -f ./AuxCode/awk/extract_struct_metals.awk ./code/allvars.i > ./AuxCode/awk/structs.dat
+	awk -f ./AuxCode/awk/extract_struct_elements.awk ./code/allvars.i >> ./AuxCode/awk/structs.dat
+	awk -f ./AuxCode/awk/extract_struct_GALAXY_OUTPUT.awk ./code/allvars.i >> ./AuxCode/awk/structs.dat
 	
