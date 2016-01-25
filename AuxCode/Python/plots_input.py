@@ -15,13 +15,12 @@ if PLANCK:
     Omega_Lambda  = 0.683
     MaxTreeFiles  = 512
     
-Datadir = '/net/bootes/export/data1/data/'
+Datadir = './data/'
 
 #DirName_MR = '/net/bootes/scratch2/SAM/test1/MR/'
 #DirName_MRII = '/net/bootes/scratch2/SAM/test1/MRII/'
 
 DirName_MR = '/net/bootes/scratch2/SAM/Henriques2015a/snaps/MR/'
 DirName_MRII = '/net/bootes/scratch2/SAM/Henriques2015a/snaps/MRII/'
-
 
 
