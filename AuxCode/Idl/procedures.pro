@@ -267,7 +267,7 @@ pro plot_kband_bband_smf,  G0, G1, G2, G3, G0_MRII, G1_MRII, G2_MRII, G3_MRII, $
         ;JONES
         ;plus +0.05 to dont overplot with other errors
         ;WMAP1
-        readcol,Datadir+'jones2006_kbandLF.dat',mag_k1,phi1,errorup1,errordown1, /SILENT  
+        readcol,Datadir+'joneskband.dat',mag_k1,phi1,errorup1,errordown1, /SILENT  
         symbols, 32, 0.3
         oploterror, mag_k1+1.825, phi1, errorup1, color = 0, $
                     errcolor = 0, psym = 8, /hiba,HATLENGTH = 80.0
@@ -335,7 +335,7 @@ pro plot_kband_bband_smf,  G0, G1, G2, G3, G0_MRII, G1_MRII, G2_MRII, G3_MRII, $
     
 
 ;JONES - z=0
-     readcol,Datadir+'jones2006_kbandLF.dat',mag_k1,phi1,errorup1,errordown1, /SILENT  
+     readcol,Datadir+'joneskband.dat',mag_k1,phi1,errorup1,errordown1, /SILENT  
      symbols, 32, 0.3
      oplot, mag_k1+1.825, phi1,linestyle=1
  
@@ -464,7 +464,7 @@ pro plot_kband_bband_smf,  G0, G1, G2, G3, G0_MRII, G1_MRII, G2_MRII, G3_MRII, $
      
 
 ;JONES - z=0
-     readcol,Datadir+'jones2006_kbandLF.dat',mag_k1,phi1,errorup1,errordown1, /SILENT  
+     readcol,Datadir+'joneskband.dat',mag_k1,phi1,errorup1,errordown1, /SILENT  
      symbols, 32, 0.3
      oplot, mag_k1+1.825, phi1,linestyle=1
  
@@ -562,7 +562,7 @@ pro plot_kband_bband_smf,  G0, G1, G2, G3, G0_MRII, G1_MRII, G2_MRII, G3_MRII, $
   
 
 ;JONES - z=0
-     readcol,Datadir+'jones2006_kbandLF.dat',mag_k1,phi1,errorup1,errordown1, /SILENT  
+     readcol,Datadir+'joneskband.dat',mag_k1,phi1,errorup1,errordown1, /SILENT  
      symbols, 32, 0.3
      oplot, mag_k1+1.825, phi1,linestyle=1
  
@@ -778,7 +778,7 @@ endif
 
 ;LABELS
 
-  readcol,Datadir+'jones2006_bbandLF.dat',mag,phi,err, /SILENT
+  readcol,Datadir+'jones2006_bband_z0.txt',mag,phi,err, /SILENT
   symbols, 2, 0.7
  
   error=phi-err
@@ -830,7 +830,7 @@ endif
 
 ;Z=0 LF Jones 2006  
  
-  readcol,Datadir+'jones2006_bbandLF.dat',mag,phi,err, /SILENT
+  readcol,Datadir+'jones2006_bband_z0.txt',mag,phi,err, /SILENT
   symbols, 2, 0.7 
   oplot, mag, Alog10(phi), linestyle=1
 
@@ -975,7 +975,7 @@ endif
 
 ;Z=0 LF Jones 2006  
  
-  readcol,Datadir+'jones2006_bbandLF.dat',mag,phi,err, /SILENT
+  readcol,Datadir+'jones2006_bband_z0.txt',mag,phi,err, /SILENT
   symbols, 2, 0.7 
   oplot, mag, Alog10(phi), linestyle=1
 
@@ -1103,7 +1103,7 @@ endif
 
 ;Z=0 LF Jones 2006  
  
-  readcol,Datadir+'jones2006_bbandLF.dat',mag,phi,err, /SILENT
+  readcol,Datadir+'jones2006_bband_z0.txt',mag,phi,err, /SILENT
   symbols, 2, 0.7 
   oplot, mag, Alog10(phi), linestyle=1
 
@@ -2271,12 +2271,6 @@ pro chi_square_and_plot, mcmc_folder, property_name, redshift, total_chi2, plot_
 ;WRITE TO FILE
   file=file_to_write+'_'+property_name+'_'+'z'+ STRTRIM(number_formatter(redshift, DECIMAL=2),2)+'.txt'
   write_to_file, file, new_data_bin,Alog10(hist), write_files, plot_after_write
-
-  if(property_name eq 'smf' and redshift ne '0.00' and do_previous_model2 eq 0) then begin
-     plot_smf_no_err, property_MR_no_err,property_MRII_no_err , N_MR, N_MRII, $
-                      sel_MR,sel_MRII,weight_MR,weight_MRII,data_bin,Bin,Nbins, $
-                      write_files, plot_after_write, file_to_write, property_name, redshift
-  endif
 
 
 
@@ -4020,6 +4014,16 @@ pro plot_gas_mass_function, G_MR, volume_MR, G_MRII, volume_MRII, Hubble_h, hubb
   
 
 ;NEW MODEL
+  HI_MR=0.54*G_MR.ColdGas
+  mass=Alog10(HI_MR*1.e10*hubble_h)
+  hist_MR=histogram(mass,locations=c,min=xmin-5.0,max=xmax+5.0,binsize=bin) 
+ 
+  if(MRII eq 1) then begin
+     HI_MRII=0.54*G_MRII.ColdGas
+     mass=Alog10(HI_MRII*1.e10*hubble_h)
+     hist_MRII=histogram(mass,locations=c,min=xmin-5.0,max=xmax+5.0,binsize=bin) 
+  endif
+
    hist_final=fltarr(n_elements(c)) 
 
    if(MRII eq 1) then mass_cut=9.2 else mass_cut=-9.2

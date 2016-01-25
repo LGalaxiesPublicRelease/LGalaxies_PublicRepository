@@ -4,16 +4,6 @@
 @LGalaxy_Henriques2014a
 @LightGalaxy_Henriques2014a
 @LGalaxy_tree_Henriques2014a
-;Henriques2013
-@LGalaxy_Henriques2013a
-@LightGalaxy_Henriques2013a
-;Guo2013
-@LGalaxy_Guo2013
-@LightGalaxy_Guo2013
-@LGalaxy_Guo2013_tree
-
-;Guo2011
-@LightGalaxy_Guo2011
 
 @procedures
 ;=========================================================================
@@ -24,24 +14,20 @@
   ;Gstruct={LightGalaxy_Henriques2014a};
   ;Gstruct={LGalaxy_tree_Henriques2014a}
  
-  ;Gstruct={LGalaxy_Henriques2013a}
-  ;Gstruct={LightGalaxy_Henriques2013a}  
-
-  ;Gstruct={LGalaxy_Guo2013}
-  ;Gstruct={LightGalaxy_Guo2013}
-  ;Gstruct={LGalaxy_Guo2013_tree}
- 
-  ;Gstruct={LightGalaxy_Guo2011}
 
   LIGHT=0
 
   ;FileName = 'SA_galtree'
   FileName = ''
 
-  !Path = './' + ':' + !Path  
-  !Path = Expand_Path( '+' + !PATH,  /All_Dirs ) 
+  !Path = Expand_Path( '+./') 
  
    Datadir = './data/'
+   DirName_MR = '/net/bootes/scratch2/SAM/Henriques2015a/snaps/MR/'
+   DirName_MRII = '/net/bootes/scratch2/SAM/Henriques2015a/snaps/MR/'  
+
+   mcmc_folder= '/net/bootes/export/data1/Workspace/PR_GitHub_Hen15/MCMC/'
+
 
    IF (not keyword_set(NN)) THEN NN = 0  
    FirstFile = 40
@@ -55,35 +41,31 @@
  
    read=[1,1,1,1,1,0]
 
-   default_plot_square=1
+   default_plot_square=0
    reduced_plot_square=0
-   extended_plot_square=0
+   extended_plot_square=1
 
 
-   plot_kband_bband_vband_smf=0
-   stellar_mass_vs_sfr=0       ;evolution contour plots
+   plot_kband_bband_vband_smf=1
+   stellar_mass_vs_sfr=1     ;evolution contour plots
   
-   color_vs_magnitude=0
-   color_ssfr_age_hist=0
+   color_vs_magnitude=1
+   color_ssfr_age_hist=1
 
-   UVJ_color=0
-   red_fraction_colorcut=0
-   stellar_mass_function_by_color=0
+   UVJ_color=1
+   red_fraction_colorcut=1
+   stellar_mass_function_by_color=1
 
-   morphology=0
-   bhbm=0
-   gas_mass_function=0
+   morphology=1
+   bhbm=1
+   gas_mass_function=1
    mstar_metals=1
  
 
 
    prefix_this_model='This Work'
  
-   DirName_MR = '/export/data1/SAM/test2/MR/'  
-   DirName_MRII = '/export/data1/SAM/test2/MRII/'  
-
-   mcmc_folder= '/net/bootes/export/data1/Workspace/Henriques2014a/'
-
+  
 ;WRITE_FILES
    write_files=1
    plot_after_write=0  
@@ -416,20 +398,17 @@ max_z=0.2
    !x.thick = x_thick
    !y.thick = y_thick
    set_plot, 'PS'
-   ;device, filename = './fig/read_gal.ps', xsize = 32, ysize = 20, /color, xoffset=1, yoffset=5
-   ;device, filename = './fig/read_gal.ps', xsize = 20, ysize = 16, /color, xoffset=1, yoffset=5
-
-   
-   device, filename = './fig/read_gal.ps', xsize = 20, ysize = 20, /color, xoffset=1, yoffset=5
+    
+   device, filename = './read_gal.ps', xsize = 20, ysize = 20, /color, xoffset=1, yoffset=5
  
    if(default_plot_square eq 1) then $
-      device, filename = './fig/read_gal.ps', xsize = 25, ysize = 20, /color, xoffset=1, yoffset=5   
+      device, filename = './read_gal.ps', xsize = 25, ysize = 20, /color, xoffset=1, yoffset=5   
    
    if(reduced_plot_square eq 1) then $
-      device, filename = './fig/read_gal.ps', xsize = 18, ysize = 14, /color, xoffset=1, yoffset=5
+      device, filename = './read_gal.ps', xsize = 18, ysize = 14, /color, xoffset=1, yoffset=5
    
    if(extended_plot_square eq 1) then $
-      device, filename = './fig/read_gal.ps', xsize = 30, ysize = 20, /color, xoffset=1, yoffset=5
+      device, filename = './read_gal.ps', xsize = 30, ysize = 20, /color, xoffset=1, yoffset=5
    
 
 
@@ -1048,6 +1027,8 @@ if( color_ssfr_age_hist eq 1) then begin
                   prefix_previous_model1, prefix_previous_model2, prefix_this_model      
    endfor
   
+ multiplot, /reset 
+
 endif
 
 
@@ -1102,7 +1083,8 @@ if(UVJ_color eq 1) then begin
       
    endfor
 
-loadct,6, /SILENT
+   loadct,6, /SILENT
+   multiplot, /reset
 endif
  
 
