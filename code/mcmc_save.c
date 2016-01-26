@@ -62,8 +62,8 @@ void save_galaxy_for_mcmc(int gal_index)
 	    MCMC_GAL[TotMCMCGals[snap]].ColdGas[snap] = log10(1E10 * (HaloGal[gal_index].ColdGas*Hubble_h));
 	    MCMC_GAL[TotMCMCGals[snap]].BulgeMass[snap] = log10(1E10 * HaloGal[gal_index].BulgeMass*Hubble_h);
 	    MCMC_GAL[TotMCMCGals[snap]].BlackHoleMass[snap] = log10(1E10 * HaloGal[gal_index].BlackHoleMass); //black hole in units of h^-1
-	    //in units of Solar Masses per yr
-	    MCMC_GAL[TotMCMCGals[snap]].Sfr[snap]= log10(HaloGal[gal_index].Sfr * UNITMASS_IN_G / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS*Hubble_h);
+	    //in units of Solar Masses yr^-1 h-2
+	    MCMC_GAL[TotMCMCGals[snap]].Sfr[snap]= log10(HaloGal[gal_index].Sfr * UNITMASS_IN_G / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS*Hubble_h*Hubble_h);
 
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
 #ifdef POST_PROCESS_MAGS
