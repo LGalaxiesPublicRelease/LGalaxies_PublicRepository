@@ -6,19 +6,21 @@
 
 #PLOT OPTIONS
 opt_stellar_mass_function=1
-opt_metals_vs_stellarmass=1
-opt_BHBM=1
-opt_SFRF=1
-opt_gas_fraction=1
-opt_HI_MF=1
-opt_sfr_vs_stellar_mass=1
-opt_ur_vs_r=1
-opt_UVJ_colour=1
-opt_redfraction_color_cut=1
+opt_metals_vs_stellarmass=0
+opt_BHBM=0
+opt_SFRF=0
+opt_gas_fraction=0
+opt_HI_MF=0
+opt_sfr_vs_stellar_mass=0
+opt_ur_vs_r=0
+opt_UVJ_colour=0
+opt_redfraction_color_cut=0
     
-
+opt_plot_MCMC_sample=1
+    
 Datadir = '/net/bootes/export/data1/data/'
 MCMCdir = '/net/bootes//export/data1/Workspace/LGal_Development_Branch/MCMC/'
+MCMCSampledir='/net/bootes//export/data1/Workspace/PR_SVN_Hen15/output/'
 #DirName_MR = '/net/bootes/scratch2/SAM/test1/MR/'
 #DirName_MRII = '/net/bootes/scratch2/SAM/test1/MRII/'
 

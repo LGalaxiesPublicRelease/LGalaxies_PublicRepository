@@ -111,6 +111,20 @@ def stellar_mass_function(G_MR, Volume_MR, ThisRedshiftList, pdf):
                  color='red', linewidth=2)
 
 
+        #MCMC sample
+        if opt_plot_MCMC_sample==1:
+            file = MCMCSampledir + 'mcmc_plus_obs0_z'+char_redshift+'.txt' 
+            obs = Table.read(file, format='ascii')      
+            subplot.plot(obs['col1'],np.log10(obs['col4']), color='black', linewidth=2)
+            
+            if ii==len(ThisRedshiftList)-1:
+                plot_label (subplot, 'label', xlim, ylim, 
+                    x_percentage=0.55, y_percentage=0.85, color='black', xlog=0, ylog=0, 
+                    label='MCMC sample', fontsize=13, fontweight='normal') 
+                plot_label (subplot, 'line', xlim, ylim,
+                    x_percentage=0.44, y_percentage=0.87, color='black', x2_percentage=0.53, 
+                    xlog=0, ylog=0, linestyle='-', linewidth=2)
+        
         #LABELS
         if ii==0:
             plot_label (subplot, 'label', xlim, ylim, x_percentage=0.075, y_percentage=0.91, 
