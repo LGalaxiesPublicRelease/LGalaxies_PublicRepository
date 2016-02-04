@@ -1013,7 +1013,7 @@ void initialize_halomodel() {
     if (fscanf(fd," %lg %lg ",&m,&h)==2) i++;
     else break;
     FofmassTable[i-1]=m+log10(ScaleMass);
-    FofnumTable[i-1]=h-3*log10(ScalePos);
+    FofnumTable[i-1]=h/pow(ScalePos,3);
   } //do
   while(1);
   fclose(fd);
