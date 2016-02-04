@@ -13,6 +13,7 @@ OPT += -DUPDATETYPETWO       # This updates the positions of type 2 galaxies whe
 
 # To run with different dark matter simulation
 #OPT += -DMRII      
+#OPT += -DCATERPILLAR
 
 # predefined some models (to be run with the corresponding input_***.par file)
 #OPT += -DGUO10

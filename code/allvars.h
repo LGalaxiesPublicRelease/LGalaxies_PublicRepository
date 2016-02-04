@@ -51,9 +51,15 @@
 #define  MAXSNAPS  72
 #else
 
+#ifdef CATERPILLAR
+#define  MAXSNAPS  256
+#else
+
 #define  MAXSNAPS  64  //NORMAL MILLENNIUM
-#endif
-#endif
+
+#endif //CATERPILLAR
+#endif //PHOENIX
+#endif //MRII
 
 #define  MAXGALFAC 2.3 /*1.5/2.3 - maximum fraction of satellite without a halo (for memory allocation)*/
 
@@ -90,9 +96,13 @@
 
 #ifdef STAR_FORMATION_HISTORY
 #define SFH_NMERGE 3  //  SFH_NMERGE=Nmax+1 (Nmax used in Shamshiri2014)
+
+#ifdef CATERPILLAR
+#define SFH_NBIN 24 //  CATERPILLAR - 256 snapshots
+#else
 #define SFH_NBIN 20
-//#define SFH_NMERGE 5
-//#define SFH_NBIN 35
+#endif //CATERPILLAR
+
 #endif //STAR_FORMATION_HISTORY
 
 #ifdef DETAILED_METALS_AND_MASS_RETURN
