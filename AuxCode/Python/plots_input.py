@@ -17,14 +17,16 @@ opt_UVJ_colour=0
 opt_redfraction_color_cut=0
     
 opt_plot_MCMC_sample=0
+    
+Datadir = '/net/bootes/export/data1/data/'
+MCMCdir = '/net/bootes//export/data1/Workspace/PR_GitHub_Hen15/MCMC/'
+MCMCSampledir='/net/bootes//export/data1/Workspace/PR_SVN_Hen15/output/'
 
-Datadir = '/Users/BrunoHenriques/Desktop/OneDrive/Workspace/GitHub_PR_Hen15/AuxCode/Python/data/'
-MCMCdir = '/Users/BrunoHenriques/Desktop/OneDrive/Workspace/GitHub_PR_Hen15/MCMC/'
-#DirName_MR = '/net/bootes/scratch2/SAM/test1/MR/'
+DirName_MR = '/net/bootes/export/data1/Workspace/PR_GitHub_Hen15/output/'
 #DirName_MRII = '/net/bootes/scratch2/SAM/test1/MRII/'
 
-DirName_MR = '/Users/BrunoHenriques/Desktop/OneDrive/Workspace/GitHub_PR_Hen15/output/'
-DirName_MRII = '/net/bootes/scratch2/SAM/Henriques2015a/snaps/MRII/'
+#DirName_MR = '/net/bootes/scratch2/SAM/Henriques2015a/snaps/MR/'
+#DirName_MRII = '/net/bootes/scratch2/SAM/Henriques2015a/snaps/MRII/'
 
 prefix_this_model='This Work - PLANCK1'
 file_this_model='ThisWork'
@@ -57,9 +59,10 @@ CatalogType='snap'
 Hubble_h_WMAP1 = 0.732
 Hubble_h_WMAP7 = 0.704
 
+MR_PLANCK=1
+CATERPILLAR_PLANCK=0
 
-PLANCK=1
-if PLANCK: 
+if MR_PLANCK: 
     FullRedshiftList=[0.00,0.11,0.40,1.04,2.07,3.11,3.95] 
     FullSnapshotList=[58,54,47,38,30,25,22]  
     BoxSize_MR    = 500.* 0.960558 #full MR 
@@ -68,6 +71,15 @@ if PLANCK:
     Omega_M       = 0.315 
     Omega_Lambda  = 0.683
     MaxTreeFiles  = 512
+    
+if CATERPILLAR_PLANCK: 
+    FullRedshiftList=[0.00,0.10,0.40,1.00,2.01,2.98,3.96] 
+    FullSnapshotList=[255,231,181,125,81,60,47]  
+    BoxSize_MR    = 100.      
+    Hubble_h      = 0.673
+    Omega_M       = 0.315 
+    Omega_Lambda  = 0.683
+    MaxTreeFiles  = 8
     
 
 
