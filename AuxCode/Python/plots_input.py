@@ -16,15 +16,14 @@ opt_ur_vs_r=0
 opt_UVJ_colour=0
 opt_redfraction_color_cut=0
     
-opt_plot_MCMC_sample=1
-    
-Datadir = '/net/bootes/export/data1/data/'
-MCMCdir = '/net/bootes//export/data1/Workspace/LGal_Development_Branch/MCMC/'
-MCMCSampledir='/net/bootes//export/data1/Workspace/PR_SVN_Hen15/output/'
+opt_plot_MCMC_sample=0
+
+Datadir = '/Users/BrunoHenriques/Desktop/OneDrive/Workspace/GitHub_PR_Hen15/AuxCode/Python/data/'
+MCMCdir = '/Users/BrunoHenriques/Desktop/OneDrive/Workspace/GitHub_PR_Hen15/MCMC/'
 #DirName_MR = '/net/bootes/scratch2/SAM/test1/MR/'
 #DirName_MRII = '/net/bootes/scratch2/SAM/test1/MRII/'
 
-DirName_MR = '/net/bootes/scratch2/SAM/Henriques2015a/snaps/MR/'
+DirName_MR = '/Users/BrunoHenriques/Desktop/OneDrive/Workspace/GitHub_PR_Hen15/output/'
 DirName_MRII = '/net/bootes/scratch2/SAM/Henriques2015a/snaps/MRII/'
 
 prefix_this_model='This Work - PLANCK1'
@@ -41,7 +40,7 @@ linestyle_previous_model1=':'
 #linestyle_previous_model2='--'
 
 do_previous_model2=1
-file_previous_model2=Datadir+'/Henriques2014a/Henriques2014a'
+file_previous_model2=Datadir+'/Henriques2015a'
 prefix_previous_model2='Henriques2015 - PLANCK1'
 linestyle_previous_model2='--'
 
