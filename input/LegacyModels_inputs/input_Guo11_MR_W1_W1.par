@@ -20,12 +20,12 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        ./MergerTrees/MRII/
+SimulationDir	        ./MergerTrees/MR/
 
 LastDarkMatterSnapShot  63
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
-OutputDir               ./outpt/
+OutputDir               ./output/
 
 MaxMemSize              2000
 
