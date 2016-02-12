@@ -658,7 +658,7 @@ void init_power() {
   NPowerTable=0;
   do { //k and Delta
     if (fscanf(fd," %lg %lg ",&k,&p)==2) {
-      kPowerTable[NPowerTable]=k-3*log10(ScalePos);
+      kPowerTable[NPowerTable]=k-log10(ScalePos);
       PowerTable[NPowerTable]=p;
       NPowerTable++;
     } //if
