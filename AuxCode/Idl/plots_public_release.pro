@@ -1444,6 +1444,331 @@ if(mstar_metals eq 1) then begin
 endif
 
 
+
+
+
+
+
+ print,''
+  print,''
+  print,''
+  print,'**************************'
+  print,'*   ISM Metals vs Mass   *'
+  print,'**************************'
+  print,''
+
+  DTDchoice = 'BiModal' ;'PowerLaw' ;'Gaussian'
+
+  theta = findgen(30)/29.*360.
+  usersym, cos(theta * !dtor)*0.6, sin(theta * !dtor)*0.6, /fill
+  loadct, 39, /silent
+
+  ;Atomic Weights:
+  H_aw = 1.008
+  He_aw = 4.003
+  C_aw = 12.01
+  N_aw = 14.01
+  O_aw = 16.0
+  Ne_aw = 20.18
+  Mg_aw = 24.31
+  Si_aw = 28.09
+  S_aw = 32.07
+  Ca_aw = 40.08
+  Fe_aw = 55.84
+
+  GMZR_M_ALL_noCuts = alog10(StellarMass_MR_0) ;alog10(StellarMass_MR)
+  GMZR_SFR_ALL_noCuts = alog10(G0_MR.Sfr*hubble_h^2)
+  GMZR_Z_ALL_noCuts =
+alog10((G0_MR.ColdGas_elements[4]/G0_MR.ColdGas_elements[0])*(H_aw/O_aw))+12.0
+
+  ww = where(GMZR_SFR_ALL_noCuts ge -2.0 AND GMZR_SFR_ALL_noCuts le 1.6
+AND GMZR_M_ALL_noCuts ge 8.5 AND GMZR_M_ALL_noCuts le 11.5)
+  GMZR_M_ALL = GMZR_M_ALL_noCuts(ww)
+  GMZR_SFR_ALL = GMZR_SFR_ALL_noCuts(ww)
+  GMZR_Z_ALL = GMZR_Z_ALL_noCuts(ww)
+
+  GMZR_M_ALL = GMZR_M_ALL(WHERE((FINITE(GMZR_Z_ALL, /NAN, SIGN=0) ne 1)))
+  GMZR_SFR_ALL = GMZR_SFR_ALL(WHERE((FINITE(GMZR_Z_ALL, /NAN, SIGN=0) ne 1)))
+  GMZR_Z_ALL = GMZR_Z_ALL(WHERE((FINITE(GMZR_Z_ALL, /NAN, SIGN=0) ne 1)))
+
+  print, "Total number of z=0 star-forming galaxies (for MZRs): ",
+n_elements(GMZR_Z_ALL)
+
+  xlimits = [9.0, 11.5]
+  ylimits = [7.9, 9.7]
+  plot, findgen(10), /nodata, xtitle = 'log(M!D*!N)
+[M!D!9'+string(110B)+'!3!N]', ytitle = '12 + log(O/H)!Dcold!N', $
+    xrange = xlimits, yrange = ylimits, xstyle = 1, ystyle = 1,
+CHARSIZE=1.5, CHARTHICK=4., XTHICK=5., YTHICK=5.
+
+  countNum = 8 ;20
+
+  ;Bin galaxies by log(M*) and Z:
+  Mmin = xlimits[0]
+  Mmax = xlimits[1]
+  Mbinno = 64.
+  Mbinwidth = (Mmax-Mmin) / Mbinno
+  Zmin = ylimits[0]
+  Zmax = ylimits[1]
+  Zbinno = 64.
+  Zbinwidth = (Zmax-Zmin) / Zbinno
+
+  AveM = fltarr(Mbinno*Zbinno)
+  AveZ = fltarr(Mbinno*Zbinno)
+  AveSFR = fltarr(Mbinno*Zbinno)
+  count = intarr(Mbinno*Zbinno)
+  deleg = intarr(n_elements(GMZR_M_ALL))
+  k=0
+  FOR i=Mmin, Mmax-Mbinwidth, Mbinwidth DO BEGIN
+    FOR j=Zmin, Zmax-Zbinwidth, Zbinwidth DO BEGIN
+      w99 = WHERE(GMZR_M_ALL ge i and GMZR_M_ALL lt i+Mbinwidth and
+GMZR_Z_ALL ge j and GMZR_Z_ALL lt j+Zbinwidth)
+      IF(w99[0] ne -1) THEN BEGIN
+        IF(n_elements(w99) ge countNum) THEN deleg(w99) = 1
+        AveM[k] = i + (0.5*Mbinwidth)
+        AveZ[k] = j + (0.5*Zbinwidth)
+        AveSFR[k] = AVG(GMZR_SFR_ALL(w99(WHERE(GMZR_SFR_ALL(w99) gt
+-100.0))))
+        count[k] = n_elements(w99)
+      ENDIF
+      k+=1
+    ENDFOR
+  ENDFOR
+  ww2 = WHERE(count ge countNum)
+
+  ;Plot low-res points:
+  usersym, [-1.1,1.1,1.1,-1.1], [1.1,1.1,-1.1,-1.1], /fill
+  ;ctload, 0, /REVERSE, CLIP=[50,200]
+  ctload, 0, CLIP=[50,200]
+  plots,AveM(ww2), AveZ(ww2), psym=8, color=bytscl(count(ww2))
+
+  ;Plot other points:
+  loadct, 13, /silent
+  usersym, cos(theta * !dtor)*0.6, sin(theta * !dtor)*0.6, /fill
+  ww99 = WHERE(deleg eq 0)
+  oplot, GMZR_M_ALL(ww99), GMZR_Z_ALL(ww99), psym = 8, symsize = ssiz,
+color=fsc_color("grey")
+
+  ;Plot mean, and 1-sigma spread lines:
+  projmin=MIN(GMZR_M_ALL)
+  projmax=MAX(GMZR_M_ALL)
+  dim=number_formatter((projmax-projmin)/0.1, DECIMALS=0)
+  xx = findgen(dim)/10. + projmin
+  lower1sigmag2 = fltarr(dim)
+  upper1sigmag2 = fltarr(dim)
+  meanZg2 = fltarr(dim)
+  j=0
+  FOR i=projmin,projmax,0.1 DO BEGIN
+    w1s = WHERE(GMZR_M_ALL ge i-0.05 AND GMZR_M_ALL lt i+0.05)
+    IF(w1s[0] ne -1) THEN BEGIN
+      upper1sigmag2[j] =
+GMZR_Z_ALL(w1s((SORT(GMZR_Z_ALL(w1s)))(84*N_ELEMENTS(GMZR_Z_ALL(w1s))/100)))
+      meanZg2[j] = AVG(GMZR_Z_ALL(w1s))
+    ENDIF
+    j=j+1
+  ENDFOR
+  www = WHERE(xx ge 8.5 and xx le 11.3)
+  oplot, xx(www), upper1sigmag2(www), thick=6., linestyle = 2,
+color=fsc_color("black")
+  oplot, xx(www), meanZg2(www), thick=6., linestyle = 0,
+color=fsc_color("black")
+
+  ;Plot Qi Guo's old gas MZR relation:
+  xxOLD =
+[8.50016,8.60016,8.70016,8.80016,8.90016,9.00016,9.10016,9.20016,9.30016,9.40016,9.50016,9.60016,9.70016,9.80016,9.90016,10.0002,10.1002,10.2002,10.3002,10.4002,10.5002,10.6002,10.7002,10.8002,10.9002,11.0002,11.1002]
+  oplot, xxOLD,
+[8.29328,8.31744,8.36549,8.38975,8.45409,8.48258,8.52472,8.57333,8.61011,8.64945,8.69886,8.73729,8.78996,8.82114,8.87590,8.91173,8.94738,8.98213,9.01795,9.05720,9.07654,9.10225,9.14133,9.16229,9.16034,9.16464,9.15175]
+$
+    , thick=6., linestyle = 0, color=fsc_color("red")
+  oplot, xxOLD,
+[8.15828,8.17994,8.23356,8.25732,8.31912,8.34660,8.38584,8.45410,8.47954,8.52805,8.58798,8.62263,8.67632,8.70672,8.76378,8.79798,8.82560,8.87950,8.90626,8.94199,8.97523,8.99093,9.02006,9.03025,9.04985,9.02321,9.01312]
+$
+    , thick=6., linestyle = 2, color=fsc_color("red")
+  oplot, xxOLD,
+[8.42827,8.45493,8.49743,8.52218,8.58906,8.61855,8.66362,8.69257,8.74068,8.77085,8.80974,8.85195,8.90359,8.93555,8.98802,9.02548,9.06917,9.08476,9.12964,9.17242,9.17786,9.21357,9.26259,9.29433,9.27082,9.30607,9.29037]
+$
+    , thick=6., linestyle = 2, color=fsc_color("red")
+
+  ;Yates et al (2012a):
+  xxx = findgen(100)/(100.0/(11.2374-8.73742)) + 8.73742
+  yyy = 26.6864 - 6.6399*xxx + 0.768653*xxx*xxx - 0.0282147*xxx*xxx*xxx
+  oplot, xxx, yyy, thick = 6, linestyle = 0, color = fsc_color("orange")
+
+  xxxSigma = [8.73742, 8.83742, 8.93742, 9.03742, 9.13742, 9.23742,
+9.33742, 9.43742, 9.53742, 9.63742, 9.73742, 9.83742, 9.93742, 10.0374,
+10.1374, 10.2374, 10.3374, 10.4374, 10.5374, 10.6374, 10.7374, 10.8374,
+10.9374, 11.0374, 11.1374, 11.2374]
+  UpperSigma = [8.76605, 8.75496, 8.76407, 8.78068, 8.79891, 8.81812,
+8.84087, 8.87536, 8.90295, 8.93559, 8.96448, 8.99686, 9.02141, 9.04769,
+9.06818, 9.08794, 9.10189, 9.11680, 9.13128, 9.14483, 9.15107, 9.16058,
+9.17166, 9.17798, 9.18027, 9.19381]
+  LowerSigma = [8.41567, 8.46743, 8.52952, 8.55702, 8.57257, 8.59747,
+8.62097, 8.64273, 8.67724, 8.70625, 8.74066, 8.77924, 8.81401, 8.85304,
+8.88790, 8.91583, 8.93949, 8.96325, 8.97943, 8.98876, 9.00417, 9.01550,
+9.02068, 9.02914, 9.02327, 9.02569]
+  oplot, xxxSigma, UpperSigma, thick = 6, linestyle = 2, color =
+fsc_color("orange")
+  oplot, xxxSigma, LowerSigma, thick = 6, linestyle = 2, color =
+fsc_color("orange")
+
+  legend, ['L-Galaxies (w/ new GCE)', 'L-Galaxies (w/o new GCE)',
+'SDSS-DR7'], box = 0, linestyle = [-99,-99,-99], textcolor =
+[fsc_color("black"),fsc_color("red"),fsc_color("orange")], thick =
+[6,6,6], charsize=1.5, charthick=4., position = [11.5,8.1+0.1], /right
+;/bottom ;, linsize = 0.75
+  IF (DTDchoice eq 'BiModal') THEN  legend, ['BM'], box = 0, linestyle =
+[-99], textcolor = [fsc_color("black")], charsize=1.5, charthick=4.,
+/top, /left
+  IF (DTDchoice eq 'PowerLaw') THEN  legend, ['PL'], box = 0, linestyle =
+[-99], textcolor = [fsc_color("black")], charsize=1.5, charthick=4.,
+/top, /left
+  IF (DTDchoice eq 'Gaussian') THEN  legend, ['NG'], box = 0, linestyle =
+[-99], textcolor = [fsc_color("black")], charsize=1.5, charthick=4.,
+/top, /left
+
+
+  axis, xaxis=0, xrange = xlimits, xstyle = 1, XTHICK=5., CHARSIZE=1.5
+  axis, yaxis=0, yrange = ylimits, ystyle = 1, YTHICK=5., CHARSIZE=1.5
+  axis, 0, ylimits[1], xaxis=1, xrange = xlimits, xstyle = 1, XTHICK=5.,
+CHARSIZE=1.5, XTICKNAME=[' ',' ',' ',' ',' ',' ',' ',' ',' ']
+  axis, xlimits[1], yaxis=1, yrange = ylimits, ystyle = 1, YTHICK=5.,
+CHARSIZE=1.5, YTICKNAME=[' ',' ',' ',' ',' ',' ',' ',' ']
+
+;------------------
+
+  print,''
+  print,''
+  print,''
+  print,'******************************'
+  print,'*   Stellar [a/Fe] vs Mass   *'
+  print,'******************************'
+  print,''
+
+  Wind = 0 ;Turn on if you ran with METALRICHWIND on.
+
+  ;Solar mass ratios (from Grevesse, Noels & Sauval 1996):
+  ;H_mf_GNS = ??
+  HeH_mf_GNS = (4.003/1.008)*10.0^(10.99-12.)
+  CH_mf_GNS = (12.01/1.008)*10.0^(8.55-12.)
+  NH_mf_GNS = (14.01/1.008)*10.0^(7.97-12.)
+  OH_mf_GNS = (16.00/1.008)*10.0^(8.87-12.)
+  NeH_mf_GNS = (20.18/1.008)*10.0^(8.08-12.)
+  MgH_mf_GNS = (24.31/1.008)*10.0^(7.58-12.)
+  SiH_mf_GNS = (28.09/1.008)*10.0^(7.55-12.)
+  SH_mf_GNS = (32.07/1.008)*10.0^(7.33-12.)
+  CaH_mf_GNS = (40.08/1.008)*10.0^(6.36-12.)
+  FeH_mf_GNS = (55.84/1.008)*10.0^(7.5-12.)
+  aFe_mf_GNS =
+AVG([alog10(MgH_mf_GNS/FeH_mf_GNS),alog10(SiH_mf_GNS/FeH_mf_GNS),alog10(SH_mf_GNS/FeH_mf_GNS),alog10(CaH_mf_GNS/FeH_mf_GNS)])
+  ZH_GNS = 0.0169 ;The calculated value of Z/(H+He) from Grevesse & Sauval
+(1998) (see Asplund et al. 2009). NB: Grevesse & Noels (1993) found
+Z/(H+He)=0.0179
+
+
+  M_ALL = alog10(StellarMass_MR_0) ;alog10(StellarMass_MR)
+  OFe_ALL =
+alog10((G0_MR.DiskMass_elements[4]+G0_MR.BulgeMass_elements[4])/(G0_MR.DiskMass_elements[10]+G0_MR.BulgeMass_elements[10]))
+- alog10(OH_mf_GNS/FeH_mf_GNS)
+
+  ;Basic elliptical sample:
+  w1 = WHERE((G0_MR.BulgeMass/(G0_MR.BulgeMass + G0_MR.DiskMass) ge 0.7) $
+    AND (G0_MR.magdust[1]-G0_MR.magdust[2] ge
+(0.051*alog10(G0_MR.BulgeMass + G0_MR.DiskMass)) + 0.14) $
+;Genevieve's g-r cut
+    AND (FINITE(G0_MR.DiskMass_elements[*], /NAN, SIGN=0) ne 1) $
+    AND (FINITE(G0_MR.BulgeMass_elements[*], /NAN, SIGN=0) ne 1))
+
+  M_ALL = M_ALL(w1)
+  OFe_ALL = OFe_ALL(w1)
+
+xlimits = [9.5, 11.8] ;[9.5, 12.0]
+ylimits = [0.05, 0.6] ;[0.05, 0.45]
+plot, findgen(10), /nodata, xtitle = 'log(M!D*!N)
+[M!D!9'+string(110B)+'!3!N]', ytitle = '[O/Fe]!Dbulge+disc!N', $
+  xrange = xlimits, yrange = ylimits, xstyle = 1, ystyle = 1,
+CHARSIZE=1.5, CHARTHICK=4., XTHICK=5., YTHICK=5.,
+POSITION=[0.15,0.1,0.95,0.6]
+
+;;Do shaded contours for mass-age-selected points (95th percentile):
+binno = 40
+xbinwidth = (xlimits[1]-xlimits[0])/(binno-1)
+ybinwidth = (ylimits[1]-ylimits[0])/(binno-1)
+
+;Do contours for all points:
+;hist2d, M_ALL, OFe_ALL, hist, xlimits, ylimits, binno, binno
+hist=hist_2d(M_ALL,OFe_ALL,min1=xlimits[0],min2=ylimits[0],max1=xlimits[1],max2=ylimits[1],bin1=xbinwidth,bin2=ybinwidth)
+;*weight
+contour, hist, findgen(binno)/(binno/(xlimits[1]-xlimits[0])) +
+xlimits[0], findgen(binno)/(binno/(ylimits[1]-ylimits[0])) + ylimits[0],
+levels=[((100.-95.)/100.)*MAX(hist),((100.-68.)/100.)*MAX(hist)], $
+;nlevels = 3, $
+  xtitle = 'log(M!D*!N) [M!D!9'+string(110B)+'!3!N]', ytitle =
+'[O/Fe]!Ddisc+bulge!N', CHARSIZE=1.5, CHARTHICK=4., XTHICK=5.,
+YTHICK=5., $
+  thick = 8., c_color = fsc_color("dodger blue"), c_linestyle = 0,
+/CLOSED, /OVERPLOT
+
+usersym, cos(theta * !dtor)*0.6, sin(theta * !dtor)*0.6, /fill
+
+;Plot Jonas' fit using MPA M* directly:
+slopeJ3 = 0.051308367
+interceptJ3 = -0.32725757
+OnesigmaJ3 = 0.092184387
+logMstar3 = findgen(100+1)/(float(100)/(11.5-9.5)) + 9.5
+;robsarray(100,9.5,11.5)
+yJ3 = (slopeJ3*logMstar3) + interceptJ3
+oplot, logMstar3, yJ3, linestyle = 0, thick = 15., color = fsc_color("black")
+oplot, logMstar3, yJ3, linestyle = 0, thick = 10., color =
+fsc_color("orange")
+oplot, logMstar3, yJ3-OnesigmaJ3, linestyle = 1, thick = 15., color =
+fsc_color("black")
+oplot, logMstar3, yJ3-OnesigmaJ3, linestyle = 1, thick = 10., color =
+fsc_color("orange")
+oplot, logMstar3, yJ3+OnesigmaJ3, linestyle = 1, thick = 15., color =
+fsc_color("black")
+oplot, logMstar3, yJ3+OnesigmaJ3, linestyle = 1, thick = 10., color =
+fsc_color("orange")
+
+IF (DTDchoice eq 'Gaussian') THEN BEGIN
+  polyfill, [9.6,9.82,9.82,9.6,9.6], [0.35,0.35,0.42,0.42,0.35], /fill,
+color=fsc_color("white")
+  IF (Wind eq 0) THEN polyfill, [11.67,11.85,11.85,11.67,11.67],
+[0.405,0.405,0.45,0.45,0.405], /fill, color=fsc_color("white")
+  IF (Wind eq 1) THEN polyfill, [11.075,11.375,11.375,11.075,11.075],
+[0.39,0.39,0.46,0.46,0.39], /fill, color=fsc_color("white")
+ENDIF
+
+IF (DTDchoice eq 'BiModal' AND Wind ne 1) THEN  legend, ['BM'], box = 0,
+linestyle = [-99], textcolor = [fsc_color("black")], charsize=1.5,
+charthick=4., /top, /right
+IF (DTDchoice eq 'PowerLaw' AND Wind ne 1) THEN  legend, ['PL'], box = 0,
+linestyle = [-99], textcolor = [fsc_color("black")], charsize=1.5,
+charthick=4., /top, /right
+IF (DTDchoice eq 'Gaussian' AND Wind ne 1) THEN  legend, ['NG'], box = 0,
+linestyle = [-99], textcolor = [fsc_color("black")], charsize=1.5,
+charthick=4., /top, /right
+IF (DTDchoice eq 'BiModal' AND Wind eq 1) THEN  legend, ['BM f!Dwind!N'],
+box = 0, linestyle = [-99], textcolor = [fsc_color("black")],
+charsize=1.5, charthick=4., /top, /right
+IF (DTDchoice eq 'PowerLaw' AND Wind eq 1) THEN  legend, ['PL f!Dwind!N'],
+box = 0, linestyle = [-99], textcolor = [fsc_color("black")],
+charsize=1.5, charthick=4., /top, /right
+IF (DTDchoice eq 'Gaussian' AND Wind eq 1) THEN  legend, ['NG f!Dwind!N'],
+box = 0, linestyle = [-99], textcolor = [fsc_color("black")],
+charsize=1.5, charthick=4., /top, /right
+
+axis, xaxis=0, xrange = xlimits, xstyle = 1, XTHICK=5., CHARSIZE=1.5
+axis, yaxis=0, yrange = ylimits, ystyle = 1, YTHICK=5., CHARSIZE=1.5
+axis, 0, ylimits[1], xaxis=1, xrange = xlimits, xstyle = 1, XTHICK=5.,
+CHARSIZE=1.5, XTICKNAME=[' ',' ',' ',' ',' ',' ',' ',' ',' ']
+axis, xlimits[1], yaxis=1, yrange = ylimits, ystyle = 1, YTHICK=5.,
+CHARSIZE=1.5, YTICKNAME=[' ',' ',' ',' ',' ',' ',' ',' ']
+
+
+
+
+
+
    device,/close_file
 
    stop
