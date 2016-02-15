@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <gsl/gsl_rng.h>
+#include <time.h>
 
 #define MIN_ALLOC_NUMBER       1000
 #define ALLOC_INCREASE_FACTOR  1.1
