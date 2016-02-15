@@ -10,7 +10,7 @@ OPT += -DUPDATETYPETWO       #  This updates the positions of type 2 galaxies wh
 
 # Options that control output
 OPT += -DOVERWRITE_OUTPUT    # overwrite output files if they exist (otherwise will quit without overwriting)
-OPT += -DNOUT=5              # sets the number of output snaps. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
+OPT += -DNOUT=1              # sets the number of output snaps. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
 
 
 #OPT += -DGUO10
@@ -28,8 +28,8 @@ OBJS  += ./code/mcmc_save.o
 INCL  += ./code/mcmc_vars.h 
 INCL  += ./code/mcmc_proto.h
 
-#OPT += -DHALOMODEL
-#OPT += -DPROJLIMITS
+OPT += -DHALOMODEL
+OPT += -DPROJLIMITS
 #to compute correlation functions for MCMC
 ifeq (HALOMODEL,$(findstring HALOMODEL,$(OPT)))
 OBJS  += ./code/mcmc_halomodel.o

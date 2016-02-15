@@ -20,8 +20,9 @@ INCL   = ./code/allvars.h  ./code/proto.h  Makefile
 
 
 # Either include the default set of Makefile options, or define your own
-include My_Makefile_options
+#include My_Makefile_options
 #include My_Makefile_options_MCMC
+include My_Makefile_options_MCMC_HaloModel
 
 # Choose your system type (needs to match an entry in Makefile_compilers)
 SYSTYPE = "MyMachine"
@@ -37,8 +38,9 @@ CFLAGS =   -g $(OPTIONS) $(OPT) -DCOMPILETIMESETTINGS=\""$(OPT)"\" $(OPTIMIZE) $
 $(EXEC): $(OBJS) 
 	$(CC) $(OPTIMIZE) $(OBJS) $(LIBS)   -o  $(EXEC)  
 
-$(OBJS): $(INCL) My_Makefile_options Makefile_compilers
+#$(OBJS): $(INCL) My_Makefile_options Makefile_compilers
 #$(OBJS): $(INCL) My_Makefile_options_MCMC Makefile_compilers
+$(OBJS): $(INCL) My_Makefile_options_MCMC_haloModel Makefile_compilers
 
 clean:
 	rm -f $(OBJS)
