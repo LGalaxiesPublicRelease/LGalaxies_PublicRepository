@@ -30,6 +30,41 @@ reload (plots_input)
 from plots_input import *
 
 
+def stellar_mass_vs_halo_mass(G_MR, ThisRedshiftList, pdf):
+
+    ylim=[4.0,12.5]
+    xlim=[7.5, 15.]
+  
+    plt.rcParams.update({'xtick.major.width': 1.0, 'ytick.major.width': 1.0, 
+                         'xtick.minor.width': 1.0, 'ytick.minor.width': 1.0})    
+    fig = plt.figure(figsize=(10,10))
+    subplot=plt.subplot()
+    subplot.set_ylim(ylim), subplot.set_xlim(xlim) 
+
+    ylab='$\mathrm{log_{10}}(M_*[h^{-2}M_{\odot}])$'       
+    xlab='$\mathrm{log_{10}}(M_{200c}[h^{-2}M_{\odot}])$'
+    subplot.set_xlabel(xlab, fontsize=16), subplot.set_ylabel(ylab, fontsize=16)
+                  
+    for ii in range (0,len(ThisRedshiftList)):
+  
+        #MODEL
+        (sel)=select_current_redshift(G_MR, ThisRedshiftList, ii)
+        
+        G0_MR=G_MR[sel]   
+        G0_MR=G0_MR[G0_MR['StellarMass']>0.]
+        StellarMass=stellar_mass_with_err(G0_MR, Hubble_h, ThisRedshiftList[ii])
+        HaloMass=np.log10(G0_MR['Mvir']*1.e10*Hubble_h)
+        subplot.scatter(HaloMass,StellarMass,s=5, color='black')
+    #endfor
+    
+    
+    plt.tight_layout()
+    plt.savefig('./fig/plots_smhm.pdf')
+    pdf.savefig()
+    plt.close()
+    
+#end stellar_mass_vs_halo_mass
+
 def stellar_mass_function(G_MR, Volume_MR, ThisRedshiftList, pdf):
            
     xlim=[7.0,12.5]
