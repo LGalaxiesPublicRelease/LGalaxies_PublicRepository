@@ -1,0 +1,13 @@
+# Response curve for Digital Sky Survey II, r = XP = Red IIIaF + RG610
+# Typed in from Figure 4 of
+# Weir, N., Djorgovski, S., & Fayyad, U.M. 1995, AJ, 110, 1.
+ 5850  0.00
+ 6000  0.03
+ 6100  0.30
+ 6200  0.47
+ 6300  0.57
+ 6500  0.68
+ 6700  1.00
+ 6800  0.84
+ 7000  0.13
+ 7200  0.00

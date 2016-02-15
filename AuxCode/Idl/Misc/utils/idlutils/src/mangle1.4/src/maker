@@ -1,0 +1,4 @@
+echo ""
+includec advise_fmt.c balkanize.c braktop_.c cmminf.c convert.c copy_format.c copy_poly.c ddcount.c drandom.c drangle.c drangle_polys.c dranglepolys_.c dump_poly.c findtop_.c garea.c gcmlim.c gphbv.c gphi.c gptin.c gspher.c gsphr.c gvert.c gvlim.c gvphi.c harmonize.c harmonize_polys.c harmonizepolys_.c ikrand.c map.c msg.c new_poly.c new_vert.c partition_poly.c places.c poly2poly.c poly_id.c polyid.c prune_poly.c ransack.c rdangle.c rdline.c rdmask_.c rdmask.c rdspher.c rotate.c rrcoeffs.c scale.c search.c snap.c snap_poly.c split_poly.c strcmpl.c strdict.c unify.c vmid.c weight.c weight_fn.c wrangle.c wrho.c wrmask.c wrrrcoeffs.c wrspher.c
+echo ""
+includef azell.s.f azel.s.f braktop.s.f felp.s.f fframe.s.f findtop.s.f garea.s.f gaream.s.f gcmlim.s.f gphbv.s.f gphi.s.f gphim.s.f gptin.s.f gsphera.s.f gspher.s.f gsubs.s.f gvert.s.f gvlim.s.f gvphi.s.f iylm.s.f twodf.f twoqz.f wlm.s.f wrho.s.f

@@ -1,0 +1,1835 @@
+\documentstyle[12pt]{article}
+\begin{document}
+% This file is taken from Chapter 10 of the GHRS users manual, written by
+% J. Blackwell, S.N. Shore, R.D. Robinson, K. Feggans, D. Lindler,
+% E. Malamuth, J. Sandoval, and T.B. Ake.    It is also available via 
+% anonymous FTP from ftp://hrssun.gsfc.nasa.gov/pub/ghrsdaf/docs as the
+% file swq-v2_1-sec10.ps.
+% Last Edit 04/15/94
+% removed change bars 
+%
+\Large
+\section{\bf Manipulating STSDAS Files and Tables}
+\label{fits}
+\label{sdas tables and files}
+\normalsize
+
+\index{SDAS tables}
+\index{SDAS images}
+\index{FITS images}
+\index{GEIS files}
+Most of 
+the data delivered by the STScI are in the form of {\it STSDAS} 
+files and tables.  STSDAS files conform to a FITS format catered to 
+HST data and can contain 1-dimensional (e.g., spectra), or multi-dimensional 
+(e.g., images) data.  STSDAS tables are in a format that is unique to STSDAS. 
+Throughout this section, we will refer to STSDAS files as {\it image} files 
+and STSDAS tables as {\it table} files (see also the STScI 
+{\it STSDAS} users' manual for additional details).\\
+
+Table files are designed for storing tabular information. Unlike image 
+files, which exist as a separate {\it header} and {\it data} file, the data 
+are all contained in a single file with {\bf .tab} as the default 
+extension.  Header information is stored {\it with the data} and is 
+accessible through various IDL procedures described in this section. The data 
+itself is arranged by row and column. Each column can have its own data type 
+and can be accessed by {\it either} a column number or a column name. The 
+rows are {\it always} accessed by number, beginning with zero for the 
+first row.\\
+
+Some examples of image and table files are the GEIS files (image) , 
+GHRS calibration files (image and table; found in the {\bf ZCAL} directory), 
+and data files (primarily image) from other HST instruments such as FOS and 
+WF/PC.  These are the ones you are most likely to use.\\
+
+This section 
+begins with a brief introduction to the FITS format concentrating
+on the STSDAS {\it Extended} FITS format used by the STScI.  Next, we 
+discuss the IDL routines used to manipulate STSDAS image files (the {\bf SX} 
+procedures).  Following this we provide an explanation of STSDAS table files 
+and finally we outline the IDL routines used to create and access tables.\\
+
+One final note about terminology.  This section uses the terms {\it STSDAS}, 
+{\it FITS}, and {\it SDAS} somewhat interchangeably.  The first simply 
+refers to the newer name for {\it SDAS} and the second {\it can} refer to 
+to either STSDAS-FITS, or the FITS format in general; the former being most
+often the case.
+
+\subsection{\bf FITS Primer}
+
+FITS is an acronym for {\bf Flexible Image Transport System}.  It was 
+originally developed as a standard means to transfer astronomical data from
+one place to another via 9-track magnetic tape using fixed physical record
+sizes.  Though this is still its most basic use, the original
+format has undergone numerous changes over the years.  This primer is intended
+to provide only the briefest of introductions to the FITS format and how it
+relates 
+to HST data.\\
+
+In its most basic form, a FITS file contains an ASCII text header
+which may or may not be followed by a {\it binary} data array (the
+presence of which is dictated by the FITS keywords {\bf NAXIS} or {\bf
+NAXISn}).  If accompanied by binary data, both text and data are
+contained in a {\it single} file.  However, in most applications
+(including HST data), the header file and the data file are separate,
+but linked, entities. 
+
+\subsubsection{\bf The FITS Header}
+\index{FITS header}
+FITS header records contain parameters which describe the structure of the 
+binary data.   These parameters are structured into a {\it keyword}, an 
+optional {\it value}, and an optional {\it comment}.  Each of these records 
+follows a strict formatting convention.  The header file consists of a number 
+of these so-called {\it card images} (i.e., each record is fixed-length, 
+80-character ASCII text).  The file extension for FITS headers follows the 
+convention {\bf .xxh} where {\bf xx} can be any alphanumeric characters 
+(e.g., {\bf .d0h}).  {\bf Note:} IDL routines described in this section 
+default to the extension {\bf .hhh}.\\
+
+One immediate consequence of fixed-length files is that one must take
+care when attempting to edit them using a text editor (such as EDT). 
+For instance, anything which is added to the file must be 80 bytes
+(characters) in length.  However, the fixed-length format should not
+cause problems when reviewing the FITS header files on a terminal
+or when sending them to a printer (IDL software utilities discussed in
+subsequent sections are designed to allow for the manipulation of FITS
+header files). 
+
+\subsubsection{\bf FITS and GEIS}
+\index{GEIS format}
+Any HST observation consists of a series of both binary data and ASCII
+header files that are collectively referred to as a {\it Generic
+Edited Information Set} or as ``GEIS files''.  GEIS files have as
+their basis an {\it Extended} FITS format.\\
+
+Each ASCII header file consists of a number of 80-byte card images 
+that contain parameter information for the data (i.e., describes the format 
+of the binary data file).  The header files also contain a number of 
+additional records which describe the details of the observation (i.e., 
+target, observer, position, instrument configuration and condition, etc...).  
+The file names follow conventions discussed in Section~\ref{geis}.\\
+
+Each binary data file consists of one or more {\it fixed size blocks} of data
+called {\bf groups}.  Each group has associated with it a fixed size
+block of data called a {\bf parameter block} (a.k.a {\it a group parameter}),
+which contains zero or more parameters.  The parameter block is physically 
+stored at the 
+end of each group.  A minimum structure consists of a 
+{\it single} group and {\it no} group parameters.
+
+\subsubsection{\bf Mandatory FITS Header Keywords}
+\index{FITS keywords}
+As with all FITS format files, the headers must contain a certain number of 
+keywords (usually as the first few records) that define the structure of the 
+binary data files.  Those which are common to components of a given set of 
+GEIS files are listed below. {\bf Note:} most of these keywords are common 
+to all FITS headers.
+
+\begin{itemize}
+
+\item {\bf SIMPLE}---This keyword specifies whether the data file conforms to 
+the {\it basic} FITS standard, that is, a file consisting of a primary header 
+followed by a single data array.  The value of {\bf SIMPLE} is either 
+{\bf T} (``True'') or {\bf F} (``False'').  Since GEIS files are in 
+{\it Extended} FITS, this keyword is normally set to {\bf F}.
+  
+\item {\bf BITPIX}---This keyword is assigned an integer value, the absolute
+value of which is used in computing the sizes of data structures.  It 
+specifies the number of bits that represent a data value. The only 
+allowed values for {\bf BITPIX} are given in Table 10.1.
+
+\begin{scriptsize}
+\begin{center}
+{\bf Table 10.1}\\
+Valid BITPIX Keyword Values\\
+\end{center}
+\begin{center}
+\begin{tabular}{rl} \hline \hline
+Value  & Description \\ \hline \\
+8 & Character or unsigned binary integer\\
+16 & 16-bit twos complement binary integer\\ 
+32 & 32-bit twos complement binary integer\\ 
+-32 & IEEE single precision floating point\\
+-64 & IEEE double precision floating point\\ \hline
+\end{tabular}
+\end{center}
+\end{scriptsize}
+  
+\item {\bf DATATYPE}---Specifies the data type of the data items.  All data
+items are in FORTRAN-format unless otherwise specified.  Supported data types 
+are listed in Table 10.2.
+
+\begin{scriptsize}
+\begin{center}
+{\bf Table 10.2}\\
+Supported Values of DATATYPE Keyword\\
+\end{center}
+\begin{center}
+\begin{tabular}{ll} \hline \hline
+DATATYPE & Comment \\ \hline \\
+INTEGER$*$1 & \\
+UNSIGNED$*$1 & (non-FORTRAN)\\
+INTEGER$*$2 & \\
+UNSIGNED$*$2 & (non-FORTRAN)\\
+INTEGER$*$4 & \\
+UNSIGNED$*$4 & (non-FORTRAN)\\
+REAL$*$4 & \\
+REAL$*$8 & \\
+COMPLEX$*$8 & \\
+COMPLEX$*$16 & \\ \hline
+\end{tabular}
+\end{center}
+\end{scriptsize}
+\newpage
+
+\item {\bf NAXIS}---
+This keyword is assigned a positive integer value which
+gives the number of dimensions (or coordinate axes) in each data group.
+
+\item {\bf NAXISn}---This {\it indexed} keyword (hence the {\bf n}) is 
+a positive integer designating the size of each component
+of a group {i.e., n = 1,...,NAXIS}.  The ordering of each component
+goes in order of decreasing size.  For example, {\bf NAXIS =}{\it 2} means 
+that the data are contained in a 2 dimensional array (recall that in IDL a 
+1-D array is usually called a {\it vector}).  Suppose that the data array 
+contains an image which is 100$\times$200 
+(i.e., {\bf data=}{\it data(100,200)}).  In this case, 
+{\bf NAXIS1} would be {\it 200}, and {\bf NAXIS2} would be {\it 100}.  
+{\bf Note:} if {\bf NAXIS=}{\it 0}, there should not be any {\bf NAXISn} 
+keywords.
+
+\item {\bf GROUPS}---A logical keyword that, if {\bf T}, specifies that the 
+binary data has a {\it group format} with parameter blocks.
+
+\item {\bf GCOUNT}---An integer keyword specifying the number of groups 
+contained in the binary data file.
+
+\item {\bf PCOUNT}---An integer keyword specifying the number of group 
+parameters in each parameter block associated with each group.
+
+\item {\bf PSIZE}---An integer keyword specifying the sum total of bits 
+in all the parameter blocks.
+
+\item {\bf PSIZEn}---An {\it indexed} integer keyword specifying the number 
+of {\it bits} in each group parameter (n=1,$\cdots$,PCOUNT).
+
+\item {\bf PTYPEn}---An {\it indexed} character string keyword which 
+specifies the name of each group parameter (n=1,$\cdots$,PCOUNT).  {\bf Names 
+identified with these GROUP keywords are the group parameter names or 
+``the group parameters'' of the data file}.
+
+\item {\bf PDTYPEn}---An {\it indexed} character string keyword which 
+specifies the data type of each group parameter (n=1,$\cdots$,PCOUNT).
+  
+\item {\bf END}---A keyword used to designate the end of the FITS header.  It
+has no value.
+\newpage
+
+\end{itemize}
+
+As an example, 
+consider the following header segment (from the {\bf .d0h} file)
+for the FOS observation whose rootname is {\it y0ya0201t}:
+
+\begin{scriptsize}
+\begin{center}
+\begin{verbatim}
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'REAL*4'             /                                                
+NAXIS   =                    2 /                                                
+NAXIS1  =                   64 /                                                
+NAXIS2  =                    1 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    8 /                                                
+PCOUNT  =                   25 /                                                
+PSIZE   =                 1024 /                                                
+PTYPE1  = 'CRVAL1  '           / right ascension of reference pixel (deg)       
+PDTYPE1 = 'REAL*8'             /                                                
+PSIZE1  =                   64 /                                                
+PTYPE2  = 'CRVAL2  '           / declination of reference pixel (deg)           
+PDTYPE2 = 'REAL*8'             /                                                
+PSIZE2  =                   64 /                                                
+PTYPE3  = 'CRPIX1  '           / x-coordinate of reference pixel                
+PDTYPE3 = 'REAL*4'             /                                                
+PSIZE3  =                   32 /                                                
+PTYPE4  = 'CRPIX2  '           / y-coordinate of reference pixel                
+PDTYPE4 = 'REAL*4'             /                                                
+.
+.
+.
+PTYPE25 = 'Y_OFFSET'           / y_offset for GIMP correction (defl.units)      
+PDTYPE25= 'REAL*4'             /                                                
+PSIZE25 =                   32 /                                                
+.
+.
+.
+END                                                                             
+\end{verbatim}
+\end{center}
+\end{scriptsize}
+
+{\bf Note:} this particular file is online in the 
+{\bf hrs8:[hrsdata.fos.0ya002]} directory.\\
+
+{\bf Translation}: The binary data file associated with this 
+header (the {\bf .d0d} file) contains {\it 8} {\bf groups} or arrays of type
+{\it REAL$*$4} (32 bit) that are two dimensional (64$\times$1, a vector in IDL).
+Each of the groups has 25 parameters following it of different sizes {\bf PSIZEn},
+names {\bf PTYPEn}, and formats {\bf PDTYPEn}.  {\bf Note:} each of the
+{\bf PTYPEn} gives the name of the parameter and a description of what that
+parameter is.
+
+\subsubsection{\bf Other Header Keywords}
+
+\begin{itemize}
+
+\item {\bf HISTORY}---This is one of the valid {\it Bibliographic} keywords 
+that contains a log of the steps taken in 
+processing the data.  Any number of {\bf HISTORY} card images may appear in a
+header.  One example of the use of this keyword can be found in the 
+GHRS calibration files (the {\bf ZCAL} directory path).
+
+\end{itemize}
+\newpage
+
+\subsection{\bf Manipulating Image Files: SX Routines}
+\label{sdas images}
+\index{SDAS image}
+
+The 
+following sections describe the IDL procedures needed to create,
+read and manipulate STSDAS image files.  Some of these routines are very
+basic and can be used with most FITS format files, while others are
+specific to the STSDAS Extended FITS image files (e.g., GEIS).
+The basic routines for reading and creating STSDAS image files are listed 
+below:\\
+
+\begin{description}
+\item [SXOPEN :] A procedure used to open an STSDAS image file.
+\item [SXMAKE :] A procedure to create new STSDAS image files (header and data).
+\item [SXREAD :] A function used to read data from an STSDAS image data file.
+\item [SXHREAD :] A procedure used to read the STSDAS image header file.
+\item [SXWRITE :] A procedure used to write data to an STSDAS image file.
+\item [SXHWRITE :] A procedure that writes header information to a STSDAS image 
+header file.
+\item [SXGPAR :] A function used to extract keyword values from the group
+parameters in the STSDAS FITS image header file.
+\item [SXPAR :] A function that extracts values of STSDAS FITS header keywords.
+\item [SXADDPAR :] A procedure used to add or modify STSDAS FITS header keywords.
+\item [SXADDHIST :] A procedure used to add {\it history} lines to an STSDAS 
+FITS header file.
+\item [SXHEDIT :] A procedure used for editing STSDAS FITS header files.
+\end{description}
+
+\subsubsection{\bf Opening the Image File}
+\index{SXOPEN}
+\index{SDAS images - opening}
+\label{sxopen}
+\begin{description}
+\item [SXOPEN, {\it unit, filename $[$, HEADER, HISTORY, access$]$} : ]
+
+This procedure opens an image file for processing. It first opens the 
+header file, reads it, closes it, and then opens the binary data 
+file.  The binary file is then left open.
+
+\begin{itemize}
+
+\item {\bf unit}---
+An IDL logical unit number from 1 to 9.
+
+\item {\bf filename}---The name of the header file.  If another set of
+file extensions are used, they must have the form {\bf .xxh} and {\bf .xxd} 
+where {\bf xx} can be any alphanumeric characters.  {\bf Note:} VMS file 
+version numbers cannot be used in {\bf filename} and that {\bf SXOPEN} will use 
+the most recent (highest version number) files.
+\newpage
+\item {\bf HEADER}---
+An optional FITS format string vector to which is 
+returned the names, values and comments from the FITS header 
+{\bf Note:} use the function {\bf SXPAR} to obtain individual parameter values.
+
+\item {\bf HISTORY}---An optional string vector to which is returned 
+the {\bf HISTORY} records from the header, if they exist.
+
+\item {\bf access}---This is an {\it optional} input parameter if opening a 
+file for reading ({\bf access='R'}), and a {\it necessary} one if creating a 
+new header ({\bf access='W'}).  {\bf Note:} R, W must be uppercase. 
+
+\end{itemize}
+
+\noindent
+For example, to open one of the FOC Point Spread Function images:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf sxopen}, {\it 1, 'zfoc:f96f210m\_gc', HEADER, HISTORY} & \\ 
+\end{tabular}
+
+%\index{SDAS image - creating}
+%
+%\noindent
+%To create a blank header file:\\
+%
+%\begin{tabular}{ll}
+%GHRS$>${\bf header=}{\it strarr(10)} & \\
+%GHRS$>${\bf sxopen}, {\it 1, 'filename', header, '', 'W'} & \\ 
+%\end{tabular}\\
+%
+%\noindent
+%Here, {\bf header} is an {\it input} parameter ({\bf header} must be 
+%supplied).  {\bf SXOPEN} then uses information
+%contained in these vectors to create a new header file {\it
+%filename.hhh} containing (in this example) ten blank 80 byte
+%(character) ASCII records. If {\bf header} does not contain the FITS
+%keyword {\bf END} as its last record ({\bf header(9)}), one is added. 
+\end{description}
+
+\subsection{\bf Creating Image Files}
+\begin{description}
+\item [SXMAKE, {\it unit, filename, data, par, groups $[$, header$]$} :] 
+\index{SXMAKE}
+\index{SDAS images - opening}
+
+This
+procedure is used to create new FITS header and data files. By
+default, these two files will have extensions {\bf .hhh} (header) and
+{\bf .hhd} (data).  Once these files are created, the routine {\bf
+SXWRITE} can be used to populate the data {\bf .hhd} file. 
+
+\begin{itemize}
+
+\item {\bf unit}---An IDL logical unit number from 1 to 9. 
+
+\item {\bf filename}---The file name (without extension) given to the
+new files. 
+
+\item {\bf data}---A sample data array having the same size,
+dimension, and data type as the data to be stored in the new binary
+data file. {\bf Note:} this array is only used by {\bf SXMAKE} as a
+template; its contents are not written to either the header or data
+file. 
+
+\item {\bf par}---The number of group parameters (parameter blocks) to
+be written. 
+
+\item {\bf groups}---The expected number of data groups to be stored
+in the data file. {\bf Note:} it is recommended that {\bf par=}{\it 0}
+since no group parameters will be written in this mode. 
+
+\item {\bf header}--- An optional string vector containing an STSDAS
+FITS header file.  If {\bf header} is omitted, a basic FITS
+header is constructed.  {\bf Note:} the {\bf END} keyword must be the
+last element in {\bf header}. 
+
+\end{itemize}
+\newpage
+For example, 
+to create STSDAS image files to contain one (1) 10$\times$10
+data array with no group parameters, one group, and no input header
+vector, use:\\ 
+
+\begin{tabular}{ll}
+GHRS$>$ {\bf data=}{\it fltarr(10,10)} & \\
+GHRS$>${\bf sxmake,} {\it 1, 'myfile', data, 0, 1} & \\
+\end{tabular}\\
+
+\noindent
+the files {\it myfile.hhh} and {\it myfile.hhd} are then created with
+the former containing the default header information listed below: 
+
+\begin{scriptsize}
+\begin{center}
+\begin{verbatim}
+SIMPLE  =                    F /Written by IDL:   7-Dec-1992 14:21:07.00
+BITPIX  =                   32 /
+NAXIS   =                    2 /
+NAXIS1  =                   10 /
+NAXIS2  =                   10 /
+DATATYPE= 'REAL*4'             /Type of data
+GROUPS  =                    T /
+PCOUNT  =                    0 /
+GCOUNT  =                    1 /
+PSIZE   =                    0 /# of bits in parm blk
+END
+\end{verbatim}
+\end{center}
+\end{scriptsize}
+\end{description}
+
+\subsection{\bf Getting Information From Image Files}
+\begin{description}
+\item [RESULT=SXREAD({\it unit $[$, group, PAR$]$}{\bf )} :] 
+\index{SXREAD}
+\index{SDAS image - reading data}
+
+A function for reading data from the image files. The function must be
+preceeded by a call to {\bf SXOPEN} or {\bf SXMAKE}.
+
+\begin{itemize}
+
+\item {\bf unit}---The IDL logical unit number specified in the call to 
+{\bf SXOPEN} or {\bf SXMAKE}. 
+
+\item {\bf group}---The group number to be read from the image file.  It can
+range from zero (0) (first group) to the number of groups minus 1. 
+If {\bf group} is not specified, then the first group (group zero) is assumed.
+
+\item {\bf PAR}---An optional output variable containing the parameter values 
+from the group parameter block.  {\bf PAR} is a {\it byte} array which may 
+contain multiple data types and is therefore not in a readable form.  The 
+function {\bf SXGPAR} can be used to retrieve values from it.
+
+\item {\bf RESULT}---An IDL vector or array containing data from the 
+requested {\bf group}.
+
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{small}
+\begin{tabular}{ll}
+Open FOS data file & \\
+& \\
+GHRS$>${\bf sxopen}, {\it 1, 'hrs8:[hrsdata.fos.0ya002]y0ya0201t.d0h', header} & \\
+GHRS$>${\bf print}, {\bf sxpar(}{\it header, 'gcount'}{\bf )} & ; gcount=8\\
+GHRS$>${\bf result=sxread(}{\it 1, 2}{\bf )} & \\
+GHRS$>${\bf help}, {\it result} & ; result=float(64)\\
+\end{tabular}
+\end{small}\\
+
+\noindent
+In 
+this example, an FOS file is opened, the number of data groups are
+identified, and the third of these groups is read.  What is returned to 
+{\bf RESULT} is a floating point vector with 500 elements.
+
+\item [SXHREAD, {\it filename, HEADER} : ] 
+\index{SDAS image - reading header}
+\index{SXHREAD}
+
+This function reads the contents of the image header.  It does not
+require the user to first open the file with {\bf SXOPEN}. {\bf SXHREAD} 
+therefore offers a simple method for obtaining a header vector that can then 
+be used by other routines (such as {\bf SXMAKE}).
+
+\begin{itemize}
+
+\item {\bf filename}---The filename of the header file (an {\bf .hhh} extension is
+appended if not given).  {\bf SXHREAD} is capable of reading 
+three (3) different types of header files which are listed below:
+
+\begin{enumerate}
+
+\item VMS Fixed record length 80 byte files.
+
+\item Unix stream files with a {\it carriage return} after every 80 bytes.
+
+\item Variable length record files.
+
+\end{enumerate}
+
+\item {\bf HEADER}---Contains the returned FITS header.
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf sxhread}, {\it 'zman:z0gy011st.shh', HEADER} & \\
+GHRS$>${\bf print}, {\it HEADER} & \\
+\end{tabular}\\
+
+\noindent
+
+will print the contents of the {\bf .shh} header file for this 
+observation to the screen.
+
+\item [RESULT=SXPAR({\it header, keywordname $[$, abort, count=count\_val$]$}) :] 
+
+This function extracts the {\it value} field of a given FITS keyword from an image 
+header which was previously opened using {\bf SXOPEN}.
+
+\begin{itemize}
+
+\item {\bf header}---The header vector to be searched for a given keyword.
+
+\item {\bf keywordname}---The keyword name to search the header for.
+
+\item {\bf abort}--An optional input string which specifies that {\bf SXPAR} 
+should perform an IDL {\bf RETALL} if the keyword assigned to {\bf name} is 
+not found in {\bf hdr}.  The string assigned to {\bf abort} can either be 
+blank or can contain a message to be appended to the standard error message 
+that is printed if a keyword is not found.  If {\bf abort} is not supplied, 
+{\bf SXPAR}  returns a negative {\bf $!$ERR} if a keyword is not 
+found.
+
+\item {\bf count=count\_val}---An optional IDL keyword set to the number of 
+FITS keyword values for keywords found by {\bf SXPAR}.
+\newpage
+\item {\bf RESULT}---Contains 
+the value assigned to the given FITS 
+keyword, if one is found.  {\bf Note:} If {\bf RESULT} is of type 
+{\it logical}, a value of {\it 1} is returned 
+for {\bf T}, and {\it 0} for {\bf F}.  If a keyword occurs more 
+than once in a header, a warning message is printed and the first occurrence 
+of the keyword value is assigned to {\bf RESULT}.
+\end{itemize}
+
+\noindent
+Examples:\\
+
+\begin{small}
+\begin{tabular}{ll}
+GHRS$>${\bf sxopen}, {\it 1, 'zcal:sf\_g2\_01', header} & \\
+GHRS$>${\bf result=sxpar(}{\it header, 'instrume'}{\bf )} & \\
+GHRS$>${\bf print}, {\it result} & ; prints HRS, no apostrophes\\
+ & \\
+GHRS$>${\bf result=sxpar(}{\it header, 'groups'}{\bf )} & \\
+GHRS$>${\bf print}, {\it result} & ; prints 1\\
+& \\
+GHRS$>${\bf result=sxpar(}{\it header, 'gcount',count=cnt}{\bf )} & \\
+GHRS$>${\bf print}, {\it result} & ; prints 2, two groups present\\
+& ; cnt=1, one keyword found\\
+& \\
+GHRS$>${\bf result=sxpar(}{\it header, 'dummy'}{\bf )} & \\
+GHRS$>${\bf print},{\it $!$err} & ; prints -1, keyword not found\\
+& \\
+GHRS$>${\bf abort=}{\it 'sf\_g2\_01'} & ; append to abort msg\\
+GHRS$>${\bf result=sxpar(}{\it header, 'dummy', abort}{\bf )} & \\
+SXPAR: keyword DUMMY not found in sf\_g2\_01 & ; appends {\bf abort} to msg\\
+\end{tabular}\\
+\end{small}
+
+\item [RESULT=SXGPAR({\it header, par, groupname $[$, type, sbyte, nbytes$]$}) : ] 
+\index{SXGPAR}
+\index{SDAS image - read keyword values}
+
+This function reads keyword values from the group header.  It must be preceded 
+by a call to {\bf SXREAD} (the group header is assigned to the parameter 
+{\bf PAR} and is of type {\it byte}).
+
+\begin{itemize}
+
+\item {\bf header}---The STSDAS FITS image header.
+
+\item {\bf par}---The STSDAS image group parameter header.
+
+\item {\bf groupname}---The group parameter name (i.e., those names 
+associated with the group parameter keywords {\bf PTYPE}{\it n}, 
+{\it n=1,$\cdots$,PCOUNT}), or simply the integer {\bf n}.
+
+\item {\bf type}---An optional output for the 
+data type of the requested group parameter (if not supplied or null string, 
+the header is searched for type, sbyte, and nbytes).
+
+\item {\bf sbyte}---An optional parameter containing the starting byte 
+in parameter block for data.
+\newpage
+
+\item {\bf nbytes}---An 
+optional input parameter containing the 
+number of bytes in parameter block for data.
+\end{itemize}
+
+{\bf Note:} supplying the {\bf type}, {\bf sbyte} and {\bf nbytes} parameters 
+greatly speeds up the execution of {\bf SXGPAR}.  The best way to get 
+these parameters is to pass the three parameters as undefined 
+(or set {\bf type=}{\it ' '}).  {\bf SXGPAR} then returns their values for 
+use in subsequent calls.  For example:\\
+
+\begin{small}
+\begin{tabular}{ll}
+GHRS$>${\bf sxopen}, {\it 1, 'hrs8:[hrsdata.fos.0ya002]y0ya0201t.d0h',} & \\
+\hspace{1.1in}{\it  header} & ; open FOS data file\\
+GHRS$>${\bf print, sxpar(}{\it header, 'gcount'}{\bf )} & ; gcount=8 \\
+GHRS$>${\bf print, sxpar(}{\it header, 'pcount'}{\bf )} & ; pcount=25\\
+GHRS$>${\bf result1=sxread(}{\it 1, 2, PAR}{\bf )} & ; read group 3 params.\\
+GHRS$>${\bf result2=sxgpar(}{\it header, par, 1, type, sbyte, nbytes}{\bf )} & \\
+GHRS$>${\bf print}, {\it result2} & ; result2=214.49820 \\
+GHRS$>${\bf print}, {\it type, sbyte, nbytes} & ; REAL$*$8, 0, 8\\
+GHRS$>${\bf print, sxpar(}{\it header, 'ptype1'}{\bf )} & ; prints CRVAL1\\
+\end{tabular}\\
+\end{small}
+
+\noindent
+In this example, the header file is opened and {\bf SXPAR} is used to get the
+number of groups {\bf gcount} and the group parameters per group {\bf pcount}.  
+{\bf SXREAD} is then used to read group 3.  Next, using the group 
+parameter header vector {\bf PAR}, {\bf SXGPAR} is used to get the value, 
+type, starting byte, and byte length of group parameter 1.  Finally, 
+{\bf SXPAR} is again used to get the group parameter name of the first 
+group parameter.
+\end{description}
+
+\subsection{\bf Modifying Image Files}
+
+\begin{description}
+\item [SXWRITE, {\it unit, data $[$, par$]$} :] 
+\index{SXWRITE}
+\index{SDAS image - writing in data}
+
+This procedure writes a data array to a binary image data file. This must be preceded by 
+a call to {\bf SXOPEN} or {\bf SXMAKE}.
+
+\begin{itemize}
+\item {\bf unit}---The IDL logical unit number from 1 to 9 specified in the
+call to {\bf SXOPEN} or {\bf SXMAKE}.
+
+\item {\bf data}---The array of data to be written.  The dimensions of 
+{\bf data} must agree with those supplied to {\bf SXOPEN} and written into 
+the STSDAS image header.  The type is converted if necessary.
+
+\item {\bf par}---An optional input parameter that contains the group parameter 
+block.  The size of this array must agree with the {\bf PSIZE} group 
+parameter keyword found in the header.
+
+\end{itemize}
+\newpage
+\noindent
+In this 
+example, the goal is to create a new STSDAS FITS image file to
+contain a portion of the contents of an existing FITS file:\\ 
+
+\begin{small}
+\begin{tabular}{ll}
+GHRS$>${\bf sxopen}, {\it 1, 'zcal:sf\_g2\_01', header} & ; open existing file\\
+GHRS$>${\bf print, sxpar(}{\it header, 'naxis'}{\bf )} & ; naxis=1 no. of axes\\
+GHRS$>${\bf print, sxpar(}{\it header, 'naxis1'}{\bf )} & ; naxis1=203 size axis 1\\
+GHRS$>${\bf print, sxpar(}{\it header, 'datatype'}{\bf )} & ; datatype=REAL$*$8 datatype of data\\
+& \\
+GHRS$>${\bf data=}{\it dblarr(203)} & REAL$*$8 vector\\
+GHRS$>${\bf print, sxpar(}{\it header, 'gcount'}{\bf )} & ; gcount=2\\
+GHRS$>${\bf sxmake}, {\it 2, 'myfile', data, 0, 1} & ; make new file\\
+& \\
+GHRS$>${\bf newdata=sxread(}{\it 1, 0}{\bf )} & ; read group 1\\
+GHRS$>${\bf sxwrite}, {\it 2, newdata} & \\
+\end{tabular}\\
+\end{small}
+\noindent
+
+The first steps open the existing file and extract header keyword values
+useful in determining the type, size, and dimension of a data group.  This 
+information is then used to create a {\it template} group array {\bf data}.
+In addition, {\bf SXPAR} is used to determine how many groups are in the
+existing file which is useful just in case the last group was to be extracted.\\
+
+Next, {\bf SXMAKE} is used to create the header and binary data files.
+The STSDAS FITS image file {\it myfile} is designed to contain a single group
+of size, dimension, and type {\bf data} with no group parameters.  In
+addition, a new header is created.\\
+
+Once the STSDAS image file {\it myfile} has been created, the first group array
+is extracted from the existing FITS file.  This group is then written to 
+{\it myfile} by {\bf SXWRITE}.
+
+\item [SXHWRITE, {\it filename, HEADER} :]
+\index{SXHWRITE}
+\index{SDAS image - writing header} 
+
+This procedure is used to write image header information to a {\it new} 
+header file {\it without} changing the data ({\bf .hhd}) file.
+
+\begin{itemize}
+
+\item {\bf filename}--- The name of the header file to write to.  
+If an extension is supplied, it must only be three (3) characters in 
+length (default is {\bf .hhh}).
+
+\item {\bf HEADER}---The image header vector to write. {\bf Note:} {\bf SXHWRITE} 
+modifies the {\bf HEADER} vector in the following ways, if necessary.
+
+\begin{enumerate}
+
+\item If not already present, the FITS {\bf END} keyword is added as the last 
+header file record.   Records after an existing {\bf END} keyword are deleted.
+
+\item Spaces are appended to force each record to be 80 characters in length.
+
+\end{enumerate}
+\end{itemize}
+\newpage
+
+\noindent
+{\bf Note:} this 
+routine functions like the {\bf access=}{\it 'W'}
+option used in {\bf SXOPEN} (see Section~\ref{sxopen}).  It does not append 
+the header information to an existing header but rather creates a new header
+file.\\
+
+\noindent
+For example:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf sxhread}, {\it 'z0gy011st.shh', HEADER} & \\
+GHRS$>${\bf sxhwrite}, {\it 'myfile', header} & \\
+\end{tabular}\\
+
+\noindent
+writes the contents of the {\bf .shh} FITS header to {\it myfile.hhh}.
+
+\item [SXADDPAR, {\it header, keywordname, value $[$, comment, location, 
+format=fmt\_string$]$} :] 
+\index{SXADDPAR}
+\index{SDAS image - modifying header}
+
+This procedure adds or modifies the value of a keyword in the STSDAS image header.
+{\bf Note:} this routine {\it does not} write the modifications to a header file.
+
+\begin{itemize}
+
+\item {\bf header}---A string vector containing the header.
+If not defined, {\bf SXADDPAR} will create an empty header vector.
+
+\item {\bf keywordname}---The name of the FITS keyword to add to the header.  
+If {\bf keywordname} is already 
+in {\bf header}, its value and possibly the comment 
+fields will be modified. Otherwise a new record is added to {\bf header}.
+If {\bf keywordname=}{\it 'HISTORY'}, then its contents will be added to the header 
+without replacement.
+
+\item {\bf value}---The value of the added FITS keyword. If {\bf value} 
+is assigned a logical {\bf 1}, then {\bf value='T'} and similarly for 
+a logical {\bf 0}.  {\bf Note:} if {\bf name=}{\it 'HISTORY'}, then 
+{\bf value} is a comment string describing the history.
+
+\item {\bf comment}---An optional input string describing the {\bf name} and/or
+its associated {\bf value}.  The ``/'' is added by {\bf SXADDPAR} at 
+string position 31 (to comply with FITS format rules).  If not supplied, or 
+set to a null value ({\bf comment=' '}), the previous {\bf comment} field 
+is retained (if found).
+
+\item {\bf location}---This is the character string name of a keyword that 
+already exists in the header.  The new keyword, its value, and any comment will
+be inserted into the header {\it before} the position of the 
+keyword assigned to {\bf location}.\\
+
+\noindent
+For example, if {\bf location=}{\it 'GCOUNT'}, the new keyword 
+will be added to {\bf header} {\it before} the keyword {\bf GCOUNT}.
+{\bf Note:} this applies only when adding a new keyword; keywords already in 
+the header are kept in the same position.
+
+\item {\bf format=fmt\_string}---An optional IDL keyword string used to 
+specify the FORTRAN format for a keyword {\bf value}.
+\end{itemize}
+\newpage
+
+\noindent
+Examples:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf sxopen}, {\it 1, 'zcal:sf\_g2\_01', header} & ; get header\\
+GHRS$>${\bf sxaddpar},{\it header, 'spam', 0.9, 'filling factor',\$} & \\ 
+\hspace{1.1in}{\it 'end', format='f4.1'} & \\
+GHRS$>${\bf print}, {\it header} & ; new header \\
+\end{tabular}\\
+
+\noindent
+In this example, an existing header is read into {\bf header}.  A new keyword, 
+{\bf spam}, its value, and the comment fields are added to {\bf header} in a 
+position {\it before} the {\bf END} keyword.\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf sxopen}, {\it 1, 'zcal:sf\_g2\_01', header} & \\
+GHRS$>${\bf sxaddpar}, {\it header, 'history', 'modified Dec 1, 1992'} & \\
+GHRS$>${\bf print}, {\it header} & ; new header \\
+\end{tabular}\\
+
+\noindent
+In this example, a {\bf HISTORY} keyword is added to the header and is 
+positioned before the {\bf END} keyword.\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf header=}{\it strarr(10)} & ; blank header\\
+GHRS$>${\bf sxaddpar}, {\it header, 'spam', 0.9, 'filling factor',} & \\ 
+\hspace{1.1in}{\it format='f4.1'} & \\
+GHRS$>${\bf print}, {\it header} & ; new header \\
+\end{tabular}\\
+
+\noindent
+In this example, a new keyword is added to an {\it empty} header.  {\bf Note:} 
+the keyword {\bf END} is also added by this statement.
+
+\item [SXADDHIST, {\it history, header} :] 
+\index{SXADDHIST}
+\index{SDAS image - adding history}
+
+This procedure adds one or more lines of history to an image header.  {\bf Note:} if the 
+header to be modified comes from an existing file, the file must first be 
+opened with {\bf SXOPEN}.  In addition, the modified header is not written to
+a header file with this routine.
+
+\begin{itemize}
+
+\item {\bf history}---A string or string vector containing history line(s) to 
+add  to the image header (maximum length of 72 characters).  
+
+\item {\bf header}---The header vector to be added to.  If {\bf header} is
+blank, it must first contain the {\bf END} keyword.  The history records are
+then added.
+
+\end{itemize}
+\newpage
+\noindent
+For 
+instance:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf sxopen}, {\it 1, 'zcal:sf\_g2\_01', header} & ; get existing header\\
+GHRS$>${\bf hist\_recs=}{\it strarr(2)} & ; add 2 history records\\
+GHRS$>${\bf hist\_recs(0)=}{\it 'History record 1'} & \\
+GHRS$>${\bf hist\_recs(1)=}{\it 'History record 2'} & \\
+GHRS$>${\bf sxaddhist}, {\it hist\_recs, header} & \\
+GHRS$>${\bf print}, {\it header} & ; view modified header\\
+\end{tabular}\\
+
+\noindent
+This example adds the history records to an existing header before the {\bf
+END} keyword.\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf data=}{\it fltarr(10,10)} & ; template data array\\
+GHRS$>${\bf sxmake}, {\it 1, 'myfile', data, 0, 1} & ; make new header file\\
+GHRS$>${\bf sxhread}, {\it 'myfile', header} & ; read header file\\
+GHRS$>${\bf hist\_recs=}{\it strarr(2)} & ; add 2 history records\\
+GHRS$>${\bf hist\_recs(0)=}{\it 'History record 1'} & \\
+GHRS$>${\bf hist\_recs(1)=}{\it 'History record 2'} & \\
+GHRS$>${\bf sxaddhist}, {\it hist\_recs, header} & \\
+\end{tabular}\\
+
+\noindent
+These statements add the history records to a newly created STSDAS image
+header before the {\bf END} keyword.
+
+\item [SXHEDIT, {\it filename, header $[$, /vi$]$} :] 
+\index{SXHEDIT}
+\index{SDAS image - editing header}
+
+This procedure allows easy editing of an STSDAS image header with using the VMS {\bf EDT} text 
+editor (or {\bf vi, GNU emacs} editors on under Unix). {\bf SXHEDIT} re-formats the 
+header to a normal ASCII text file, invokes the editor, and then re-formats 
+the file back to FITS format (80 character fixed-length) when the editor is 
+exited.  {\bf Note:} a new version of the header file is created in this 
+process.  Under VMS, a new version number is created.  Under UNIX, a temporary 
+file {\it sxhedit.tmp} is created which will contain the updated header 
+information.  This file is also created on VMS machines and may be deleted.
+
+\begin{itemize}
+
+\item {\bf filename}---The filename of the image header (default extension is 
+{\bf .hhh}).
+
+\item {\bf /vi}---An IDL keyword (if using this routine under Unix only) 
+which when present and non-zero, tells {\bf SXHEDIT} to use the
+{\bf vi} text editor. Otherwise, the {\it GNU emacs} editor is used. 
+
+\item {\bf HEADER}---An optional output which contains the edited version of the 
+header.  
+\end{itemize}
+\newpage
+
+\noindent
+For 
+example:\\
+
+\begin{tabular}{ll}
+GHRS$>$\${\bf copy} {\it zcal:sf\_g2\_01.$*$ $*$} & ; copy to current dir.\\
+GHRS$>${\bf sxhedit}, {\it 'sf\_g2\_01', header} & ; open existing header\\
+\end{tabular}\\
+
+\noindent
+opens the existing header file, places the user into the VMS {\bf EDT} text
+editor at which point existing records can be modified or new records can be
+added.  The new version of the header is then written to the user's current
+directory.\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf print}, {\it header} & ; view modified header\\
+GHRS$>${\bf sxhread}, {\it 'sf\_g2\_01', header} & ; read modified header\\
+\end{tabular}\\
+
+\noindent
+{\bf SXHREAD} is then used to read the newly modified header. 
+\end{description}
+
+\subsection{\bf Operating on STSDAS Tables}
+
+\index{SDAS tables, operating on}
+This section describes the procedures used to create, read in and modify 
+STSDAS tables. There are two groups of procedures, operating at 
+high and low-levels. The high-level routines (prefaced by {\bf TABLE}), 
+are easier to use, but are more restrictive than the low-level routines 
+(prefaced by {\bf TAB}).\\
+
+An STSDAS 
+table consists of a specified number of rows and columns into which 
+data are stored and later manipulated.  Each column typically has both a name 
+associated with it, and a specified data format.  The table format 
+(number of rows, columns, column names, data formats) specifications are 
+contained within a {\it Table Control Block} or {\bf TCB}.  The data that are 
+entered in the rows and columns are contained in the {\it Data Table Array} or 
+{\bf TAB}.\\
+\index{SDAS tables - high level routines}
+
+One of the major differences between the high and low-level routines is that
+they work by manipulating IDL variables ({\bf TCB} and 
+{\bf TAB}), whereas the high level routines primarily work with the table as 
+a whole and are designed for easy display of its contents.\\
+
+
+\subsubsection{\bf The High-Level TABLE Routines}
+\label{sdas table high}
+\index{SDAS tables - high level routines}
+Procedures 
+included in this section are summarized below:
+
+\begin{description}
+\item [TABLE\_HELP :] A procedure that prints a summary of STSDAS table 
+contents.
+\item [TABLE\_PRINT :] A procedure used to create a listing of the STSDAS table.
+\item [TABLE\_LIST :] A procedure that generates a listing of specific 
+columns in a table.
+\item [TABLE\_EXT :] A procedure used to extract values from specific columns 
+of a table.
+\item [TABLE\_SORT :] A procedure used to sort table data in ascending order.
+\item [TABLE\_CALC  :] A procedure used for calculating a new column based 
+on existing table columns,
+\item [TABLE\_APPEND :] A procedure used to merge two or more similar STSDAS 
+tables.
+\item [TABLE\_DELETE :] A procedure for deleting specific rows from an STSDAS 
+table.
+\end{description}
+
+\vspace{0.25in}
+
+\begin{description}
+
+\item [TABLE\_HELP, {\it tabname $[$, header$]$} :]
+
+\index{TABLE\_HELP}
+\index{SDAS tables - help}
+\index{help - SDAS tables}
+
+This 
+procedure prints a summary of the STSDAS table contents. This includes the size of the 
+table, column names, column units, data type and output format (in SPP code).
+
+\begin{itemize}
+
+\item {\bf tabname}---The STSDAS table name.
+
+\item {\bf header}---An optional input header vector returned by {\bf
+TAB\_READ}.  If supplied, it will be printed. 
+
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf tab\_read}, {\it 'zcal:blem\_001', tcb, tab, header} & \\
+GHRS$>${\bf table\_help}, {\it tcb, header} & \\
+\end{tabular}\\
+
+\noindent
+produces the following output to the screen:
+
+\begin{scriptsize}
+\begin{center}
+\begin{verbatim}
+	ZCAL:BLEM_001.TAB                                               
+         nrows=         165               ncols=           8
+       maxrows=         165             maxcols=          10
+          npar=           0          row length=          28 words
+     max n_par=           0      max row length=          28 words
+    Table type=  Column-ordered
+ 
+ col. number    column_name            units     type    SPP format code
+ 
+     1            DETECTOR                     Integer*4       11d
+     2               LINE1                        Real*4     16.8g
+     3               LINE2                        Real*4     16.8g
+     4             SAMPLE1                        Real*4     16.8g
+     5             SAMPLE2                        Real*4     16.8g
+     6             EPSILON                     Integer*4       11d
+     7               DEPTH                        Real*4     16.8g
+     8             COMMENT                        String       28s
+ 
+END                                                                             
+\end{verbatim}
+\end{center}
+\end{scriptsize}
+\newpage
+
+\item [TABLE\_PRINT, {\it tablename $[$, columns, row1, row2$]$} : ] 
+\index{TABLE\_PRINT}
+\index{SDAS tables - listing}
+
+Procedure 
+that creates a tabular listing of the requested columns and
+rows.  If no columns or rows are specified, then  {\em all} columns
+and rows are output. The {\bf $!$textout} command can be used to
+redirect the output (Section~\ref{textout}). 
+
+\begin{itemize}
+
+\item {\bf tablename}---The STSDAS table name.
+
+\item {\bf columns}---An optional input vector of column numbers to be 
+printed or a string with column names separated by commas. If not supplied or 
+set to a null string, all columns are printed.
+
+\item {\bf row1}---An optional input designating the first row to print 
+(default=0).
+
+\item {\bf row2}---An optional input designating the last row to print 
+(default=last row in table).
+
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf table\_print}, {\it 'zcal:blem\_001','', 1, 2} & \\
+GHRS$>${\bf $!$textout=}{\it 3} & ; re-direct to file\\
+GHRS$>${\bf table\_print}, {\it 'zcal:blem\_001',[1, 3, 5], 1, 2} & \\
+GHRS$>${\bf $!$textout=}{\it 1} & ; re-direct to screen\\
+\end{tabular}\\
+
+\noindent
+produces a tabular listing for all columns and rows 1---2.  The second call 
+prints a listing of columns 1, 3, and 5 (again rows 1---2) to the output file 
+{\bf table\_print.prt}. {\bf Note:} if all columns are requested, the output
+format may wrap-around when directing output to the screen.
+%
+\item [TABLE\_LIST, {\it tablename $[$, row1, row2$]$} :] 
+\index{TABLE\_LIST}
+\index{SDAS tables - listing}
+
+A procedure that generates a listing or all of the columns in a FITS
+table (one column per line) for the requested rows. Normally the
+output goes to the terminal screen.  To redirect the output, use the
+{\bf $!$textout} command (see Section~\ref{textout}). 
+
+\begin{itemize}
+
+\item {\bf tablename}---The STSDAS table name.
+
+\item {\bf row1}---An optional input designating the first row to list 
+(default row1 = 0).
+
+\item {\bf row2}---The last row to list (default row2 = maxrow).
+
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf table\_list}, {\it 'zcal:blem\_001', 10, 12} & \\
+GHRS$>${\bf $!$textout=}{\it 3} & ; re-direct to file\\
+GHRS$>${\bf table\_list}, {\it 'zcal:blem\_001', 10, 12} & \\
+GHRS$>${\bf $!$textout=}{\it 1} & ; re-direct to screen\\
+\end{tabular}\\
+\newpage
+
+\noindent
+lists 
+the contents of rows 10---12 to the screen, then to an output file 
+{\bf table\_list.prt}.
+
+\item [TABLE\_EXT, {\it tablename, columns, V1, $\cdots$, V9} : ] 
+\index{TABLE\_EXT}
+\index{SDAS tables - reading}
+
+A procedure to read values from specified columns in a table and
+place them into variables (e.g., {\bf V1}, $\cdots$, {\bf V9}, etc).
+
+\begin{itemize}
+
+\item {\bf tablename}---The STSDAS table name.
+
+\item {\bf columns}---The table columns to extract (a string with columns 
+names separated by commas).
+
+\item {\bf V1, $\cdots$, V9}---Values 1---9 for the column names 1---9.
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf table\_ext}, {\it 'zcal:blem\_001', 'line1', line1data} & \\
+\end{tabular}\\
+
+\noindent
+extract the {\it line1} column from the table and stores the values in the
+vector {\bf line1data}.
+%
+\item [TABLE\_SORT, {\it tablename, column $[$, out\_name$]$} : ] 
+\index{TABLE\_SORT}
+\index{SDAS tables - sorting}
+
+This procedure sorts a table in {\it ascending order} based upon the values in the specified
+column.
+
+\begin{itemize}
+
+\item {\bf tablename}---The STSDAS table name.
+
+\item {\bf column}---The column to sort on.
+
+\item {\bf out\_name}---An optional output table name.  If not 
+supplied, input name is used.
+
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf table\_sort}, {\it 'zcal:blem\_001', 'detector', 'blem\_001\_mod'} & \\
+\end{tabular}\\
+
+\noindent
+sorts the {\it detector} column into ascending order and writes it to the 
+new table {\it blem\_001\_mod.tab} in the user's current directory.
+
+\item [TABLE\_CALC, {\it tablename, expression $[$, out\_name$]$} :] 
+\index{TABLE\_CALC}
+
+This procedure allows the user to construct a new column of data
+as a function of values in existing table columns.
+
+\begin{itemize}
+
+\item{\bf tablename}---The STSDAS table name.
+
+\item {\bf expression}---An expression for new or updated column values.
+Any legal IDL expression is valid where existing column names can be used as 
+variables.  User functions within the expression are allowed if the function
+is in an IDL library or has been previously compiled.
+
+\item {\bf out\_name}---An 
+optional input parameter designating the output 
+table name.  If not supplied, the input name is used.
+
+\end{itemize}
+
+\noindent
+For example, in the following call, the procedure uses data tabulated in 
+columns {\bf 'line1'} and {\bf 'line2'} of the existing
+table {\bf 'zcal:blem\_001'} to generate an average flux and tabulate this in
+column {\bf 'ave\_line'}.  The new table is written to {\bf blem\_001\_mod}:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf table\_calc}, {\it 'zcal:blem\_001', 'ave\_line$=$(line1$+$line2)/2.0'} & \\
+\end{tabular}
+
+\item [ TABLE\_APPEND, {\it list, name}: ]  This procedure is used to 
+append STSDAS tables to create a single table.  {\bf Note:} all input tables 
+must have the same number of columns with the same names, datatypes, and 
+column order.  Header parameters are taken only from the first table in the 
+list.
+
+\begin{itemize}
+\item {\bf list}---A string vector listing the STSDAS table filenames to append.
+\item {\bf name}---The name of the output STSDAS table containing all appended
+tables.
+\end{itemize}
+%
+\item [TABLE\_DELETE, {\it tablename, rows $[$, OUT\_NAME$]$} : ] 
+\index{SDAS tables - modifying}
+\index{TABLE\_DELETE}
+Procedure that deletes rows from the specified STSDAS table.
+
+\begin{itemize}
+
+\item {\bf tablename}---The STSDAS table name.
+
+\item {\bf rows}---The row or rows to delete from the table.
+
+\item {\bf out\_name}---An optional output table name. If not supplied, the 
+input name is used.
+
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf tab\_read}, {\it 'zcal:blem\_001', tcb, tab, header} & \\
+GHRS$>${\bf table\_delete}, {\it 'zcal:blem\_001', [10, 12], 'blem\_001\_mod'} & \\
+\end{tabular}\\
+
+\noindent
+deletes rows 10 and 12 from the existing table and writes the modified table to 
+the user's current directory.
+\end{description}
+\newpage
+
+\subsubsection{\bf The Low-Level TAB Routines}
+\label{sdas table low}
+\index{SDAS tables - low level routines}
+
+The routines 
+described in this section are summarized below:\\
+
+\begin{description}
+
+\item [TAB\_CREATE :] A procedure that creates {\bf tcb} and {\bf tab} 
+structures to pass to other routines.
+\item [TAB\_READ :] A procedure used to read STSDAS tables into IDL variables.
+\item [TAB\_PRINT :] A procedure that prints the columns of a table.
+\item [TAB\_SIZE :] A procedure which returns the number of rows and columns 
+in a table.
+\item [TAB\_VAL :] A function used t extract data from an STSDAS table.
+\item [TAB\_SORT :] A procedure used to sort an STSDAS table by a specified 
+columns.
+\item [TAB\_PUT :] A procedure used to add data to existing columns in a 
+table.
+\item [TAB\_COL :] A procedure used to extract column information from 
+table control block (TCB).
+\item [TAB\_MODCOL  :] A procedure used to change the name of a 
+column in an STSDAS table.
+\item [TAB\_EXPAND :] A procedure used to exapnd the number of 
+columns in an STSDAS table.
+\item [TAB\_ADDCOL :] A procedure used to add a new column to an STSDAS table.
+\item [TAB\_NULL :] A function used to locate null values within a vector of 
+values from an STSDAS table.
+\item [TAB\_NULLROW :] A procedure that adds a null row or rows to a table.
+\item [TAB\_DEL :] A procedure used to delete a row or rows from an 
+STSDAS table.
+\item [TAB\_WRITE :] A procedure used to save a modified table.
+\item [TAB\_TO\_DB :] A procedure used to write the contents of an STSDAS 
+table to an existing or new database.
+\item [TAB\_FORTOSPP :] A  procedure to convert a fortran format to an spp 
+format specfication.
+\newpage
+\item [TAB\_SPPTOFOR :] A 
+procedure used for converting an SPP format 
+specification to a normal Fortran format specification.
+\item [TAB\_HCONVERT :] A procedure used to perform byte-swapping when 
+converting STSDAS tables from VMS to UNIX. 
+\item [TAB\_CONVERT :] A procedure used to convert STSDAS tables from VMS to 
+UNIX (or DOS).
+\end{description}
+
+These are all called by the TABLE routines.  When working with the low-level
+routines, the first step is to read the contents of an STSDAS table into the
+IDL variables {\bf TCB} and {\bf TAB} using {\bf TAB\_READ} or {\bf
+TAB\_CREATE}.  When the table  modifications have been completed,
+the revised STSDAS table is saved to file using {\bf TAB\_WRITE}.\\ 
+
+\begin{description}
+
+\item [TAB\_CREATE, {\it TCB, TAB $[$, maxcol, maxrows, row\_len,
+tb\_type$]$} :] 
+\index{TAB\_CREATE}
+\index{SDAS tables - creating}
+
+Procedure that creates a {\it template} Table Control Block {\bf TCB} and Table Data Array
+{\bf TAB} required by other low-level routines.  {\bf Note:} you do not need to
+specify the table size, since all of the table routines will automatically 
+expand the table dimensions when required.  This routine is required for 
+{\it new} STSDAS tables.  If working with an existing table, proceed to the 
+routine {\bf TAB\_READ}.
+
+\begin{itemize}
+
+\item {\bf TCB}---The {\it template} Table Control Block array.
+
+\item {\bf TAB}---The {\it template} Data Table array.
+
+\item {\bf maxcol}---An optional input parameter which designates the maximum 
+allocated number of table columns ({\bf maxcol=}{\it 10} Default).
+
+\item {\bf maxrows}---An optional input and designates the maximum allocated 
+number of table rows ({\bf maxrows=}{\it 100} Default).
+
+\item {\bf row\_len}---An optional input and designates the table row length 
+in 2-byte units {\bf row\_len=maxcol$*$2}
+
+\item {\bf tb\_type}---An optional input and designates the table order 
+type; either\\
+{\bf tb\_type=}{\it 'row'} or {\it 'column'} ordered ('column' Default).
+
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf tab\_create}, {\it TCB, TAB} & ; create template arrays\\
+\end{tabular}\\
+
+\noindent
+will create template arrays for use with other low-level routines listed
+below.
+
+\item [TAB\_READ, {\it tablename, TCB, TAB $[$, HEADER$]$} :] 
+
+\index{TAB\_READ}
+\index{sdas tables - reading}
+
+The main 
+procedure used to read the contents of the specified table file into 
+IDL variables. {\bf Note:} if you are working with an existing table, this 
+would be the first call to make.  Otherwise, you need to first create a 
+table using {\bf TAB\_CREATE}.
+
+\begin{itemize}
+
+\item {\bf tablename}---The STSDAS table name.
+
+\item {\bf TCB}---Table control block.
+
+\item {\bf TAB}---The data table array.
+
+\item {\bf header}---An optional output header vector in a form usable 
+by {\bf SXPAR}, {\bf SXADDHIST}, {\bf SXADDPAR} 
+(i.e., the header is re-formatted to look like a normal FITS header).
+
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf tab\_read}, {\it 'zcal:blem\_001', tcb, tab, header} & \\
+\end{tabular}\\
+
+\noindent
+reads one of the GHRS calibration table files.
+%
+\item [TAB\_PRINT, {\it TCB, TAB, columns, row1, row2} :]
+\index{TAB\_PRINT}
+\index{SDAS table - printing}
+ 
+Procedure for printing all or select columns of an STSDAS table.  The
+text is printed as directed by the value of {\bf !textout}.  You must 
+use TAB\_READ before using this procedure.
+ 
+\begin{itemize}
+\item	{\bf tcb}---table control block returned by TAB\_READ
+\item	{\bf tab}---table array returned by TAB\_READ
+\item	{\bf columns}---(optional) vector of numbers a string with
+column names, separated by commas, of the columns to be printed. If
+not supplied, or provided as a null string, all columns are printed. 
+\item	{\bf row1}---first row to print  (default = 0).
+\item	{\bf row2}---last row to print (default = last row in table).
+\end{itemize} 
+%
+\index{TAB\_SIZE}
+\item [TAB\_SIZE, {\it tcb, NROWS, NCOLS, MAXROWS, MAXCOLS, ROWLEN, 
+MAX\_RL} : ] This procedure returns those factors which define the 
+structure of the STSDAS table.
+
+\begin{itemize}
+
+\item {\bf tcb}---The Table Control Block.
+
+\item {\bf NROWS}---The number of rows in the table.
+
+\item {\bf NCOLS}---The number of columns in the table.
+
+\item {\bf MAXROWS}---The 
+number of allocated rows.
+
+\item {\bf MAXCOLS}---The number of allocated columns.
+
+\item {\bf ROWLEN}---The byte-length of a row.
+
+\item {\bf MAX\_RL}---The allocated row length.
+
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{small}
+\begin{tabular}{ll}
+GHRS$>${\bf tab\_read}, {\it 'zcal:blem\_001', tcb, tab, header} & \\
+GHRS$>${\bf tab\_size}, {\it tcb, NROWS, NCOLS, MAXROWS, MAXCOLS,} & \\
+\hspace{1.1in}{\it ROWLEN, MAX\_RL} & \\
+\end{tabular}\\
+\end{small}
+
+\noindent
+returns the values for the requested table parameters.
+%
+\item {\bf RESULT=TAB\_VAL(}{\it tcb, tab, column $[$, rows$]$}){\bf :} 
+Function used to extract values from a STSDAS table.
+ 
+\index{TAB\_VAL}
+\index{SDAS tables - extracting values}
+
+\begin{itemize}
+
+\item {\bf tcb}---The Table Control Block.
+
+\item {\bf tab}---The Data Table Array (TAB).
+
+\item {\bf column}---A scalar column name or number.  These names and numbers 
+can be listed with the high-level routine {\bf TABLE\_HELP}.
+
+\item {\bf rows}---An optional input to which is assigned the row number or
+numbers to extract data values from.  If not supplied, all rows are returned.
+
+\item {\bf RESULT}---Contains the values for the specified column and row(s). 
+
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf tab\_read}, {\it 'zcal:blem\_001', tcb, tab, header} & \\
+GHRS$>${\bf table\_help}, {\it tcb, header} & ; list table info\\
+GHRS$>${\bf result=tab\_val(}{\it tcb, tab, 1, 1}{\bf )} & \\
+GHRS$>${\bf print}, {\it result} & ; result$=$1 \\
+\end{tabular}\\
+
+\noindent
+Here, the table file is first read to determine the names and
+numbering of the columns.  The table is then read and the value
+associated with column 1, row 1 is assigned to {\bf result}.
+%
+\newpage
+\item [TAB\_SORT, {\it column, TCB, TAB}:]
+\index{TAB\_SORT}
+\index{SDAS table - modifying}
+Procedure 
+for sorting a column of an STSDAS table in ascending 
+order.
+
+\begin{itemize}
+\item	{\bf column} - column name or number to sort.
+\item	{\bf tcb} - table control block.
+\item	{\bf tab} - output table array.
+\end{itemize}
+%
+\item [TAB\_PUT, {\it column, values, tcb, tab $[$, row$]$} :] 
+\index{SDAS tables - adding data}
+\index{TAB\_PUT}
+
+Used to add data to a new or existing table. 
+
+\begin{itemize}
+
+\item {\bf column}---The column name or number. {\bf Note:} If adding a new 
+column, a column name must be specified.
+
+\item {\bf values}---The data values to add to the table.
+
+\item {\bf tcb}---The Table Control Block.
+
+\item {\bf tab}---The Data Table Array.
+
+\item {\bf row}---An optional input starting row to insert values.   If not 
+specified then {\bf row=}{\it 0} is assumed.
+
+\end{itemize}
+
+\noindent
+Examples:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf tab\_read}, {\it 'zcal:blem\_001', tcb, tab, header} & \\
+GHRS$>${\bf table\_help}, {\it tcb, header} & ; list table info\\
+GHRS$>${\bf values=}{\it lonarr(165)} & ; create column vector\\
+GHRS$>${\bf values(}{\it $*$}{\bf )=}{\it 10} & ; a row of 10's\\
+GHRS$>${\bf tab\_put}, {\it 1, values, tcb, tab} & \\
+\end{tabular}\\
+
+\noindent
+This example reads an existing table, gets column information (specifically the
+column numbers, the data types of the columns, and how many elements are in 
+a given column).  It then overwrites the {\bf values} vector into all rows of
+column 1 ({\it 'detector'}).\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf tab\_read}, {\it 'zcal:blem\_001', tcb, tab, header} & \\
+GHRS$>${\bf table\_help}, {\it tcb, header} & ; list table info\\
+GHRS$>${\bf tab\_put}, {\it 'comment', 'this is great', tcb, tab, 3} & \\
+GHRS$>${\bf tab\_write}, {\it 'blem\_001\_mod', tcb, tab, header} & ; write changes\\
+\end{tabular}\\
+
+\noindent
+This example writes a single comment starting in row 3 of the {\it comments}
+ column.  It only overwrites to the length of the string assigned to 
+{\bf values} (i.e., if {\bf comment} is already populated, it may not be 
+completely overwritten).  {\bf Note:} the number of elements in the 
+{\bf values} vector dictates how many rows are written to. The modified
+table is then written to the user's current directory.
+%
+\item [TAB\_COL, {\it TCB, column, offset, width, type, column\_name, 
+units, format} :]
+\index{TAB\_COL}
+\index{SDAS table - modifying}
+
+This 
+very low level ({\it i.e.} basic) procedure extracts column
+information from the table control block. 
+
+\begin{itemize}
+\item	{\bf tcb}-- table control block.
+\item	{\bf column}-- column name (string) or column number
+\item	{\bf offset}-- output column offset in bytes
+\item	{\bf width}-- output column width in bytes
+\item	{\bf type}-- column data type:
+\begin{itemize}
+\item		1 - boolean
+\item		2 - character string
+\item		4 - integer*4
+\item		6 - real*4
+\item		7 - real*8
+\end{itemize}
+\item	{\bf column\_name}--column name
+\item	{\bf units}-- units of the column entries
+\item	{\bf format}-- format code
+\end{itemize}
+%
+\item [TAB\_MODCOL, {\it tcb, column $[$, units, format, newname$]$} : ]  
+\index{TAB\_MODCOL}
+A procedure used to change the specification for a table column.
+
+\begin{itemize}
+
+\item {\bf tcb}---The Table Control Block.
+
+\item {\bf column}---The column name or number to be modified.
+
+\item {\bf units}---An optional input string giving physical units for the 
+column (i.e., 'CM/SEC').  If not supplied or set to the null string ('') 
+the units are not changed.  {\bf Note:} case sensitivity on unit name.
+
+\item {\bf format}---An optional input print format (either FORTRAN or SPP 
+format). An SPP format should be preceeded by a '%'.  If not supplied or set 
+to a null string (''), the print format for the column is not changed.
+
+\item {\bf newname}---The new name for the column.  If not supplied
+or set to a null string (''), the name is not changed. {\bf Note:}
+case sensitivity on column name.
+
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf tab\_read}, {\it 'zcal:blem\_001', tcb, tab, header} & \\
+GHRS$>${\bf tab\_modcol}, {\it tcb, 'line1', 'Angstroms', 'f10.3', 'wave'} & \\
+GHRS$>${\bf tab\_write}, {\it 'blem\_001\_mod', tcb, tab, header} & \\
+\end{tabular}\\
+
+\noindent
+This example 
+reads an existing table and changes the column labelled 
+{\it 'line1'} from having no defined units, to units of {\it 'Angstroms'}; 
+from a format of {\it f16.8} to {\it f10.3}; and from a column name of {\it LINE1} 
+to {\it wave}.  The table is then written to the user's current directory 
+under {\it blem\_001\_mod.tab}.  {\bf Note:} the formatting is only for 
+display purposes and does not reflect a change in precision of the value.
+%
+\item [	TAB\_EXPAND,{\it tcb,tab,maxcol,maxrow,rowlen}:]
+\index{TAB\_EXPAND}
+\index{SDAS table - modifying}
+
+A procedure to expand the size of an STSDAS table file.
+
+\begin{itemize}
+\item	{\bf tcb} -- table control block returned by routine TAB\_READ
+\item	{\bf tab} -- output table array
+\item	{\bf maxcol} -- (optional) new maximum number of columns.
+\item	{\bf maxrow} -- new maximum number of rows.
+\item	{\bf rowlen} -- new maximum row length in 2 byte units.
+ \end{itemize}
+
+	If {\it maxcol}, {\it maxrow}, or {\it rowlen} are given 
+	values {\it less} than the previous maximum values, the previous
+	values are used.  All values are defaulted to zero
+	if not supplied.
+%
+\item [TAB\_ADDCOL, {\it col\_name, data\_temp, TCB, TAB} : ] This procedure adds a new
+column to an existing STSDAS table.  {\bf Note:} this procedure does not 
+populate the column with data values.
+
+\begin{itemize}
+\item {\bf col\_name}---The name of the column.
+\item {\bf data\_temp}---Sample data of type to be written to the column.  
+{\bf Note:} this parameter is only used as a template to determine data type.
+\item {\bf TCB}---Table Control Block.
+\item {\bf TAB}---The Data Table array.
+\end{itemize}
+%
+\item [NULLS=TAB\_NULL({\it values}) :]
+\index{TAB\_NULL}
+\index{SDAS table - modifying}
+A function that finds null values in any column or row.  The 
+vector {\it values} must already have been created using {\bf 
+TAB\_EXT} or {\bf TAB\_VAL} (see above).  It returns a set of index 
+values for the nulls in the vector by applying a logical T/F test to 
+each value in the extracted list.  So, for instance:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf i=where(not TAB\_NULL(}{\it value}{\bf ))} & \\
+GHRS$>${\bf value=value(}{\it i}{\bf )} & \\
+\end{tabular}\\
+
+\noindent
+removes all of the nulls from the vector {\it values}.
+\newpage
+\item [TAB\_NULLROW,{\it tcb,tab,row1,row2}:]
+\index{TAB\_NULLROW}
+\index{SDAS table - modifying}
+Procedure for 
+inserting null row(s) into an STSDAS table.
+
+\begin{itemize} 
+\item	{\bf tcb}---table control block
+\item	{\bf tab}---output table array
+\item	{\bf row1}---(optional) first row number to insert nulls (default=0)
+\item	{\bf row2}---(optional) last row number to insert nulls (default = last row)
+\end{itemize}
+%
+\item [TAB\_DEL, {\it TCB, TAB, rows} :]
+\index{TAB\_DEL}
+\index{SDAS table - modifying}
+Procedure for deleting specific row(s) from an STSDAS table.  
+
+\begin{itemize}
+\item	{\bf tcb}---table control block
+\item	{\bf tab}---table array
+\item	{\bf rows}---(Optional) A scalar vector giving the list of
+rows to delete from the table.  {\bf Note:} If {\it rows} is not
+supplied, all rows are deleted. 
+\end{itemize}
+%
+\item [TAB\_WRITE, {\it tablename, tcb, tab $[$, header$]$} :] Procedure 
+used to save a modified STSDAS table.
+\index{TAB\_WRITE}
+\index{SDAS table - modifying}
+
+\begin{itemize}
+\item {\bf tablename}---The table name (default extension = .tab).
+
+\item {\bf tcb}---The Table Control Block.
+
+\item {\bf tab}---The Data Table Array.
+
+\item {\bf header}---An optional input header vector.
+\end{itemize}
+
+\noindent
+For example:\\
+
+\begin{tabular}{ll}
+GHRS$>${\bf tab\_read}, {\it 'zcal:blem\_001', tcb, tab, header} & \\
+GHRS$>${\bf tab\_write}, {\it 'blem\_001\_mod', tcb, tab, header} & \\
+\end{tabular}\\
+
+\noindent
+writes the table to a new name into the user's default directory.
+%
+\item [TAB\_TO\_DB, {\it tablename, dbname, new}:]
+\index{TAB\_TO\_DB}
+\index{SDAS table - adding to Database}
+\index{Databases -- adding an SDAS table to existing}
+
+Procedure for adding the contents of an STSDAS table to an existing or
+new database file. 
+
+\begin{itemize}
+\item	{\bf tablename}---table name
+\item	{\bf dbname}---database name
+\item	{\bf new}---(optional) integer that flags one of the following states 
+for the target database (default = 0):
+\begin{itemize}
+\item  0 -add 
+to existing database 
+\item  1 -create new database
+\item 2 -create new database and allow user to edit the {\bf .DBD} file (for 
+example, to add spares)
+\end{itemize}
+\end{itemize}
+ 
+In order to execute TAB\_TO\_DB, {\bf !priv} must be set to 2 or 
+higher.  If you are creating a new database, TAB\_TO\_DB places it in 
+your current default directory.  The default directory must be 
+included the logical definition {\bf zdbase}.  {\bf Note:}  
+TAB\_TO\_DB will update the item ENTRY in any database.
+
+\item [TAB\_FORTOSPP, {\it format, SPPFORMAT} :] Procedure to convert a 
+Fortran-format to an SPP-format specfication.
+\begin{itemize}
+\item {\bf format}---Fortran-format specification.
+\item {\bf SPPFORMAT}---SPP-format specification.
+\end{itemize}
+%
+\item [TAB\_SPPTOFOR, {\it sppformat, FORMAT, WIDTH} :] This procedure 
+converts an SPP-format specification to a Fortran-format specification.
+\begin{itemize}
+\item {\bf sppformat}---SPP-format specification (without preceeding \%).
+\item {\bf FORMAT}---Fortran-format specification (string).
+\item {\bf WIDTH}---Fortran field width.
+\end{itemize}
+%
+\item [TAB\_HCONVERT, {\it name} :] This procedure performs byte-swapping 
+when converting STSDAS tables from VAX to SUN.
+\begin{itemize}
+\item {\bf name}---The STSDAS table file name.
+\end{itemize}
+%
+\item [TAB\_CONVERT, {\it filespec} :] This procedure converts STSDAS tables from VAX to 
+SUN (or DOS) computers.
+\begin{itemize}
+\item {\bf filespec}---File name of STSDAS table.
+\end{itemize}
+\end{description}
+\newpage
+\subsubsection{\bf Example: Creating a New STSDAS Table}
+
+\index{SDAS tables - examples}
+\index{examples - SDAS tables}
+In this 
+section we illustrate the use of the table manipulation routines
+by creating a new table to contain a spectrum using the low level
+routines and then examining the table with the high level routines. 
+It is assumed that the spectrum has been obtained from other sources and is 
+held in the IDL vectors {\bf WAVE} and {\bf FLUX}.\\
+
+\begin{small}
+\begin{tabular}{lll}
+1. & GHRS$>${\bf tab\_create}, {\it tcb, tab} & ; generates empty table \\
+2. & GHRS$>${\bf tab\_put}, {\it 'wavelength', wave, tcb, tab} & ; create wavelength column \\
+3. & GHRS$>${\bf tab\_put}, {\it 'flux', flux, tcb, tab} & ; Create flux column \\
+4. & GHRS$>${\bf tab\_modcol}, {\it tcb, 'wavelength', 'Angstroms'} & ; Add units to column \\
+5. & GHRS$>${\bf tab\_write}, {\it 'spectrum', tcb, tab} & ; Writes table to file. \\
+6. & GHRS$>${\bf table\_help}, {\it 'spectrum'} & ; lists contents of table \\
+7. & GHRS$>${\bf table\_sort}, {\it 'spectrum', 'wavelength'} & ; sort table on wavelengths. \\
+8. & GHRS$>${\bf table\_delete}, {\it 'spectrum', 25} & ; Remove bad row \\
+9. & GHRS$>${\bf table\_calc}, {\it 'spectrum', \$} & ; New column.\\
+   & {\it 'newflux$=$flux$-$(a$+$b$*$wavelength)'} & ; \\
+10. & GHRS$>${\bf $!$textout=3} & ; Redirect output \\
+11. & GHRS$>${\bf table\_print}, {\it 'spectrum', \$} & ; Print contents \\
+   & {\it 'wavelength, newflux', 0, 99} & ;\\ 
+\end{tabular}\\
+\end{small}
+
+\noindent
+{\bf Line 1} creates the structure for the file while {\bf Lines 2}
+and {\bf 3} add data to the table and names the columns. {\bf Line 4}
+adds the units to the wavelength column and {\bf Line 5} saves the
+table in the disk file {\bf spectrum.tab}.  {\bf Line 6} then examines
+the contents of the disk file, {\bf Line 7} sorts the table into
+ascending wavelength values and {\bf Line 8} removes row 25, which
+might contain a bad data point. {\bf Line 9} then generates a new
+column (called {\bf NEWFLUX}) which contains the original flux with a
+wavelength dependent background removed. {\bf Line 10} re-directs text
+output to the file {\it table\_print.prt} and {\bf Line 11} prints out
+the first 100 rows of the wavelength and revised flux columns. 
+
+\end{document}

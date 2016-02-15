@@ -1,0 +1,35 @@
+#!/usr/bin/perl
+
+$started=0;
+while(<>) {
+  if(!/^\S/) {
+    $started=0;
+  }
+  if($started) {
+    s/<\S*>//g;
+    s/^\*//;
+    s/\*/ /;
+    $name=substr($_, 6,31);
+    $name=~/[\*|\>]?(.*)/;
+    $name=$1;
+    $name=join("_", split(" ", $name));
+    $ra=substr($_, 37, 11);
+    $ra=~/(.*)h(.*)m(.*)s/;
+    $rahr=$1;
+    $ramin=$2;
+    $rasec=$3;
+    $dec=substr($_, 49, 10);
+    $dec=~/(.*)d(.*)m(.*)s/;
+    $decdeg=$1;
+    $decmin=$2;
+    $decsec=$3;
+    $cz=substr($_, 68, 6);
+    printf "%31s $rahr $ramin $rasec $decdeg $decmin $decsec $cz\n", $name;
+  } else {
+    chomp;
+    split;
+    if($_[0] eq "No.") {
+      $started=1;
+    }
+  }
+}

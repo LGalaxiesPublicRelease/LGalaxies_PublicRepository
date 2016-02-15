@@ -1,0 +1,52 @@
+/database                                                 July 2001
+
+This subdirectory contains the IDL procedures, mostly written by Don Lindler,
+(ACC/Goddard) to create and access an IDL database.   These database procedures
+are currently used by the HST-ACS, HST-STIS, HST-WFC3 and SOHO  science teams. 
+The LaTex file database.tex in the /text directory describes  the use of the
+database procedures with an emphasis on astronomical  applications.     Further
+information on the database software is available  in Chapter 3 and Appendix J
+of "A User's Guide to the GHRS Software" available as a postscript file or as
+.html help from  http://hrssun.gsfc.nasa.gov/daf/sw_docs.html
+
+The database procedures require the non-standard system variables
+!PRIV, !TEXTOUT, and !TEXTUNIT.   These can be added to the IDL session 
+by using the procedure ASTROLIB.
+
+Sample astronomical catalogs, formatted as IDL databases, are available in the
+/zdbase directory.   These include the Yale Bright Star Catalog, the 
+RC3 Galaxy catalog, and a catalog of HST observations.
+
+Very large (> 15 million entries) databases may require the use of 64 bit
+integers - and at least V5.2 -- internally.     Updated versions of DBINDEX,
+DBINDEX_DBF, DBFIND_SORT, and DBEXT_IND are available in
+ftp://idlastro.gsfc.nasa.gov/pub/v53.
+
+23-Jul-2001: DBCREATE, DBFIND, DBFIND_SORT, DBXVAL, DBINDEX_BLK, DBBUILD -
+             Now allow user to specify items with 64 bit or unsigned integer
+             datatypes.
+
+2-Dec-2000:  DBINDEX, DBEXT_IND - Now allow multiple-valued index items
+             Minor updates to database.tex file
+
+17-Nov-2000: DBFIND, DBFIND_ENTRY, DBFIND_SORT, DBSEARCH, IMDBASE - Now
+                have a Count keyword; deprecate use of !ERR
+
+11-Oct-2000: DBXVAL - Work for multiple-valued strings
+
+08-Aug-2000: DBPRINT - Change a loop index to type LONG (sigh...)
+
+5-Feb-2000:  DBPRINT - Only byteswap when necessary, for much improved speed.
+
+1-Nov-1999:  DBINDEX, DBEXT_DBF - Now allow a maximum of 18 instead of 15 items
+
+21-Sep-1999: DBPRINT - Fixed occasional problem when /NOHEADER supplied
+
+04-Sep-1999: DBCIRCLE - Fixed bug that could cause some entries to be missed
+
+05-Aug-1999: DBMATCH - Removed loop (faster) for substring searches
+             DBMATCH() - Change some loop indicies to type LONG
+             DBCIRCLE() - Leave output DIS vector unchanged if no entries found
+
+
+ 

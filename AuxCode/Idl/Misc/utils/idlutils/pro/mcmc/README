@@ -1,0 +1,45 @@
+Executive summary: I have an MCMC code (tested, working) checked into
+idlutils.
+
+Dear $IDLUTILS_DEVELOPERS,
+
+I have written a trivial and feature-free Markov Chain Monte Carlo
+code (called "hogg_mcmc" of course); it is fairly general.  It takes
+as input two functions, one of which computes a likelihood (given
+parameters) and the other of which randomly jumps to a new location in
+parameter space from the "current" location (according to whatever
+rules you like).
+
+To test the code, and see an example implementation:
+
+   # in any unix shell
+   cd $IDLUTILS_DIR
+   cvs -q up -d
+   cd pro/mcmc
+   echo hogg_mcmc_test | idl
+   gv idl.ps
+
+This test code uses the MCMC code to determine a weighted mean of 20
+1d measurements with gaussian errors (1d test) and fit a straight line
+to 40 2d data points with gaussian errors in only one dimension (2d
+test).  The latter case is an incredibly heavy implementation of
+standard linear least-square fitting.
+
+The PostScript(tm) file (idl.ps) made and displayed by the above UNIX
+commands has seven pages:
+
+0: test data for 1d test, with max-likelihood mean displayed
+1: likelihood vs mean value for each tested mean value
+2: histogram of all mean values tested, showing that the MCMC spends
+   more time on more likely models, linearly, as it is supposed to do
+3: test data for 2d test, with max-likelihood straight line displayed
+4: scatter plot of all models tested, plotted slope vs intercept
+5: histogram of all intercepts tested
+6: histogram of all slopes tested
+
+Hogg, 2005-03-31
+-- 
+David W. Hogg        *  assistant professor
+Center for Cosmology and Particle Physics
+Department of Physics, New York University
+david.hogg@nyu.edu   *  http://cosmo.nyu.edu/hogg/

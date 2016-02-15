@@ -1,0 +1,300 @@
+
+typedef struct {
+  char flag[20];  # Flag name
+  int bit;        # Bit number, 0-indexed (0 to 31)
+  char label[20]; # Bit label
+} maskbits;
+
+#------------------------------------------------------------------------------
+
+# The following mask bits are for the fiber, set in FIBERMASK_BITS()
+maskbits SPPIXMASK  0 NOPLUG          # Fiber not listed in plugmap file
+maskbits SPPIXMASK  1 BADTRACE        # Bad trace from routine TRACE320CRUDE
+maskbits SPPIXMASK  2 BADFLAT         # Low counts in fiberflat
+maskbits SPPIXMASK  3 BADARC          # Bad arc solution
+maskbits SPPIXMASK  4 MANYBADCOLUMNS  # >10% pixels are bad columns
+maskbits SPPIXMASK  5 MANYREJECTED    # >10% pixels are rejected in extraction
+maskbits SPPIXMASK  6 LARGESHIFT      # Large spatial shift between flat and object pos'n
+maskbits SPPIXMASK  7 BADSKYFIBER     # Sky Fiber shows extreme residuals
+maskbits SPPIXMASK  8 NEARWHOPPER     # Within 2 fibers of a whopping fiber (exclusive)
+maskbits SPPIXMASK  9 WHOPPER         # Whopping fiber
+maskbits SPPIXMASK 10 SMEARIMAGE      # Smear available for red and blue cameras
+maskbits SPPIXMASK 11 SMEARHIGHSN     # S/N sufficient for full smear fit
+maskbits SPPIXMASK 12 SMEARMEDSN      # S/N only sufficient for scaled median fit
+
+# The following mask bits are for a pixel, set in SPPIXMASK_BITS()
+maskbits SPPIXMASK 16 NEARBADPIXEL    # Bad pixel within 3 pixels of trace
+maskbits SPPIXMASK 17 LOWFLAT         # Flat field less than 0.5
+maskbits SPPIXMASK 18 FULLREJECT      # Pixel fully rejected in extraction (INVVAR=0)
+maskbits SPPIXMASK 19 PARTIALREJECT   # Some pixels rejected in extraction
+maskbits SPPIXMASK 20 SCATTEREDLIGHT  # Scattered light significant
+maskbits SPPIXMASK 21 CROSSTALK       # Cross-talk significant
+maskbits SPPIXMASK 22 NOSKY           # Sky level unknown at this wavelength (INVVAR=0)
+maskbits SPPIXMASK 23 BRIGHTSKY       # Sky level > flux + 10*(flux_err)
+                                      #   AND sky > 1.25 * median(sky,99 pixels)
+maskbits SPPIXMASK 24 NODATA          # No data available in combine B-spline (INVVAR=0)
+maskbits SPPIXMASK 25 COMBINEREJ      # Rejected in combine B-spline
+maskbits SPPIXMASK 26 BADFLUXFACTOR   # Low flux-calibration or flux-correction factor
+maskbits SPPIXMASK 27 BADSKYCHI       # Relative chi^2 > 3 in sky residuals at this wavelength
+maskbits SPPIXMASK 28 REDMONSTER      # Contiguous region of bad chi^2 in sky residuals
+                                      # (with threshhold of relative chi^2 > 3).
+
+#------------------------------------------------------------------------------
+
+maskbits TARGET  0 QSO_HIZ
+maskbits TARGET  1 QSO_CAP
+maskbits TARGET  2 QSO_SKIRT
+maskbits TARGET  3 QSO_FIRST_CAP
+maskbits TARGET  4 QSO_FIRST_SKIRT
+maskbits TARGET  5 GALAXY_RED
+maskbits TARGET  6 GALAXY
+maskbits TARGET  7 GALAXY_BIG
+maskbits TARGET  8 GALAXY_BRIGHT_CORE
+maskbits TARGET  9 ROSAT_A
+maskbits TARGET 10 ROSAT_B
+maskbits TARGET 11 ROSAT_C
+maskbits TARGET 12 ROSAT_D
+maskbits TARGET 13 STAR_BHB
+maskbits TARGET 14 STAR_CARBON
+maskbits TARGET 15 STAR_BROWN_DWARF
+maskbits TARGET 16 STAR_SUB_DWARF
+maskbits TARGET 17 STAR_CATY_VAR
+maskbits TARGET 18 STAR_RED_DWARF
+maskbits TARGET 19 STAR_WHITE_DWARF
+maskbits TARGET 20 SERENDIP_BLUE
+maskbits TARGET 21 SERENDIP_FIRST
+maskbits TARGET 22 SERENDIP_RED
+maskbits TARGET 23 SERENDIP_DISTANT
+maskbits TARGET 24 SERENDIP_MANUAL
+maskbits TARGET 25 QSO_MAG_OUTLIER
+maskbits TARGET 26 GALAXY_RED_II
+maskbits TARGET 27 ROSAT_E
+maskbits TARGET 28 STAR_PN
+maskbits TARGET 29 QSO_REJECT
+maskbits TARGET 31 SOUTHERN_SURVEY
+
+#------------------------------------------------------------------------------
+
+maskbits TTARGET  0 LIGHT_TRAP
+maskbits TTARGET  1 REDDEN_STD
+maskbits TTARGET  2 TEST_TARGET
+maskbits TTARGET  3 QA
+maskbits TTARGET  4 SKY
+maskbits TTARGET  5 SPECTROPHOTO_STD
+maskbits TTARGET  6 GUIDE_STAR
+maskbits TTARGET  7 BUNDLE_HOLE
+maskbits TTARGET  8 QUALITY_HOLE
+maskbits TTARGET  9 HOT_STD
+maskbits TTARGET 30 SEGUE_SURVEY
+maskbits TTARGET 31 SOUTHERN_SURVEY
+
+#------------------------------------------------------------------------------
+
+maskbits ZWARNING  0 SKY
+maskbits ZWARNING  1 LITTLE_COVERAGE
+maskbits ZWARNING  2 SMALL_DELTA_CHI2
+maskbits ZWARNING  3 NEGATIVE_MODEL
+maskbits ZWARNING  4 MANY_OUTLIERS
+maskbits ZWARNING  5 Z_FITLIMIT
+maskbits ZWARNING  6 NEGATIVE_EMISSION
+maskbits ZWARNING  7 UNPLUGGED
+
+#------------------------------------------------------------------------------
+
+maskbits RESOLVE_STATUS  0 RUN_PRIMARY
+maskbits RESOLVE_STATUS  1 RUN_RAMP
+maskbits RESOLVE_STATUS  2 RUN_OVERLAPONLY
+maskbits RESOLVE_STATUS  3 RUN_IGNORE
+maskbits RESOLVE_STATUS  4 RUN_EDGE
+maskbits RESOLVE_STATUS  5 RUN_DUPLICATE
+maskbits RESOLVE_STATUS  8 SURVEY_PRIMARY
+maskbits RESOLVE_STATUS  9 SURVEY_BEST
+maskbits RESOLVE_STATUS 10 SURVEY_SECONDARY
+maskbits RESOLVE_STATUS 11 SURVEY_BADFIELD
+maskbits RESOLVE_STATUS 12 SURVEY_EDGE
+
+#------------------------------------------------------------------------------
+
+maskbits IMAGE_STATUS  0 CLEAR
+maskbits IMAGE_STATUS  1 CLOUDY      # Unphotometric score
+maskbits IMAGE_STATUS  2 UNKNOWN     # Unphotometric score
+maskbits IMAGE_STATUS  3 BAD_ROTATOR # Set score=0
+maskbits IMAGE_STATUS  4 BAD_ASTROM  # Set score=0
+maskbits IMAGE_STATUS  5 BAD_FOCUS   # Set score=0
+maskbits IMAGE_STATUS  6 SHUTTERS    # Set score=0
+maskbits IMAGE_STATUS  7 FF_PETALS   # Unphotometric score
+maskbits IMAGE_STATUS  8 DEAD_CCD    # Unphotometric score
+maskbits IMAGE_STATUS  9 NOISY_CCD   # Unphotometric score
+
+#------------------------------------------------------------------------------
+
+maskbits CALIB_STATUS   0  PHOTOMETRIC
+maskbits CALIB_STATUS   1  UNPHOT_OVERLAP
+maskbits CALIB_STATUS   2  UNPHOT_EXTRAP_CLEAR
+maskbits CALIB_STATUS   3  UNPHOT_EXTRAP_CLOUDY
+maskbits CALIB_STATUS   4  UNPHOT_DISJOINT
+maskbits CALIB_STATUS   5  INCREMENT_CALIB
+maskbits CALIB_STATUS   6  RESERVED2
+maskbits CALIB_STATUS   7  RESERVED3
+maskbits CALIB_STATUS   8  PT_CLEAR
+maskbits CALIB_STATUS   9  PT_CLOUDY
+maskbits CALIB_STATUS  10  DEFAULT
+maskbits CALIB_STATUS  11  NO_UBERCAL  # For matching to external catalogs.
+
+#------------------------------------------------------------------------------
+
+maskbits VAGC_SELECT  0 TILED
+maskbits VAGC_SELECT  1 PLATEHOLE
+maskbits VAGC_SELECT  2 MAIN
+
+#------------------------------------------------------------------------------
+
+maskbits OBJECT1 0 CANONICAL_CENTER 	
+maskbits OBJECT1 1 BRIGHT 	
+maskbits OBJECT1 2 EDGE 	
+maskbits OBJECT1 3 BLENDED 	
+maskbits OBJECT1 4 CHILD  	
+maskbits OBJECT1 5 PEAKCENTER 	
+maskbits OBJECT1 6 NODEBLEND 	
+maskbits OBJECT1 7 NOPROFILE 	
+maskbits OBJECT1 8 NOPETRO 	
+maskbits OBJECT1 9 MANYPETRO 	
+maskbits OBJECT1 10 NOPETRO_BIG
+maskbits OBJECT1 11 DEBLEND_TOO_MANY_PEAKS  
+maskbits OBJECT1 12	CR
+maskbits OBJECT1 13 MANYR50 
+maskbits OBJECT1 14 MANYR90 
+maskbits OBJECT1 15 BAD_RADIAL 
+maskbits OBJECT1 16 INCOMPLETE_PROFILE 
+maskbits OBJECT1 17 INTERP 
+maskbits OBJECT1 18 SATUR 
+maskbits OBJECT1 19 NOTCHECKED 
+maskbits OBJECT1 20 SUBTRACTED 
+maskbits OBJECT1 21 NOSTOKES 
+maskbits OBJECT1 22 BADSKY 
+maskbits OBJECT1 23 PETROFAINT 
+maskbits OBJECT1 24 TOO_LARGE 
+maskbits OBJECT1 25 DEBLENDED_AS_PSF 
+maskbits OBJECT1 26 DEBLEND_PRUNED 
+maskbits OBJECT1 27 ELLIPFAINT 
+maskbits OBJECT1 28 BINNED1 
+maskbits OBJECT1 29 BINNED2 
+maskbits OBJECT1 30 BINNED4 
+maskbits OBJECT1 31 MOVED 
+
+#------------------------------------------------------------------------------
+
+maskbits OBJECT2 0 DEBLENDED_AS_MOVING 
+maskbits OBJECT2 1 NODEBLEND_MOVING 
+maskbits OBJECT2 2 TOO_FEW_DETECTIONS 
+maskbits OBJECT2 3 BAD_MOVING_FIT 
+maskbits OBJECT2 4 STATIONARY 
+maskbits OBJECT2 5 PEAKS_TOO_CLOSE 
+maskbits OBJECT2 6 BINNED_CENTER 
+maskbits OBJECT2 7 LOCAL_EDGE 
+maskbits OBJECT2 8 BAD_COUNTS_ERROR 
+maskbits OBJECT2 9 BAD_MOVING_FIT_CHILD 
+maskbits OBJECT2 10 DEBLEND_UNASSIGNED_FLUX 
+maskbits OBJECT2 11 SATUR_CENTER 
+maskbits OBJECT2 12 INTERP_CENTER 
+maskbits OBJECT2 13 DEBLENDED_AT_EDGE 
+maskbits OBJECT2 14 DEBLEND_NOPEAK 
+maskbits OBJECT2 15 PSF_FLUX_INTERP 
+maskbits OBJECT2 16 TOO_FEW_GOOD_DETECTIONS 
+maskbits OBJECT2 17 CENTER_OFF_AIMAGE 
+maskbits OBJECT2 18 DEBLEND_DEGENERATE 
+maskbits OBJECT2 19 BRIGHTEST_GALAXY_CHILD 
+maskbits OBJECT2 20 CANONICAL_BAND 
+maskbits OBJECT2 21 AMOMENT_UNWEIGHTED 
+maskbits OBJECT2 22 AMOMENT_SHIFT 
+maskbits OBJECT2 23 AMOMENT_MAXITER 
+maskbits OBJECT2 24 MAYBE_CR 
+maskbits OBJECT2 25 MAYBE_EGHOST 
+maskbits OBJECT2 26 NOTCHECKED_CENTER 
+maskbits OBJECT2 27 HAS_SATUR_DN 
+maskbits OBJECT2 28 SPARE4 
+maskbits OBJECT2 29 SPARE3 
+maskbits OBJECT2 30 SPARE2 
+maskbits OBJECT2 31 SPARE1 
+
+#------------------------------------------------------------------------------
+
+maskbits Q_EYEBALL 0 DONE
+maskbits Q_EYEBALL 1 OTHER
+maskbits Q_EYEBALL 2 UNCLASSIFIABLE
+maskbits Q_EYEBALL 3 NEED_BIGGER_IMAGE
+maskbits Q_EYEBALL 4 BAD_DEBLEND
+maskbits Q_EYEBALL 5 FLECK
+maskbits Q_EYEBALL 6 DOUBLE_STAR
+maskbits Q_EYEBALL 7 HII
+maskbits Q_EYEBALL 8 USE_ANYWAY
+maskbits Q_EYEBALL 9 EDGE
+maskbits Q_EYEBALL 10 SATELLITE
+maskbits Q_EYEBALL 11 PLANE
+maskbits Q_EYEBALL 12 BAD_Z
+maskbits Q_EYEBALL 13 INTERNAL_REFLECTION
+maskbits Q_EYEBALL 14 BAD_SPEC_CLASS
+maskbits Q_EYEBALL 15 USE_PARENT
+maskbits Q_EYEBALL 16 IN_HUGE_OBJECT
+maskbits Q_EYEBALL 17 STAR_ON_GALAXY
+maskbits Q_EYEBALL 18 QSO_ON_GALAXY
+maskbits Q_EYEBALL 19 NEGATIVE_QSO_FIT
+maskbits Q_EYEBALL 20 BAD_SPECTRUM
+maskbits Q_EYEBALL 21 POSSIBLE_LENS
+maskbits Q_EYEBALL 22 IS_STAR
+maskbits Q_EYEBALL 23 DOUBLE_Z
+maskbits Q_EYEBALL 24 PLANETARY_NEBULA
+maskbits Q_EYEBALL 25 BAD_PARENT_CENTER
+maskbits Q_EYEBALL 26 GOOD_Z
+maskbits Q_EYEBALL 27 USE_CHILD_IMAGE
+maskbits Q_EYEBALL 28 USE_CHILD_SPECTRUM
+
+#------------------------------------------------------------------------------
+
+maskbits T_EYEBALL 0 DONE
+maskbits T_EYEBALL 1 OTHER
+maskbits T_EYEBALL 2 UNCLASSIFIABLE
+maskbits T_EYEBALL 3 ELLIPTICAL
+maskbits T_EYEBALL 4 DISK
+maskbits T_EYEBALL 5 IRREGULAR
+maskbits T_EYEBALL 6 UNUSED_0
+maskbits T_EYEBALL 7 S0
+maskbits T_EYEBALL 8 PITCH_0    # tightly wound
+maskbits T_EYEBALL 9 PITCH_1
+maskbits T_EYEBALL 10 PITCH_2
+maskbits T_EYEBALL 11 PITCH_3
+maskbits T_EYEBALL 12 PITCH_4   # openly wound
+maskbits T_EYEBALL 13 PSF
+maskbits T_EYEBALL 14 ASYMMETRIC
+maskbits T_EYEBALL 15 HII_REGIONS
+maskbits T_EYEBALL 16 SPIRAL_STRUCTURE
+maskbits T_EYEBALL 17 DUST_LANE
+maskbits T_EYEBALL 18 BAR
+maskbits T_EYEBALL 19 RING
+maskbits T_EYEBALL 20 TIDAL_TAILS
+maskbits T_EYEBALL 21 SHELLS
+maskbits T_EYEBALL 22 BLUE_CORE
+maskbits T_EYEBALL 23 WARPED_DISK
+maskbits T_EYEBALL 24 DUST_ASYMMETRY
+maskbits T_EYEBALL 25 NEAR_NEIGHBORS
+maskbits T_EYEBALL 26 MERGER
+maskbits T_EYEBALL 27 OUTFLOW
+
+#------------------------------------------------------------------------------
+
+maskbits M_EYEBALL 0 DONE
+maskbits M_EYEBALL 1 NOT_MERGER
+maskbits M_EYEBALL 2 QUESTIONABLE
+maskbits M_EYEBALL 3 DRY
+maskbits M_EYEBALL 4 TIDAL_TAILS
+maskbits M_EYEBALL 5 SHELLS
+maskbits M_EYEBALL 6 RING
+maskbits M_EYEBALL 7 MAJOR
+maskbits M_EYEBALL 8 MULTIPLE
+maskbits M_EYEBALL 9 ALL_RED
+maskbits M_EYEBALL 10 ALL_BLUE
+maskbits M_EYEBALL 11 MIXED_REDBLUE
+maskbits M_EYEBALL 12 REPEAT
+maskbits M_EYEBALL 13 BEFORE
+maskbits M_EYEBALL 14 DURING
+maskbits M_EYEBALL 15 AFTER

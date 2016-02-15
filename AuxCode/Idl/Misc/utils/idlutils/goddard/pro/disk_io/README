@@ -1,0 +1,73 @@
+/DISK_IO                                                   June 1998
+
+This subdirectory contains IDL procedures to read popular disk formats in
+astronomy.  Currently available are procedures to access
+
+     (1) IRAF image (.imh) files  (read and write)
+     (2) MIDAS image and table files  (read and update)
+     (3) WFPC2 images (FITS or STSDAS)
+
+The procedures to access disk FITS files are kept in a separate subdirectory
+/FITS, and those to access STSDAS image files are in the subdirectory /SDAS.
+
+The procedure IRAFDIR uses the non-standard system variables !TEXTOUT and
+!TEXTUNIT.   These can be added to one's session using the procedure
+ASTROLIB.
+
+*********************************************************************
+
+IDL-MIDAS Interface routines  
+                             F. Murtagh, ST-ECF, January 1989.
+
+   The following four IDL routines are available for accessing
+   MIDAS .BDF and .TBL data structures:
+
+   MID_RD_IMAGE      ... image (.BDF) read,
+   MID_UP_IMAGE      ... image (.BDF) update,
+   MID_RD_TABLE      ... table (.TBL) read,
+   MID_UP_TABLE      ... table (.TBL) update.
+
+   The following lower level procedure is called by MID_RD_IMAGE and
+   MID_UP_IMAGE.
+
+   MID_RD_DIRDSC     ... directory descriptor read
+
+Annotated example of usage:
+
+   mid_rd_image,'trial',nax,npix,data
+                              [image TRIAL.BDF is accessed;
+                              values will be obtained for number of 
+                              dimensions in the image, NAX (assumed 1
+                              or 2); numbers of pixels in these 
+                              dimensions, NPIX(..); and pixel values, 
+                              DATA]
+   print,data                 [... for instance]
+   data(0) = 8.77             [arbitrary change of value]
+   mid_up_image,'trial',nax,npix,data
+                              [image TRIAL.BDF is updated; values for
+                              NAX, NPIX and DATA must be provided 
+                              and this example indicates how this can 
+                              be done using a prior MID_RD_IMSGE call]
+
+
+
+========================================================================
+Known Difficulties
+========================================================================
+
+1. A very large number of image descriptors cannot be handled.  This is
+   because the offsets determined by these routines cannot cope with 
+   for example 86 descriptors, as is the case with FOC images converted 
+   to MIDAS c. fall 1990.  An error message indicating that NAXIS is 0
+   indicates that the correct value of NAXIS is not being picked up. 
+
+   A simple work-around here is as follows.  Get rid of all superfluous
+   descriptors.  In MIDAS, this is permitted using the aux_mode keyword.
+   
+   help/key aux_mode             [... gives information about aux_mode]
+   read/key aux_mode             [... indicates that usually the 4th 
+                                  element is 1; put it to 0...]
+   write/key aux_mode 1,0,0,0,0,0,0,1
+   comp/ima newimage = oldimage  [... this copies the image, getting rid
+                                  of unnecessary descriptors.]
+

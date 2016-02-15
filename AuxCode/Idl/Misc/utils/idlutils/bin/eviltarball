@@ -1,0 +1,74 @@
+#!/bin/bash
+#------------------------------------------------------------------------------
+# Script to export a version of a code and build a tar file for distribution.
+#
+# The version name should either be "cvs" or begin with the letter "c".
+# If it is "cvs", then simply check-out the current (untagged) version
+# of the code.  If it is an actual tagged version, then cvs-export that
+# version.
+#
+# Example:
+#   % eviltarball idlspec2d v4_5_0
+# This creates the file "idlspec2d-v4_5_0.tar".  If you then wish to build
+# the code from this tar file in a directory named "idlspec2d":
+#   % tar xf idlspec2d-v4_5_0.tar
+#   % mv idlspec2d-v4_5_0 idlspec2d
+#   % cd spec2d
+#   % setenv $IDLSPEC2D_DIR $PWD
+#   % evilmake all
+# Note that the environment variable with the product name must be set,
+# and that the script "evilmake" must be in your path.  That script is
+# in the distribution of the "idlutils" product.
+#
+# D. Schlegel, Princeton, 24 August 2001
+#------------------------------------------------------------------------------
+
+# Demand that both a product and version name are on the command line,
+# and that the version name either be "cvs" or begin with the character "c".
+if [ $# != 2 ] ; then
+  echo "Need to specify product and version on command line, i.e."
+  echo "  \"eviltarball idlutils v4_5_0\""
+  exit
+fi
+PRODNAME=$1
+PRODVERS=$2
+if [ $PRODVERS  != "cvs" ] && [ `echo $PRODVERS | head -1c` != "v" ] ; then
+   echo "Version name must either be \"cvs\" or begin with the character \"c\"."
+   exit
+fi
+
+# Set up "sdsscvs" if it exists as a product.
+# Note that the "setup" Fermi-UPS command would already need to be present.
+
+# setup sdsscvs
+# if [ -z "$CVSROOT" ] ; then
+#    echo "Setting CVSROOT and CVS_RSH to default locations at Fermi"
+#    CVSROOT=cvsuser@sdss.fnal.gov:/cvs/sdss
+#    CVS_RSH=ssh
+# fi
+
+# Make a temporary directory for exporting the code, and make certain
+# that we can write to it.
+
+TEMPDIR=$PWD
+TEMPSUBDIR=$PRODNAME-$PRODVERS
+
+# Now export the code.
+
+cd $TEMPDIR
+if [ $PRODVERS = "cvs" ] ; then
+   cvs co -d $TEMPSUBDIR $PRODNAME
+else
+   cvs export -d $TEMPSUBDIR -r $PRODVERS $PRODNAME
+fi
+
+# Build the tar file
+
+tar cvf $TEMPSUBDIR.tar $TEMPSUBDIR
+
+# Finally, delete the temporary directory used to export the code.
+
+\rm -rf $TEMPDIR/$TEMPSUBDIR
+
+exit
+#------------------------------------------------------------------------------

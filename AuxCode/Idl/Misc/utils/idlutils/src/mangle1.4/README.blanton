@@ -1,0 +1,39 @@
+Andrew Hamilton's mangle product; docs at
+http://casa.colorado.edu/~ajsh/mangle/
+
+Changed Makefile to allow evilmake to define its own stuff, and to
+not compile "rotate" which depends on starlink (yuck).
+
+Removed the "A" files since they are silly and unnecessary and screw
+up the MacOS CVS stuff.
+
+Changed msg.c to use evilmake UNAME values SunOS and Linux
+
+Take out defn of CC=gcc and rely on evilmake to set it
+
+Change NPOLYSMAX
+
+moved *polygons[NPOLYSMAX] defn outside the stack for the main
+programs
+
+added selfdestruct flag to wrmask to destroy polygons as you write
+them
+
+added parents to format.h, polygon.h, new_poly.c, copy_poly.c,
+parse_args.c
+
+added add_parent
+
+added -x -H flags for inputs/outputs into parse_args.c
+
+Added mrb_balkanize, and changed Makefile for it
+
+changed output to stderr in msg.c
+
+in vmid.c, at vm=0x0 line to take care of static nonNULL address
+problem
+
+***
+
+fixed ransack bug where it wasn't checking for nULL polygons after
+throwing them away

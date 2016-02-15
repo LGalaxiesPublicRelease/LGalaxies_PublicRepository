@@ -1,0 +1,361 @@
+%!
+%%BoundingBox:       0      0    612    792
+%%Creator:  ajsh
+%%Title:  bonzo.ps
+%%CreationDate:  Mon Jun 11 13:48:16 2001
+%%PageMedia: Letter
+%%PageOrientation: Portrait
+% Begin fixed bonzo PostScript prologue
+save /psbonzosave exch def
+/$psbonzo 50 dict def
+$psbonzo begin
+% concatstrings procedure from gs_init.ps, needed by font-to-iso-latin-1
+/concatstrings
+	{ exch dup length 2 index length add string	% str2 str1 new
+	  dup dup 4 2 roll copy				% str2 new new new1
+	  length 4 -1 roll putinterval
+	} bind def
+% borrowed from gslp.ps
+% build iso-latin-1 version of a font
+/font-to-iso-latin-1 {  % <font> font-to-iso-latin-1 <font>
+    %% reencode for iso latin1; from the 2nd edition red book, sec 5.6.1
+    dup length dict begin {1 index /FID ne {def} {pop pop} ifelse} forall
+    /Encoding ISOLatin1Encoding def currentdict end
+    dup /FontName get 80 string cvs (-ISOLatin1) concatstrings cvn
+    exch definefont
+} def
+/find-latin-font {	% <name> find-latin-font <font>
+  findfont font-to-iso-latin-1
+} def
+/fonts [
+   /Times-Roman findfont
+   /Times-Italic findfont
+   /Times-Bold findfont
+   /Symbol findfont
+   /Times-BoldItalic findfont
+   /Helvetica findfont
+   /Helvetica-Oblique findfont
+   /Helvetica-Bold findfont
+   /Symbol findfont
+   /Helvetica-BoldOblique findfont
+   /Times-Roman find-latin-font
+   /Times-Italic find-latin-font
+   /Times-Bold find-latin-font
+   /Times-BoldItalic find-latin-font
+   /Helvetica find-latin-font
+   /Helvetica-Oblique find-latin-font
+   /Helvetica-Bold find-latin-font
+   /Helvetica-BoldOblique find-latin-font
+   ] def
+/Landscape {/pagewidth exch def /pageheight exch def
+   90 rotate 0 pagewidth neg .75 sub translate} def
+/Portrait {/pageheight exch def /pagewidth exch def} def
+/Upsidedown {/pageheight exch def /pagewidth exch def
+   180 rotate pagewidth neg .75 sub pageheight neg .5 sub translate} def
+/W {initclip
+    /ymax exch def /ymin exch def /xmax exch def /xmin exch def
+    newpath xmin ymin moveto xmax ymin lineto xmax ymax lineto
+    xmin ymax lineto closepath clip} def
+/NW{initclip} def
+/A {/angle exch def} def
+/CF{sethsbcolor closepath fill} def
+/CS{closepath stroke} def
+/D {/ycur exch def /xcur exch def
+    newpath xcur ycur moveto xcur ycur lineto 1 setlinecap
+    stroke
+    0 setlinecap} def
+/F {/yoff exch def /xmove exch def /ysize exch def /xoff exch def
+    /ymove exch def /xsize exch def /font exch def
+    fonts font 1 sub get
+    fm 0 xsize put
+    fm 1 ymove put
+    fm 2 xoff put
+    fm 3 ysize put
+    fm 4 xmove put
+    fm 5 yoff put
+    fm makefont setfont} def
+/I {setlinewidth} def
+/L {lineto} def
+/M {moveto} def
+/N {/ycur exch def /xcur exch def
+    newpath xcur ycur moveto} def
+/R {sethsbcolor} def
+/S {stroke} def
+/T {gsave currentpoint translate angle rotate show grestore} def
+/Colrow {/rows exch def /cols exch def /colcount 1 def /rowcount 1 def} def
+/Init {/angle 0 def
+       /fm [1 0 0 1 0 0] def
+       0 setlinewidth
+       initclip} def
+/Page {showpage
+       colcount cols eq rowcount rows eq and
+         {end psbonzosave restore}
+         {rowcount rows eq
+            {/rowcount 1 def colcount 1 add /colcount exch def}
+            {rowcount 1 add /rowcount exch def} ifelse
+         Init} ifelse
+      } def
+/Axis {/yorig exch def /xorig exch def
+       savematrix setmatrix xorig yorig translate
+       colcount 1 sub pagewidth mul neg
+       rowcount 1 sub pageheight mul neg translate} def
+72 72 scale
+Init
+% End of fixed prologue
+ 10.5 7.75 Portrait
+ 1 1 Colrow
+/savematrix matrix currentmatrix def
+% Page
+% Axis
+ 2.75 3.875 Axis
+% Seg
+ NW
+ 0 I
+ 0 0 0 R
+ 4 0 N
+ 4 4 L
+ 0 4 L
+ 0 0 L
+ 4 0 L
+CS
+ 0 0 N
+ 0 0.140625 L
+S
+ 0.4 0 N
+ 0.4 0.140625 L
+S
+ 0.8 0 N
+ 0.8 0.140625 L
+S
+ 1.2 0 N
+ 1.2 0.140625 L
+S
+ 1.6 0 N
+ 1.6 0.140625 L
+S
+ 2 0 N
+ 2 0.140625 L
+S
+ 2.4 0 N
+ 2.4 0.140625 L
+S
+ 2.8 0 N
+ 2.8 0.140625 L
+S
+ 3.2 0 N
+ 3.2 0.140625 L
+S
+ 3.6 0 N
+ 3.6 0.140625 L
+S
+ 4 0 N
+ 4 0.140625 L
+S
+ 0 4 N
+ 0 3.859375 L
+S
+ 0.4 4 N
+ 0.4 3.859375 L
+S
+ 0.8 4 N
+ 0.8 3.859375 L
+S
+ 1.2 4 N
+ 1.2 3.859375 L
+S
+ 1.6 4 N
+ 1.6 3.859375 L
+S
+ 2 4 N
+ 2 3.859375 L
+S
+ 2.4 4 N
+ 2.4 3.859375 L
+S
+ 2.8 4 N
+ 2.8 3.859375 L
+S
+ 3.2 4 N
+ 3.2 3.859375 L
+S
+ 3.6 4 N
+ 3.6 3.859375 L
+S
+ 4 4 N
+ 4 3.859375 L
+S
+ 0 0 N
+ 0 0.28125 L
+S
+ 2 0 N
+ 2 0.28125 L
+S
+ 4 0 N
+ 4 0.28125 L
+ 0 A
+S
+ 4 0.28125 0 -0 0.28125 0 0 F
+ -0.1553281 -0.328125 M
+(-) T
+ 1 0.3125 0 -0 0.28125 0 0 F
+ -0.000921875 -0.328125 M
+(1) T
+ 1.921875 -0.328125 M
+(0) T
+ 3.921875 -0.328125 M
+(1) T
+ 0 4 N
+ 0 3.71875 L
+S
+ 2 4 N
+ 2 3.71875 L
+S
+ 4 4 N
+ 4 3.71875 L
+S
+ 0 0 N
+ 0.140625 0 L
+S
+ 0 0.4 N
+ 0.140625 0.4 L
+S
+ 0 0.8 N
+ 0.140625 0.8 L
+S
+ 0 1.2 N
+ 0.140625 1.2 L
+S
+ 0 1.6 N
+ 0.140625 1.6 L
+S
+ 0 2 N
+ 0.140625 2 L
+S
+ 0 2.4 N
+ 0.140625 2.4 L
+S
+ 0 2.8 N
+ 0.140625 2.8 L
+S
+ 0 3.2 N
+ 0.140625 3.2 L
+S
+ 0 3.6 N
+ 0.140625 3.6 L
+S
+ 0 4 N
+ 0.140625 4 L
+S
+ 4 0 N
+ 3.859375 0 L
+S
+ 4 0.4 N
+ 3.859375 0.4 L
+S
+ 4 0.8 N
+ 3.859375 0.8 L
+S
+ 4 1.2 N
+ 3.859375 1.2 L
+S
+ 4 1.6 N
+ 3.859375 1.6 L
+S
+ 4 2 N
+ 3.859375 2 L
+S
+ 4 2.4 N
+ 3.859375 2.4 L
+S
+ 4 2.8 N
+ 3.859375 2.8 L
+S
+ 4 3.2 N
+ 3.859375 3.2 L
+S
+ 4 3.6 N
+ 3.859375 3.6 L
+S
+ 4 4 N
+ 3.859375 4 L
+S
+ 0 0 N
+ 0.28125 0 L
+S
+ 0 2 N
+ 0.28125 2 L
+S
+ 0 4 N
+ 0.28125 4 L
+S
+ 4 0.28125 0 -0 0.28125 0 0 F
+ -0.4512812 -0.09375 M
+(-) T
+ 1 0.3125 0 -0 0.28125 0 0 F
+ -0.296875 -0.09375 M
+(1) T
+ -0.296875 1.90625 M
+(0) T
+ -0.296875 3.90625 M
+(1) T
+ 4 0 N
+ 3.71875 0 L
+S
+ 4 2 N
+ 3.71875 2 L
+S
+ 4 4 N
+ 3.71875 4 L
+S
+% Seg
+ 0 4 0 4 W
+ 1.862842 2.376839 N
+ 1.742227 1.692798 L
+ 2.394931 1.930363 L
+ 1.862842 2.376839 L
+ 0.8 0.1 1 CF
+% Seg
+ 1.862842 2.376839 N
+ 3 1.42265 L
+ 2 3.154701 L
+ 1.862842 2.376839 L
+ 0 0.1 1 CF
+% Seg
+ NW
+ 0 1 1 R
+ 1.862842 2.376839 N
+ 3 1.42265 L
+ 2 3.154701 L
+ 1.862842 2.376839 L
+CS
+% Seg
+ 0 4 0 4 W
+ 1 1.42265 N
+ 1.742227 1.692798 L
+ 2 3.154701 L
+ 1 1.42265 L
+ 0.1 0.1 1 CF
+% Seg
+ NW
+ 0.1 1 1 R
+ 1 1.42265 N
+ 1.742227 1.692798 L
+ 2 3.154701 L
+ 1 1.42265 L
+CS
+% Seg
+ 0 4 0 4 W
+ 1 1.42265 N
+ 3 1.42265 L
+ 2.394931 1.930363 L
+ 1 1.42265 L
+ 0.9 0.1 1 CF
+% Seg
+ NW
+ 0.9 1 1 R
+ 1 1.42265 N
+ 3 1.42265 L
+ 2.394931 1.930363 L
+ 1 1.42265 L
+CS
+Page

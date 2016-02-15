@@ -1,0 +1,29 @@
+Read INSTALL for instructions on compilation.
+
+Documentation on mangle is at
+http://casa.colorado.edu/~ajsh/mangle/
+
+Typing a command with no arguments will give you a brief summary of its usage. 
+
+Typing a command with the -d switch will tell you what the defaults are.
+
+The mathematical algorithms are described by
+Hamilton A J S & Tegmark M (2003)
+"A method to deal accurately and efficiently with complex angular masks
+in galaxy surveys", MNRAS, submitted.
+
+To create masks for the 2QZ 10k or 2dF 100k surveys,
+cd <mangle_directory>/masks/2qz10k
+or
+cd <mangle_directory>/masks/2df10k
+and follows the READMEs.
+
+The intention is that the probability of the mangle software failing,
+once successfully compiled, should be comparable to the probability
+of a piece of spacejunk falling on your head (let's hope it ain't true).
+If it fails, please check out Troubleshooting at
+http://casa.colorado.edu/~ajsh/mangle/index.html#trouble
+If you still have a problem, please email me
+Andrew.Hamilton@colorado.edu
+
+Updated by ajsh 8 June 2003

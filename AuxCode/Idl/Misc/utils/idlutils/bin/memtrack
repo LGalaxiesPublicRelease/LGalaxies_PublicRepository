@@ -1,0 +1,9 @@
+#!/bin/bash
+# The one argument should be the process ID
+while [ 1 ]
+do
+#  /bin/ps -o etime,pcpu,pmem,rsz -p 4177 | tail -1
+  /bin/ps -o etime,pcpu,pmem,rsz -p $1 | tail -1 >> memtrack.out
+  sleep 1
+done
+

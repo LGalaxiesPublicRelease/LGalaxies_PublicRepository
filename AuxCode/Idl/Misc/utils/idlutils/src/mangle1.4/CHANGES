@@ -1,0 +1,32 @@
+--------------------------------------------------------------------------------
+mangle1.4
+3 Sep 2003
+
+Several minor improvements.
+The mangle code has gotten a pretty good workout on the 2dF 230k sample,
+released on 30 June 2003, and there have been no changes in mangle for about
+a month now, so I'm getting pretty happy that the code has converged,
+at least for the time being.
+
+In the future, if demand warrants, there may be an accelerated version of
+mangle that replaces double do loops over polygons with code that is a little
+more intelligent about deciding whether 2 polygons are close to each other.
+
+--------------------------------------------------------------------------------
+mangle1.3.3
+24 June 2003
+
+Implemented spolygon format.
+
+--------------------------------------------------------------------------------
+mangle1.3.2
+17 June 2003
+
+First general public release.
+Major upgrade from mangle1.2; much more robust.
+
+--------------------------------------------------------------------------------
+mangle1.2
+8 Sep 2001
+
+First limited public release.

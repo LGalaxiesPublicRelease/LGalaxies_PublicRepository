@@ -1,0 +1,50 @@
+The mangle software is written in c and fortran 77,
+so to compile mangle you will need both c and f77 compilers.
+
+To compile
+----------
+
+cd <mangle_directory>/src
+make
+
+The executables will be in
+<mangle_directory>/bin
+
+To remove unneeded object files
+-------------------------------
+
+cd <mangle_directory>/src
+make clean
+
+To remove a previous compilation and compile from scratch
+---------------------------------------------------------
+
+cd <mangle_directory>/src
+make cleanest
+make
+
+Systems on which mangle has compiled successfully
+-------------------------------------------------
+
+Linux
+gcc versions 2 or 3
+g77 or fort77
+
+Solaris
+cc or gcc
+f77 or g77
+
+Troubleshooting
+---------------
+If the Makefile gives problems, try using gmake (the gnu version of make)
+in place of make.  More generally, mangle is known to compile and run
+successfully with the gnu versions gcc and g77 of the c and fortran compilers,
+and with the gnu version gmake of the make command.
+
+There are bound to be problems with compilation in early stages of the general
+release of mangle, since mangle has been tested only on a limited number of
+systems.  If you are having problems compiling, please email me
+Andrew.Hamilton@colorado.edu, and I will try to work with you to get mangle
+to compile on your system.
+
+Updated by ajsh 16 June 2003

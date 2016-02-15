@@ -1,0 +1,27 @@
+# Quantum efficiency curve for Tek 2KA CCD at KPNO.
+# This is tabulated from a PostScript file on the KPNO web page (10 Sep 97).
+# The curve should be nearly identical for the CTIO 2KA CCD.
+# I have added the first and last points - DJS.
+ 2200  0.0
+ 2400  0.005
+ 2600  0.01
+ 2800  0.025
+ 3000  0.06
+ 3200  0.12
+ 3400  0.165
+ 3600  0.34
+ 3800  0.44
+ 4050  0.515
+ 4500  0.57
+ 5000  0.605
+ 5500  0.635
+ 6000  0.705
+ 6500  0.695
+ 7000  0.69
+ 7500  0.64
+ 8000  0.55
+ 8500  0.43
+ 9000  0.30
+ 9500  0.17
+10000  0.08
+11000  0.00

@@ -1,0 +1,8 @@
+; IDL commands for building HTML documentation
+
+cd, '..'
+make_html_help, 'pro/*/', 'doc/www/idlutils_doc.html', $
+ /strict, title='IDL Help for IDLUTILS', /verbose
+make_html_help, 'goddard/pro/*/', 'doc/www/goddard_doc.html', $
+ /strict, title='IDL Help for Goddard Utilities', /verbose
+exit

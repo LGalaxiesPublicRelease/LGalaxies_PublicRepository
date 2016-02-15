@@ -1,0 +1,21 @@
+Plotting Procedures                       pro/plot             March 2000
+
+The procedures in this directory are useful additions to the intrinsic IDL
+plotting capabilities.
+
+CLEANPLOT - Reset all plotting system variables to their default (X) values
+CURFULL - Like intrinsic CURSOR procedure but with a full-screen cursor
+LEGEND - Create an annotation legend for a plot
+LEGENDTEST - Demo program demonstrating the capabilities of LEGEND
+LINEID_PLOT - Annotate the identified lines in a spectrum
+MULTIPLOT - Create multiple plots with shared axes
+OPLOTERROR - Overplot Y vs. X with optional X and Y error bars
+PLOTERROR - Plot Y vs. X with optional X and Y error bars
+PLOTHIST - Plot the histogram of an array
+PLOTSYM - Define useful plotting symbols not in the standard PSYM definition
+PARTVELVEC - Plot the velocity vectors of a set of particles
+SUNSYMBOL() - Return the character string to plot a subscripted Sun symbol
+VSYM - Create "Mongo"-like plotting symbols, rotationally symmetric polygons
+
+PLOTERROR and OPLOTERROR were renamed from PLOTERR and OPLOTERR in June 1998
+to avoid conflict with the RSI library procedures. 

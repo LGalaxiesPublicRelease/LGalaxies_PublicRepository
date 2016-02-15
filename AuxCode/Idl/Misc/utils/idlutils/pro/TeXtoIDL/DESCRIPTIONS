@@ -1,0 +1,12 @@
+MATCHDELIM --  Match open/close delimiters in a string.
+NEXTTOK --  Find the next occurance of any of a set of characters in a
+ string and return the character which occurs next.
+SHOWTEX --  Display TeX sequence translation table on current graphics device.
+STRCNT --  Count number of occurrences of a substring in a string.
+STRTOK --  Retrieve portion of string up to token.
+STRTRANS --  Translate all occurences of one substring to another.
+SUB_SUP_IDL --  Return the proper IDL font positioning command for TeX
+ sub/superscripts. 
+TEXTABLE --  Returns a translation table from TeX to IDL.
+TEXTOIDL --  Convert a valid TeX string to a valid IDL string for plot labels.
+TRANSLATE_SUB_SUPER --  Translate TeX sub/superscripts to IDL sub/superscripts.

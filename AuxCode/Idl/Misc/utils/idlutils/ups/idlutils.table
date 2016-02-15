@@ -1,0 +1,23 @@
+File=Table
+Product=idlutils
+
+Group:
+Flavor=ANY
+Qualifiers=""
+
+Common:
+   Action=setup
+      setupOptional("idl")
+      setupOptional("dust")
+      setupOptional("first")
+      setupOptional("gsc")
+      setupOptional("twomass")
+      setupOptional("tycho2")
+      setupOptional("ucac")
+      setupOptional("usno")
+      proddir()
+      setupenv()
+      pathAppend(PATH, ${UPS_PROD_DIR}/bin)
+      envPrepend(IDL_PATH, +${UPS_PROD_DIR}/goddard/pro)
+      envPrepend(IDL_PATH, +${UPS_PROD_DIR}/pro)
+End:

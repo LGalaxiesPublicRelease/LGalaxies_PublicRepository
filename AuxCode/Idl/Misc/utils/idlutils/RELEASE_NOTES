@@ -1,0 +1,957 @@
+v5_3_0 (January 8, 2008) running on IDL 5.4 - 6.4 (6.3+ for MacIntel)
+Tagged for idlspec2d v5_3_x
+
+BSPLINE_BKPTS: Add placed= arg to support externally determined breakpoints. (Loomis)
+src/trace_gweight.c: Bug fix to assign errors to uncentroidable (at edge) peaks (Loomis)
+DJS_BATCH: Bug fix to not crash if input file names (LOCALFILE) are
+               not specified.
+DJS_ICOLOR: Set de_compose to 1 for ps file (Blanton).
+DMEDSMOOTH,DOBJECTS_MULTI,DSMOOTH: Add Blanton's smoothing routines.
+HOGG_SCATTERPLOT: Fied multi-panel and IDL window issues (Hogg).
+MATCHND: Fix array expansion error.
+PIXFONT: New function to pixelize a font for inclusion in a pixelized image.
+PSF_REJECT_CR_SINGLE: Fixed bug with spatially constant psfvals.
+
+data/sdss/sdssMaskBits.par: Added explicit NO_UBERCAL CALIB_STATUS flag
+               to give a handy value when matching to non calibrated areas.
+               Add USE_CHILD_IMAGE,USE_CHILD_SPECTRUM to Q_EYEBALL flag.
+src/Makefile: Add dimage directory.
+src/dimage/Makefile,dfind.c,dimage.h,dmedsmooth.c,dojects_multi.c,
+               dselip.c,dsigma.c,dsmooth.c,idl_dmedsmooth.c,
+               idl_dobjects_multi.c,idl_dsmooth.c: Add Blanton's smoothing code.
+
+-------------------------------------------------------------------------------
+v5_2_0 (February 1, 2007) running on IDL 5.4 - 6.3 (6.3 only on MacIntel)
+Tagged for idlspec2d v5_2_0
+
+BH_RDFORT: Remove antique ugliness.
+DUST_GETVAL: Change endian-ness criterion
+UNIXFIND: String concatenation bugfix
+
+>>>>>>> 1.278
+-------------------------------------------------------------------------------
+v5_1_7 (January 5, 2007) running on IDL 5.4 - 6.3 (6.3 only on MacIntel)
+Tagged for Son-of-Spectro.
+
+FILLSPAN: New function for generating an evenly-spaced array (Loomis).
+NW_AD_GRID: Bug fixes for small or large bins.
+UNIXFIND: Faster implementation of the IDL FILE_SEARCH function (Loomis).
+
+data/sdss/sdssMaskbits.par: Added INCREMENT_CALIB bit in CALIB_STATUS flag,
+               for use by PCALIB_INCREMENTAL code.
+
+-------------------------------------------------------------------------------
+v5_1_6 (December 21, 2006) running on IDL 5.4 - 6.3 (6.3 only on MacIntel)
+Tagged for Hogg mosaic and overlay code.
+
+DJS_BATCH: Change the internal structure with the priority to be
+               a double-precision number rather than type long, since
+               this was then not working for small floating-point values.
+FREEFREE: Calculate free-free spectrum (from Finkbeiner's Halpha repository).
+HEAL_SMOOTH: Comment-out test (plotting) line.
+HOGG_OPEN_OVERLAY, HOGG_CLOSE_OVERLAY: New prodedures to open and close
+               overlays for RGB images.
+HOGG_MAKE_ASTR: Comments.
+MATCHND: All /silent option.
+NW_AD_GRID: Change charthick in plots.
+RESAMPLE_SPECTRUM: New function for a simple resampling of 1-D spectra
+               (modified from REBIN_SPECTRUM).
+
+bin/evilmake: Replace one brittle SunOS build stanza with another.
+               - Ditch SunOS 4.x support.
+               - If 'f77' exists, assume it is the SunOS compiler and
+                 assume that the old build stanza worked.
+               - Otherwise run g77, etc. This works on SunOS 5.8 with
+                 the gnu 2.95.2 chain. Which does not have 64-bit support,
+                 so you have to run "idl -32" in any case.
+src/mangle1.4/src/msg.c: Remove hopefully unused pre-POSIX relic (Loomis).
+
+-------------------------------------------------------------------------------
+v5_1_5 (October 16, 2006) running on IDL 5.4 - 6.3 (6.3 only on MacIntel)
+Tagged to fix Makefile bug in v5_1_4
+
+ASTR2GSSS: Moved from hoggpt product.
+ATV: New "m" and "k" keys mark and delete points .
+BEATDRIVE,BEATDRIVE_CHECK: Use native FILE_MKDIR; cosmetic changes.
+DJS_ITERSTAT: Add optional INVVAR input, and NEWIVAR output.
+EMBED_STAMP: Fix to make efficient for large stamps.
+GET_PSFVALS,PSF_VALIDATE: Move the latter bit of code out of the former.
+GAUNTFF: New function for Gaunt factor for free-free emission.
+GRIDND,MATCHND: Fix single-element bug.
+GVERTS: Add error message.
+HOGG_MRDFITS: Add optional NCHUNK keyword, which is more convenient
+               than the NROWCHUNK keyword.
+HOGG_SCATTERPLOT: Add /NOCONTOURS option.
+IAU_TO_RADEC: Vectorize.
+PLOT_POLY: Add SOPLOT option, and other changes by Blanton.
+PSF_EVAL: Allow non-square PSF.
+PSF_REJECT_CR: Calculate PSFVALS for each location in image if PSTR is passed.
+PSF_REJECT_CR_SINGLE: Allow an array of PSFVALS, one for each suspect cosmic.
+
+bin/evilmake: Try supporting Darwin/x86 as long as IDL is PPC.
+              Notes from Craig Loomis:
+              - IDL 6.3 and under are PPC only, so all dylibs must also be ppc
+              - g77 v3.4 is the last/latest PPC compiler. You can install an
+                x86 gfortran if you need both.
+              - Various hideous problems are papered over by using
+                "gcc -dynamiclib" as the driver, instead of trying to figure
+                out the magic of the instant to feed ld or libtool.
+                [e.g. where is saveFP?]
+              - The PPC flags should be untouched and should work as well
+                or poorly as they ever did.
+              - This was tested with OS 10.4.5, and the latest gcc 4.0.1 XCode
+                (2.0.1).
+              - "-undefined dynamic_lookup" seems better than the older
+                "-undefined suppress ", but it requires
+                MACOSX_DEPLOYMENT_TARGET=10.4 for cross-compilers.
+              Try supporting Darwin/x86 with the x86-native IDL (6.3+).
+              - I don't think it's worth keeping the IDL/ppc on x86 evilmake 
+                stuff, and am overwriting it.
+              - evilmake now expects IDL/x86 and gfortran. See the 
+                http://hpc.sourceforge.net/ pages for links to gfortran.
+
+data/sdss/sdssMaskbits.par: Change to CALIB_STATUS mask bits.
+               Add M_EYEBALL mask bits (Blanton).
+lib/Makefile: Fix (recent) bug copying to install directory.
+src/Makefile: Stop building the slatec directory, which is no longer used.
+
+-------------------------------------------------------------------------------
+v5_1_4 (May 31, 2006) running on IDL 5.4 - 6.2
+Tagged for idlspec2d v5_1_4
+
+ANG2PIX_RING: Healpix routine that we forgot to check in.
+BALKAN_PLOT: Add /NOPLOT option (Blanton).
+DJS_RGB_MAKE: Add /TIFF keyword and 16,32 bit per channel support.
+DJS_ICOLOR: Add another entry to the simple color tables (Blanton).
+GET_PSFVALS,PSF_EVAL,PSF_FINDSTARS,PSF_MULTI_FIT,PSF_NORM,PSF_POLYFIT,
+               PSF_POLYFIT,PSF_STAMP_CENTER_ITER,PSF_STAMPS:
+               Test code for PSF fitting (Finkbeiner)
+HOGG_ITER_LINFIT: Add condition keyword to return condition number.
+HOGG_MCMC,HOGG_MCMC_STEP,HOGG_MCMC_TEST: Bug fixes ("masjedi bug").
+OFFSET_FROM_PAIRS: Remove divide-by-zero in print statement.
+PFIT_PARA2: Need to check for version of LA_CHOLDC.
+POPULATE_IMAGE: Changes in support to the C code, in response to PR #6946
+               from Finkbeiner.
+SPHEREMATCH: Speed and memory management of both C and IDL codes improved
+               by adding ESTNMATCH keyword (Finkbeiner).
+STRING2RADEC: Add optional RASTR,DECSTR keywords (Blanton).
+USNO_CONE: Improve memory management (Hogg).
+
+data/sdss/sdssMaskfits.par: Change the bitmask values for CALIB_STATUS,
+               according to our definitions in sdss-photoop/1719.
+lib/Makefile: Copy *.SO_EXT not just *.so when installing.
+pro/Makefile: Add psf directory
+src/image/pop_image.c: Add two more possible C calls for POPULATE_IMAGE
+               to pass X,Y as integer values rather than floats.  This fixes
+               a problem whereby if the image had more than about 2^24
+               elements, one could populate that incorrectly due to
+               round-off errors in the conversion of X,Y from ints to floats.
+               This is in response to PR #6946 from Finkbeiner.
+src/spheregroup/spherematch.c: Memory improvements by Finkbeiner:
+               transform list1 to XYZ on the fly, remove large if else
+               in matching section, check that we do not overflow maxmatch.
+
+-------------------------------------------------------------------------------
+v5_1_3 (Feb 14, 2006) running on IDL 5.4 - 6.2
+Tagged for idlspec2d v5_1_3
+
+GAUSS1,GAUSS1P,GAUSS2,MPCURVEFIT,MPFIT,MPFIT2DFUN,MPFIT2DPEAK,MPFITEXPR,
+               MPFITFUN,MPFITPEAK,MPFFITTUT,TNMIN: This entire pro/mpfit
+               directory had been updated from Craig Markwardt's web site
+               on 7 Feb 2006.  Included are the following new routines:
+               MPCHILIM,MPCHITEST,MPFITELLIPSE,MPFTEST,MPNORMLIM,MPNORMTEST.
+SIGMA_PBAR_P: Annihilation cross section of pbar on p 
+WCSXY2SPH:     Add healCart projection so atv works on healpix.
+
+data/filters/PS1.dat: Filter curves for Pan-STARRS, downloaded from
+               their web site at
+               http://pan-starrs.ifa.hawaii.edu/project/people/siegmund/Telescope/20030523_Filters/
+               where the file was "q2003-150data.txt".
+pro/Makefile: Added physics directory.
+pro/physics: Added this new physics directory for general physics routines.
+
+-------------------------------------------------------------------------------
+v5_1_2 (Feb 2, 2006) running on IDL 5.4 - 6.2
+Tagged for idlspec2d v5_1_2; robustness of B-spline routines
+
+BSPLINE_FIT: Remove /CHECK option introduced in last version.
+BSPLINE_ITERFIT: Add REQUIREN optional keyword, to require at least
+               some minimum number of data points between break points,
+               masking break points where necessary.
+               This is an attempt to address PR #6774.
+HOGG_MCMC,HOGG_MCMC_STEP,HOGG_MCMC_TEST: Add Hogg's Markov Chain Monte Carlo
+               code.
+HST_GUIDETEST: Clean up memory usage.
+SOLVE_POLY_RATIO: Fix documentation.
+WCSXY2SPH: Merge HCT healpix projection back in again (Finkbeiner).
+
+bin/evilmake: Fix X_LD_FLAGS for Darwin 8 and later (Blanton).
+bin/Makefile: Copy the somehow left-out install_ups_table.
+pro/Makefile: Add mcmc directory.
+
+-------------------------------------------------------------------------------
+v5_1_0 (December 19, 2005) running on IDL 5.4 - 6.2
+Tagged for idlspec2d v5_1_0; fix double-precision on OSX and Linux64.
+
+ACS_PEAKS: Wrapper for FIND_SB for peak-finding on 2D images.
+ACSSIP_AD2XY,ACSSIP_XY2AD: Bug fixes.
+ACSSIP_INVERT: Another implementation of inverting HST ACS distortions.
+               This *should* do what ACSSIP_AD2XY already does internally,
+               so not sure why there is this routine too.
+ANGLES_TO_XYZ,XYZ_TO_ANGLES: New proc to convert between x,y,z coordiates
+               and angles.
+BALKAN_PLOT: New procedure to plot balkans of a set of polygons
+BEATDRIVE:     Test new disk by filling with SDSS idR-sized files (5.3MB)
+BEATDRIVE_CHECK: Verify outputs from beatdrive
+BSPLINE_FIT: Add /CHECK option, to test (and mask) any poorly constrained
+               break points.
+BSPLINE_ITERFIT: Pass EXTRA keywords to BSPLINE_FIT.
+CIRCLE_CAP: Bug fix for RA=0.
+DEC2HMS,HMS2DEC: Vectorized, comments added.
+DJS_DIFF_ANGLE: Clean up the code, and allow 1-element arrays as an
+               alternative to scalar inputs.
+DJS_RGB_MAKE: Compute fill values for saturated pixels from neighboring pixels.
+FIND_SB: New proc to find peaks on a 2D image using a Gaussian filter (Burles)
+FIT_PARA2D: New function called by FIND_SB for peak-finding.
+FUNC_FIT: Allow the use of the names 'legendre' and 'chebyshev' as
+               well as 'flegendre' and 'fchebyshev'.
+GRIDND: New (beta) code for assigning points to grid points in N dimensions
+GROUP_ON_MATCHES: New procedure for taking lists of objects and their
+               matches (presumably from SPHEREMATCH), and find groups.
+HOGG_ARROW: Slightly-changed version of the IDL proc arrow, but allowing
+               one to set the angle of the arrow head.
+HOGG_DIRECTIONS,HOGG_IMAGE_OVERLAY,NW_AD_GRID: New plotting procs from Hogg.
+HOGG_IAU_NAME,IAU_TO_RADEC,RADEC2STRING,STRING2RADEC: More new routines
+               from Hogg for dealing with sexigesimal formats.
+HOGG_ITERATED_AD2XY: Wrapper to AD2XY for inverse transforms, but not sure
+               why one would not use XY2AD which should work.
+HOGG_MAKE_ASTR: New function for making trivial astrometry structures.
+HOGG_NAME2RADEC: New proc to convert IAU names to cooordinates.
+HOGG_MRDFITS: Change default NROWCHUNK from 1000 to 2880.
+HOGG_PLOTHIST: Histogram plotter that uses weights (from Hogg).
+MAKE_RA_CAP: Add NODE keyword.
+MATCHND: New (beta) code for matching 2 sets of points in N dimensions.
+               This was written to be the Cartesian equivalent of SPHEREMATCH.
+OFFSET_FROM_PAIRS: Fix "div by zero" exception problem.
+SOLVE_POLY_RATIO: This is a generalized version of SPFLUXCORR_SOLVE
+               and SPFLUXCORR_SOLVE2 that was found in the idlspec2d
+               routine SPFLUXCORR_V5.  It solves for the multiplicative
+               and additive polynomial terms between two spectra (vectors).
+STRUCT_APPEND: Add /FORCE option to be used by READSPEC in idlspec2d.
+SXADDPAR: Change by Landsman to handle input array of single empty string
+               (which was supported previously, but then broken).
+UNIQTAG: new proc (from vagc) to find unique values of a given tag in a struct array
+USNO_READ:     Read epoch file silently.
+
+src/idlmangle/Makefile: Added $(X_CFLAGS) to CFLAGS to fix linking problems
+               on FC3/64-bit platform.
+src/idlmangle/idl_garea.c,idl_vmidc.c,idl_where_polygons_overlap.c:
+               Fix type-casting to work on 64-bit Linux.
+src/mangle1.4/src/defines.h: Increase hard limit for NPOLYSMAX from
+               10,000,000 to 100,000,000.
+src/mangle1.4/src/logical.h,parse_args.c: Change typedefs to work on 64-bit
+               Linux.
+src/mangle1.4/src/makefile:  Added -fPIC to FFLAGS to fix linking problems
+               on FC3/64-bit platform.
+
+-------------------------------------------------------------------------------
+v5_0_5 (August 23, 2005) running on IDL 5.4 - 6.2
+Tagged for photoop v1_7_8
+
+ACSSIP_AD2XY,ACSSIP_XY2AD: Conversion between HST ACS pixels and coordinates.
+ANGLE_FROM_PAIRS,DJS_REJECT,POLY_ITER,SLATEC_SPLINEFIT: Add /double keyword
+               to STDDEV() call, such the behaviour will be the same on 32-bit
+               or 64-bit machines.
+ASTROM_ENGINE: Added optional keyword start_angle.
+ASTROM_TWEAK: Change calls to the deprecated STDEV() to STDDEV().
+BSPLINE_PSF_ACTION: New routine to return action matrix for image bsplines
+               with PSF convolution (Burles).
+BSPLINE_RADIAL: Allow one to set ntheta=0.
+BSPLVN: Upped the huge array threshold by a factor of 12.
+               Bug fix reported by Andy Marble on July 29, 2005, whereby
+               values of zero were returned if X was not floating-point.
+BVALU: Changes to support new routine BSPLINE_PSF_ACTION.
+FUNC_FIT, TRACE_CRUDE, TRACESET2PIX, XY2TRACESET: Add support for double-
+               precision, either by passing certain inputs as such, or
+               by explicitly setting the /double keyword.
+HOGG_PLOTHIST: Add /totalweight keyword.
+HOGG_TP_SHIFT: New routine for shifting WCS headers.
+HST_GUIDETEST: New procedure for testing whether potential HST guide stars
+               are good, by looking at the 2MASS and UCAC catalogs.
+IS_FILE_READABLE: New function to determine if a file is readable,
+               which is always true unless a filesystem is corrupted.
+NMF_SPARSE: Improve error estimates.
+PSF_REJECT_CR: Better determination of sky and sigma in crowded field.
+RSEX, WSEX: L. Moustakas code to read and write SExtractor format
+               files to and from IDL structures.
+STDEV: Remove this copy of this obsolete routine (we now use STDDEV instead).
+STRUCT_PRINT: Changes to prevent too many LUNs to be open.  Specifically,
+               the only time a LUN is not closed is if LUN is passed as an
+               input, otherwise we always close all files before returning.
+TMASS_DECSLICE,TMASS_READZONE: Bug fix for crash condition desribed in PR #6502.
+TMASS_READ: Return zero when no objects are within radius, and better comments.
+TMASS_READZONE: Fix indmax bug that affected highest RA star in each dec slice.
+TRACE_CRUDE: Fix argument-passing as to not overwrite input variables.
+               If no peaks found, don't crash, just return zeros.
+               Make robust to [1,N] and [N,1] images.
+               Bug fix in the case of double-precision: we never reallyl do
+               double-precision in the call to C, but erroneously we could
+               passing some double-precision arrays to the C code.
+UCAC_READ: This is a new version of UCAC_READGC (now deprecated) that
+               allows one to specify either a great circle on the sky,
+               or a circle on the sky.  This is now analagous to TMASS_READ.
+UCAC_READGC: Deleted, since this has now been replaced with the more general
+               piece of code UCAC_READ.
+
+bin/evilmake: added line to deal with difference between Darwin versions
+              8 and later, and previous versions.
+include/export.h: New export.h file in the IDL 6.2 beta distribution.
+src/math/nrecipes.c,nrutil.c,nrutil.h: Trying to compile on the newest 64-bit
+               Linux OS (2.6.11-6-21.caos.smp) results in crashing code that
+               I've tracked down to the overloading of some of the definitions
+               within the Numerical Recipes code.  I've changed these files
+               to prefix all the routines in nrutil.c with "nr_", for example
+               "vector" is now "nr_vector".
+src/mangle1.4/src/mrb_balkanize.c: Add calls to fflush.
+src/mangle1.4/src/mrb_snap.c: Allow stdin input.
+
+-------------------------------------------------------------------------------
+v5_0_4 (April 10, 2005) running on IDL 5.4 - 6.1
+Tagged for development of Longslit package.
+
+BSPLVN: Added code to break up task for 10^6 pts or more.
+               BSPLINE_ACTION was not carrying double precision all the way
+               through, now it should be.
+BSPLINE_FIT: Test if SSET is set by demanding that it be a structure;
+               as it was, setting SSET=0 would not cause it to self-initialize.
+BSPLINE_RADIAL, BSPLINE_RADIAL_VALU, BSPLINE_WORKIT: New radial B-splines
+               from Bolton & Burles.
+CHOLESKY_SOLVE: Up to date bspline implementation, passing structure and
+               masking breakpoints (Burles).
+               Make loop variables type long (Blanton).
+DCOMDISDZ,COMDIS,PROPMOTDIS,ANGDIDIS,LUMDIS: Added equation of state w
+               parameter for OmegaL.
+DJS_PHOTFRAC: Add documentation on /exact keyword, and report error in case
+               of non-integer center given with /exact keyword set. also, 
+               changed so it doesn't recenter on its own if /exact is set.
+DPF_REJECT_CR: ???
+DUST_GETMAP: Use EULER_2000_FAST instead of non-existent EULER_2000.
+EXACT_PHOTFRAC: fix bug involving calculation of annulus photometry
+FIND: Need to index some loops with type LONG to allow for large
+               numbers of stars.
+FLEGENDRE: Removed from pro/trace directory, since that copy is meant
+               to be identical to that in goddard/pro/math.
+HOGG_ARROW: Hogg's version of plotting arrows (like DJS_ARROW), but with
+               more options and working in device coordinates.
+HOGG_BWIFY:  ???
+HOGG_IAU_NAME: Clean-roomed adstring out.
+HOGG_IMAGE_OVERLAY: Erase .ppm file when done.
+HOGG_MEANPLOT, HOGG_WEIGHTED_MEAN_SURFACE: Added NEAREST option to smooth
+               based upon the nearest N neighbors.
+HOGG_MRDFITS,MWRFITS_CHUNKS: Declare all internal variables as long64,
+               just to be sure that files larger than 2Gb will be handled
+               correctly.
+               Make robust to file not existing (return 0 instead of crashing).
+HOGG_NAME2RADEC: New proc to convert IAU name in "J" format to RA,DEC (Hogg).
+HOGG_OPLOT_COVAR: Add support for a vectorized THICK keyword.
+HOGG_PLOTHIST: Change in behviour for setting X range when using /OVERPLOT.
+HOGG_SCATTERPLOT: Added IOUTLIERS keyword, to plot the outliers differently.
+LABELLOC: Simple utility for XYOUTS plotting to get positions relative to 
+               plot frame
+LG_TO_HELIO: Inverse function to HELIO_TO_LG.
+MRDFITS:       LONG64 stuff, handle degenerate excess NAXIS keywords
+MWRFITS_CHUNKS: More bug fixes for appending to existing FITS binary
+               tables for string-type elements.  Bug fix to allow appending
+               string elements that are different lengths, though if the
+               appended strings are longer then they get truncated.
+NMF_SPARSE, MMEVAL, MMSPARSE: New procedure (and utility procedures) for 
+               nonnegative PCA on sparse data matrices. 
+NW_RGB_MAKE: Trivial bug fixes; change SPLOG statements to PRINT.
+               Change default quality to 100, add dpitiff keyword.
+               Other changes???
+POLYWARP_SHIFT: Wrapper on polywarp to do a simple shift.
+PSF_REJECT_CR,PSF_REJECT_CR_SINGLE: Implementation by Finkbeiner of
+               Lupton and Gunn's CR code.
+SPLOT: The reported "Area" for the interactive gaussian fits was missing
+               a factor of sigma.
+TRACE_CRUDE: Allow XSTART to be set to exactly zero as an input.
+               Bug fix, where the arrays were cast incorrectly if IMAGE
+               was not type float, and INVVAR was not specified.
+               Use radius-dependent smoothing, which only matters if radius > 6.
+USNOB2FITS: Compress files locally, then copy to target.
+WRITE_FITS_POLYGONS: Allow it to propagate a header to the FITS file.
+
+src/image/reject_cr_psf.c: Undocumented changes by Blanton, presumably
+               in response to Finkbeiner's faster implemenation of this
+               algorithm in IDL.
+src/mangle1.4/src/mrb_balkanize.c: Add QA print statement for number of caps.
+src/mangle1.4/src/manglefn.h, mrb_balkanize.c, new_poly.c:
+               Flush memory usage where possible.
+src/math/Makefile, idl_mmeval.c,idl_mmsparse.c: C code to support the
+               new procedures MMEVEL and MMSPARSE respectively.
+
+-------------------------------------------------------------------------------
+v5_0_3 (August 18, 2004) running on IDL 5.4 - 6.0
+Tagged for photoop v1_6 (for the SDSS Orion data release)
+
+ALM2HEALPIX,HEAL_SMOOTH,MQLADVANCE: Avoid floating-point underflows.
+ATV,ATV_JOE_WRITEPS,SPLOT,SXASCII_READ,TEXTOIDL,YANNY_READ:
+               Replace calls to the obsolete function RSTRPOS()
+               with STRPOS(/REVERSE_SEARCH).
+ATV: Fix bug introduced for Healpix when reading non-Healpix files.
+               Reject complex inputs (Finkbeiner).
+BSPLINE_ITERFIT: Fix crash condition for when only 1 point to fit.
+DPF_NEST2RING,DPF_PIX2ANG_RING: Cache lookup table for wicked speed.
+DPF_PIX2ANG_NEST: Added (simply calls dpf_nest2ring and dpf_pix2ang_ring).
+DJS_OPLOT,DJS_OPLOTERR,DJS_PLOT: Bug fix in case Y is set to the value zero.
+DJS_RGB_MAKE: Code to create JPEG from 3 FITS files based upon NW_RGB_MAKE,
+               but saturating stars to a single color per object.
+EXACT_PHOTFRAC,GROW_OBJECT,INTERP_PROFMEAN,POPULATE_IMAGE,REJECT_CR,
+               GAREA,GVERTS,READ_FITS_POLYGONS,VMID,DJS_AVSIGCLIP,
+               DJS_CORRELATE,DJS_MEDIAN,MEMSHIFT,NNLS,EFC2D,EFCMN,
+               SLATEC_BVALU,SLATEC_EFC,SPHEREGROUP,SPHEREMATCH,
+               TRACE_CRUDE,TRACE_FWEIGHT,TRACE_GWEIGHT:
+               Call IDLUTILS_SO_EXT() to get the suffix for dynamically
+               loaded libraries (rather than assuming ".so").
+FITS_PURGE_NANS: New procedure to deal with some invalid FITS header
+               keywords in raw SDSS data files.
+HEALGEN        Updated to use dpf* routines and break dependence on HEALPIX
+               packages.
+               No longer loop over chunks to save memory.
+HEALPIX_RING_WEIGHT: Fix fatal bug caused by new mrdfits() response to 
+               Gorski's nonstandard file format for ring weights.
+HEAL_SMOOTH    Prevent "Floating underflow" condition
+HOGG_MANYD_SCATTERPLOT: Fix xdim=0 bug, add EXTRAFUN parameter,
+               send plotting back to X.
+HOGG_MANYD_SCATTERPLOT,HOGG_PLOTHIST,HOGG_SCATTERPLOT:
+               Add /meanweight option.
+HOGG_SCATTERPLOT: Add /outliers keyword to show points outside last contour
+               as points (and don't show greyscale there).
+IS_IN_CAP, IS_INPOLYGON: Fix ra=0 bug (changing keyword_set to n_elements).
+LOCAL_EXTRAGALACTIC: Code added by Blanton for returning the locations of
+               nearby clusters, using the data files in data/objects.
+MAKE_RA_CAP,MAKE_DEC_CAP: Functions moved from photoop; make mangle
+               caps along ra and dec lines. 
+MRDFITS: When we updated the Goddard routines on 15 April 2004, it went
+               back to a version from Landsman that only included some of
+               the patches for large file (> 2Gb) support.  This meant that
+               we could get crazy behaviour for files larger than 2 Gb, though
+               the code wouldn't crash.  I've re-introduced the patches
+               originally included on 22 Sep 2003, and e-mailed this patch
+               to Landsman.
+MWRFITS: Fix a bug, whereby if a pointer was included in an output structure,
+               the byte padding in heap was incorrect, and block sizes other
+               than 2880 bytes were incorrectly written out.  This was a
+               1-line bug fix that Landsman found.
+               Also, needed bug fix in the function MWR_RETABLE, whereby
+               other elements in a structure that also contained heap data
+               was not being written properly.  Only the zeroth element of
+               the non-pointer tags were being copied.  This bug fix was
+               sent to me by Landsman on 16-Jul-2004.
+NW_AD_GRID,NW_OVERLAY_RANGE: New (but unused?) code.
+NW_RGB_MAKE: Slight change to overlay code.  Option for TIFF files.
+PLOT_POLY: Add /AITOFF flag to plot on Aitoff projections.
+POLYWARP_ROTATE: New function which is simply a wrapper on polywarp and 
+               poly_2d to perform a rotation of an imaging using the 
+               cubic approximation to the sinc shift.
+REJECT_CR: A previous error in determining the background for rejection
+               has been fixed, so more cosmics are now successfully rejected. 
+RINGWT: Finkbeiner's stab at computing ring weights for Healpix integrations;
+               probably doesn't work?
+SORTINPLACE: New function for sorting arrays in-place.
+SPLOT: Add PLUGIN keyword for coordinate plug-ins.
+SPLOT_PLUGIN_SDSS_FINDIMAGE: Plug-in for using SPLOT from the SDSS_FINDIMAGE
+               function in the photoop product.
+WHICH: Replace with Tim Robishaw's version of which, he says it is better.
+               Primarily, it shows which version of a routine has been
+               compiled-in, even if that isn't the first instance of that
+               routine in your path.
+YANNY_WRITE: Make loop variables type LONG.
+
+Makefile: Install the RELEASE_NOTES file.
+bin/evilmake: Set SO_EXT=dylib for the Mac (Darwin) platform.
+data/Makefile: Add "objects" subdirectory.
+data/objects/ned-query-clusters-lt0.03.dat,ned-query-clusters-lt0.03.txt,
+               process_ned_list: Data files added by Blanton for returning
+               the locations of nearby clusters.
+data/sdss/sdssMaskbits.par: Change Q_EYEBALL flag meanings (Blanton).
+               Add SEGUE_SURVEY target flag for TTARGET, which was
+               serrupticiously added by Brian Yanny.  Note that this
+               also means that the primary target flags have different
+               meanings when this bit is nothing -- nothing I can do
+               about that dumb change.
+
+lib/Makefile: For "make clean", also remove ".dylib" files.
+
+-------------------------------------------------------------------------------
+v5_0_2b (April 17, 2004) running on IDL 5.4 - 6.0
+Tagged for photoop v1_3b (for the SDSS Orion data release)
+(This version of MRDFITS is buggy on >2 Gb files!)
+
+The Goddard routines (in goddard/pro) have been brought up to
+the early 2004 versions from Landsman as follows:
+
+DEREDD:              UPDATE keyword
+GLACTC:              Fix major bug when year not 2000 and /FK4 not set
+IMCONTOUR:           Works with Galactic coordinates
+ISMEUV:              Compute the continuum interstellar EUV optical depth
+PRECESS:             Work for arrays, not just vectors
+
+DELVARX:             /FREE_MEM - free memory associated with pointers
+FXPAR:               DATATYPE keyword to recast on the fly
+EXTAST:              ALT keyword for more general projections
+MAKE_ASTR:           The astrometry structure definition was slightly modified
+                     in July 2003; all angles are now double precision, and the
+                     LATPOLE tag was added.
+PUTAST:              Changes for ALT keyword
+
+FITSDIR:             NAXIS values must be integers
+FITS_TEST_CHECKSUM:  Return quietly if CHECKSUM keywords not found
+READFITS:            CHECKSUM keyword (tests FITS file checksums)
+HEADFITS:            Test output status of MRD_HREAD call
+MODFITS:             Major rewrite to allow changing size of data or header
+MRDFITS:             Major rewrite to improve binary table features
+                     Mar 2004: bug fixes, internal fxpar is faster
+MWRFITS:             Exit gracefully if write priveleges unavailable
+                     Don't use EXECUTE() statement if on a virtual machine
+SXADDPAR:            SAVECOMMENT keyword
+WRITEFITS:           NaNvalue keyword
+QUERY*:              New query procedures in sockets/
+
+-------------------------------------------------------------------------------
+v5_0_1 (Apr 15, 2004) running on IDL 5.4 - 6.0
+Tagged for photoop v1_2.
+
+ASINH: Copy in Landsman's latest version.
+COUNT_FREELUN: New function to count the number of logical file pointers
+               (LUNs) that are available.  This is to be called by DJS_BATCH.
+DIERFC: New math function for erfc.
+DJS_BATCH: Add a call to COUNT_FREELUN().  Do not try to use more hosts than
+               there are free file pointers (LUNs) due to a limitation in
+               executing the SPAWN command.
+DUST_RV_TABLE,WEB_TABLE: Throw-away proc for making table of R_V values for
+               sources with different spectral energy distributions.
+EMBED_STAMP: New procedure to take one image and add it to another, starting
+               at an arbitrary position (SSHIFTing appropriately) without 
+               rotation. 
+GVERTS: Bug fix for the case of single-cap polygons.
+HELIO_TO_LG: Fixed sign error in correction.
+HOGG_IAU_NAME: New proc by Hogg to format astronomical source names to
+               the IAU convention.
+HOGG_IMAGE_OVERLAY,HOGG_RGB_ENTROPY: New routines from Hogg for generating
+               true-color images.
+IDLUTILS_SO_EXT: New function to return the appropriate dynamic library
+               extension given architecture.
+MULTI_PSF_FIT: New procedure which, given an image and a PSF, finds the
+               best fit combination of N PSFs which explains the image
+               (user supplies number of desired PSFs N).
+NW_ARCSINH: Changes to use less memory.
+NW_RGB_MAKE: add new keyword COLORS to pass back final colors used for jpg
+RADEC_GREATCIRCLE: In the internal function RADEC_GCFN, return the
+               concatenation of all the chi values in both mu+nu,
+               rather than some quatrature sum of the chi^2's.
+               This seems to result in much better convergence,
+               especially for those runs where we don't have a good
+               starting guess.
+SPLOG: Only call FLUSH if we're not in demo mode (since we cannot call FLUSH
+               from demo mode).
+SPLOT: Add xoffset and yoffset keywords which position splot on the 
+               screen where you want it.
+VMIDC,idl_vmidc.c,vmid.c: New function to return the central vector in
+               a polygon.
+XY2TRACESET: A bug was found by Andy Marble (Arizona): The input mask
+               was basically being ignored in all cases!
+UNDEFINE: Fanning procedure to wrap TEMPORARY calls to delete
+               variables.  Similar to DELVARX, but only does one at a time.
+WHERE_POLYGONS_OVERLAP: Add optional output AREAMATCH.
+
+data/filters/ogle_I.dat: Approximate OGLE I-band filter from Taka Sumi.
+data/sdss/sdssMaskbits.par: Remove the RESOLVE bits, which have been deprecated
+               with the RESOLVE_STATUS mask bits.                            
+               Add Q_EYEBALL and T_EYEBALL, eyeball quality and 
+               type bitmasks for SDSS galaxies
+src/idlmangle/Makefile: Add idl_garea.o
+               Change the order of the line that does linking from
+               "-lmangle -L$(IDLUTILS_DIR)/lib" to
+               "-L$(IDLUTILS_DIR)/lib -lmangle".  This seems to make a
+               difference on the SGI platform (hecate.princeton), but
+               makes no difference under Linux.
+               Link to "libmangle.a" instead of "libmangle.$(SO_EXT)",
+               in accordance with the explicit naming of that library.
+src/idlmangle/where_polygons_overlap.c: Compute and return the overlap area.
+src/image/grow_obj.c: Comment-out "ny" because it isn't actually used.
+src/mangle1.4/src/Makefile: Change the output library name from
+               "libmangle.$(SO_EXT)" to explicitly be "libmangle.a"
+               (as used to be the case) because that seems to be the
+               only way to get this to build under Darwin and IRIX (SGIs).
+src/mangle1.4/src/mrb_balkanize.c: Print output status in stage 2.
+src/mangle1.4/src/msg.c: Add the include for <stdarg.h>, since it it needed
+               to build on the IRIX platform (on hecate.princeton).
+               It seems safe to have that include on Linux or Darwin also.
+
+-------------------------------------------------------------------------------
+v5_0_0 (Feb 19, 2004) running on IDL 5.4 - 6.0
+Tagged for idlspec2d v5_0_0.
+
+BSPLINE_ITERFIT: Set all the SSET.BKMASK=1 (good) for the case that the break
+               points are passed through the OLDSET keyword.
+REBIN_SPECTRUM: New function for rebinning 1-D spectra using CIC assignment
+               and arbitrary pixel boundaries.
+TRACESET_TRIM: New function for trimming trace sets to selected traces.
+
+Makefile: Add include directory.
+bin/evilmake: Change build flags on the SGI platform (IRIX64) to be 64-bit
+               instead of 32-bit.  This involves adding "-64" and "-mips4"
+               flags.
+bin/Makefile: Should have "-n32" instead of "-32" in the X_FFLAGS
+               for the IRIX64 platform, to avoid inconsistencies with
+               the other compiler flags.
+include/export.h: This include file used to exist in six places under /src,
+               but now I am consolodating into this one place.
+               Two changes to the file to treat the "sgi" platform like
+               other 64-bit platforms.
+               Remove this file from src/idlmangle, src/image, src/math,
+               src/slatec, src/spheregroup, src/slatec.
+include/Makefile: New directory for IDL<->C include file.
+src/{idlmangle,mangle1.4/src}/Makefile: Change the instances of "libmangle.a"
+               with "libmangle.$(SO_EXT)" so that we get ".a" extensions
+               on some platforms, and ".so" extensions on others.  This is
+               how our other built libraries work.
+src/idlmangle/idl_garea.c,idl_gvers.c,idl_vmid.c,idl_where_polygons_overlap.c:
+               Recaste some "int" with "IDL_LONG" where not consistent.
+               This was crashing the build on the SGI platform.
+               Also, remove some unused variables.
+src/{idlmangle,image,math,slatec,spheregroup,trace}/Makefile: Changed the
+               location of the include file to "../../include".
+src/image/Makefile: Change some of the comment lines, since for some bizarre
+               reason those comment lines that end in a backslash will crash
+               on the SGI IRIX platform.
+src/mangle1.4/src/Makefile: Simplify line 80 of the Makefile such that this
+               will build on the SGI platform.  This meant stripping out the
+               fancy bit of code that extracts the list of objects in
+               the libmangle.a library.
+src/trace/evilmath.c: Get rid of "sumf" variable which is unused.
+
+-------------------------------------------------------------------------------
+v4_10_8 (Jan 4, 2004)
+Tagged for sirtf v0_0_2
+
+GAUSS_OVERLAP: New function to calculate log integral, covariance, and
+               mean of product of two gaussians.
+NW_RGB_MAKE: Top-level routine for making color images from 3 color images.
+
+bin/evilmake: Add "LDF77=g77" or "LDF77=ld", and export it.
+scr/idlmangle/Makefile: Change of $(FC) -> $(LDF77) on link line, so
+               that this builds on a Mac where "ld" is used instead
+               of "g77" for linking.
+src/mangle1.4/src/garea.s.f: Bug fix to send errors to stderr.  We had errors
+               like "*** from garea: total failure at tol =  3.33161425"
+               spilling into the output stream from the Fortran code back
+               into IDL, which was corrupting the data.  (Blanton thinks
+               this is triggered from balkans with zero area.)
+
+-------------------------------------------------------------------------------
+v4_10_7 (Dec 11, 2003)
+Tagged for idlspec2d v4_10_7.
+
+Directory pro/rgbcolor added to support making color (RGB) images.
+Directory pro/healpix added to support atv display of healpix maps.
+
+ALM2HEALPIX,DPF_NEST2RING,DPF_PIX2ANG_RING,HEAL_REBIN,
+               HEAL_SMOOTH,HEALCART_IND,HEALGEN,
+               HEALGEN_LB,HEALPIX2ALM,HEALPIX_RING_WEIGHT,HEALNPIX,ISHEALPIX,
+               MAP_NEST2RING,MAP_RING2NEST: healpix routines added to
+               support using ATV to view healpix-format images.
+ATV: Add support for healpix (DPF).
+CMP_FITS_FILES: New proc for comparing the contents of two FITS files.
+DJS_READILINES: Minor bug fix reported by John Moustakes; need to
+               allow setting INDX=[0] and return that first line.
+DUSTPLOT: Checking in this old proc for making SFD map figures.
+FIRST_READ: Fix possible crash condition if radius > 1 deg, and near RA=0.
+HEALNPIX, HEALPIX_CL :  More healpix routine (NP)
+HOGG_MAKE_IMAGE_LABEL,NW_ARCSINH,NW_CUT_TO_BOX,
+               NW_FLOAT_TO_BYTE,NW_REBIN_IMAGE,NW_SCALE_RBG:
+               Hogg's code for generating color (RGB) images.
+LOOKBACK: New proc in cosmography routines for computing look-back times.
+MQLADVANCE : A healpix routine DPF forgot (NP)
+PLOT_POLY: Use SPLOT routine.
+POPULATE_IMAGE: If IMAGE is type DOUBLE, then do the assignments in
+               double-precision.
+REJECT_CR: New proc for detecting CRs by finding features sharper than the PSF.
+SPHEREMATCH: Some memory-saving changes by Blanton.
+STRUCT_SELECTTAGS: New proc for trimming structures to specified tags.
+               This is code broken out of SDSS_READOBJ().
+WCSXY2SPH: Comment fix from May version (for HealCart)
+
+data/sdss/sdssMaskbits.par: Change IMAGE_STATUS bit from "CLOUDS" to "CLOUDY".
+pro/Makfile: Add reference to healpix,rgbcolor directories.
+src/image/Makefile: Add CR code.
+src/image/idl_reject_cr_psf.c,reject_cr_psf.c: Code called by REJECT_CR.
+src/image/pop_image.c: A double-precision version of the code has been
+               added to support the double-precision option in POPULATE_IMAGE.
+src/image/p_cisi.c: Get rid of the definition of "TRUE", since that's already
+               done in "export.h"
+src/mangle1.4/src/Makefile: Add snap.
+src/mangle1.4/src/mrb_snap.c: New routine.
+
+-------------------------------------------------------------------------------
+v4_10_6 (Oct 15, 2003)
+Mostly debugging of mangle Fortran code.
+Tagged for idlspec2d v4_10_6.
+
+ASINH: Modified this Goddard routine so that it works for scalars
+               as well as arrays.
+CCM_FITRV,FUNC_CCM_FITRV: New proc for fitting R_V extinction parameter.
+EXTRACT_PROFMEAN,FRAC_PROFMEAN,INTERP_PROFMEAN: Blanton's routines
+               for dealing with PHOTO aperature photometry.
+MEMSHIFT: New proc for doing raw memory copies within arrays or
+               structure arrays.  This is faster than just using
+               an IDL assignment statement.
+MRDFITS: Re-cast the argument to POINT_LUN to be type LONG64, to allow
+               using MRDFITS with > 2 Gb files without errors.  This patch
+               has been sent to Landsman.
+               Also, recast some other variables as LONG64 to work with
+               large files.  Basically, do this to all NAXIS*,THEAP,PCOUNT
+               header keywords.
+POLYGON_OVERLAP: Added /allow_neg_doubles to call to SET_USE_CAPS.
+READ_BINARY_POLYGONS: New proc to read a polygon format binary file
+               written by mangle, and return in the IDL structure format.
+QU_TO_BAPHI: New proc to transform Q/U values to B/A and PHI.
+SET_USE_CAPS: New (undocumented) keyword of /ALLOW_NEG_DOUBLES.
+VMID: New proc to return vector within a given balkan polygon.
+WHERE_POLYGONS_OVERLAP: New proc to check which polygons overlap a given
+               polygon.
+
+bin/evilmake: For compiling on the Mac (Darwin) platform, add the following
+               to the X_LD_FLAGS flags: "-flat_namespace -undefined suppress".
+               This lets Blanton's spherematch code build, since it needs
+               to link to IDL's memory-management routines.  Note that we
+               still cannot build the mangle routines on the Mac.
+               Blanton changed the following for building Fortran code on Linux:
+                MAKE_FTNLIB="-lg2c"
+               to have the following:
+                "-lg2c  -L/usr/lib/gcc-lib/i386-redhat-linux/`gcc -dumpversion
+               I've commented this out, since it fails on all our machines,
+               and compiles just fine without it.
+data/sdss/sdssMaskbits.par: Add SURVEY_BADFIELD mask bit to RESOLVE_STATUS.
+               Add all the IMAGE_STATUS mask bits.
+pro/Makefile: Remove radprof from the SUBDIRS list, since there is nothing
+               left in that directory.
+src/idlmangle/Makefile: Build idl_vmid.c,where_polygons_overlap.c
+src/idlmangle/idl_vmid.c: New code called by VMID.
+src/idlmangle/where_polygons_overlap.c: New code called by
+               WHERE_POLYGONS_OVERLAP.
+src/image/Makefile: Include $(MAKE_FTNLIB) options in $(LD) build step.
+               Also, build the new Fortran (.f) files, and idl_profmean,
+               ppvalu, tautsp, interv, interp_profmean.
+               I've now removed the Fortran code from the Makefile, since
+               there are problems getting it to link to g2c on all Linux
+               platforms.
+src/image/idl_interp_profmean.f, interp_profmean.f, interv.f, ppvalu.f,
+               tautsp.f: New procs by Blanton for profile interpolation.
+src/mangle1.4/src/Makefile: Change the "make" command to put the executables
+               directly in the idlutils/bin directory, rather than copying
+               them there after a "make install".  And don't have "make"
+               automatically do a "make install".
+src/mangle1.4/src/GNUmakefile: Remove this file, since it appears to
+               be identical to the "Makefile", and I don't really want
+               to be worrying about two versions of the same Makefile.
+src/mangle1.4/src/format.h, mrb_balkanize.c, msg.c, parse_args.c, vmid.c:
+               Fixes for memory-use bugs.
+src/mangle1.4/src/copy_poly.c,defaults.h,defines.h,format.h,manglefn.h,
+               parse_args.c,wrmask.c: Change to use binary mangle outputs.
+src/mangle1.4/src/mrb_unify.c: New function.
+src/math/Makfile: Compile memshift.c
+src/math/memshift.c: Called by the new IDL procedure MEMSHIFT.
+
+-------------------------------------------------------------------------------
+v4_10_5 (Sep 17, 2003)
+Upgraded version mangle code, and new features for SPLOT.
+Tagged for photoop v1_1.
+
+ADJUST_ERROR: New proc.
+ASINH2: Trig function; moved from vagc product.
+ASTROM_ENGINE: Fix print statement for "XSHIFT:".
+CIRCLE_CAP: Conform to new RA,DEC inputs.
+COMDIST2: New proc to compute comoving line-of-sight distances.
+CONSTRUCT_POLYGON, READ_MANGLE_POLYGONS: Cleaner memory.
+DJS_PHOT,DJS_PHOTSKY,EXACT_PHOTFRAC: Add support for calling the sinc-shift
+               "exact" photometry that Lupton uses in PHOTO.  This algorithm
+               is called if the /EXACT keyword is set.
+FIRST_READ,FIRST_COVERAGE: New functions for reading the FIRST radio survey
+               data files.
+GVERTS: Fix a loop variable that should have been type long.
+               Move from mangle version 1.2 to mangle version 1.4.
+IS_IN_CAP,IS_IN_POLYGON,IS_IN_WINDOW: Change calling sequence, with
+               ra=,dec=,xyz= instead of assuming xyz is passed.
+CONSTRUCT_POLYGON,CONSTRUCT_VERTEX,COPY_CAPS,DESTRUCT_POLYGON,SET_USE_CAPS:
+               Get rid of LONG64 in USE_CAPS.
+LOGSUM: Small bug fix.
+MWRFITS_CHUNKS: Small changes to internal proc MWRBIN_APPEND to allow
+               support for files larger than 2 Gb.
+               Free all logical units (LUNs), which was not the case.
+               We were not freeing one LUN for each time this routine
+               was called.
+POLYGON_OVERLAP - Blanton changed the usage?
+SET_USE_CAPS: Output use_caps separately too.
+SPLOT - Fix to address PR #5468, where the IDL system variable !p.position
+               is left in a bad state that does not allow the use of !p.multi
+               in other plot windows.  The fix is to always make sure that
+               !p.position is reset to its previous value after any calls
+               to SPLOT,SOPLOT,SXYOUTS.
+               If in zoom mode, default to zooming/panning in X, or if shift
+               button is pressed then zoom/pan in Y, or if ShiftLock, then
+               zoom/pan in X+Y.
+               Add SPOLYFILL command, analogous to POLYFILL.
+               Make state.xrange,state.yrange,state.position double-precision
+               to avoid some round-off problems.
+               In the proc splot_autoscale_y, bug fix to set the correct
+               limits even if the X plot range runs from big X to small X.
+               Change MAXPLOT from 20 thousand to 100 thousand.  Maybe this
+               should be changed dynamically rather than hard-wired??
+               This now works for 16-bit color under the KDE window manager.
+               Get rid of the bit of code that was supposed to make things
+               work under 24-bit color, since it *didn't work on my Mac,
+               which says it has 24-bit color.
+TMASS_ASCII2FITS,TMASS_CONE,TMASS_DECSLICE,TMASS_FITS_FILES,
+TMASS_READZONE,TMASS_REFORMAT_PSC,TMASS_STRUC:
+               New procs for reading the 2MASS catalog.
+
+bin/evilmake: Changed some of the flags so that C code libraries load
+               properly on an IRIX64 machine (sdsshost.apo).  I got these
+               flags from "idl_5.5/external/call_external/C/makefile".
+               The changed flag values for IRIX64 are:
+                 X_CFLAGS="-n32 -KPIC -mips3"
+                 CC=cc
+                 LD=ld
+                 X_LD_FLAGS="-shared -n32 -mips3"
+data/sdss/sdssMaskbits.par: Add CALIB_STATUS flag values.
+               Add the "UNPLUGGED" value to the ZWARNING flag.
+lib/Makefile: For "make clean", also remove all "*.a" files.
+src/Makefile: Compile source code in "mangle1.4/src" instead of "mangle1.2".
+src/image/idl_photfrac.c, p_cisi.c, p_midpnt.c, p_polint.c, p_qromo.c,
+               p_utils.c, ph.h, photfrac.c, test_photfrac.c:
+               New tools added by Blanton for band-limited aperature
+               photometry (as done by Lupton in PHOTO).
+src/mangle1.2/Makefile: For "make install", copy the source code into
+               the install directory.  This isn't necessary, but we
+               conventionally do it anyway.
+src/mangle1.2/mrb_balkanize.c, mwrmask.c: Destroy the polygons as they
+               stream out, so that we try to conserve total memory as
+               the C outputs are read into the IDL code.
+               Print a loop counter after every 100 balkans.
+src/mangle1.4: All new source code imported by Blanton from Andrew Hamilton,
+               replacing mangle1.2 files.
+src/mangle1.4/mrb_balkanize.c: Clear memory usage when possible
+               when assigning parents.
+ups/idlutils.table: Add optional dependencies upon these products: dust,
+               first, gsc, twomass, tycho2, ucac, usno.
+               Get rid of all the $UPS_PROD_FLAVOR references for
+               dependent products.
+
+In the Goddard utitilies:
+MRDFITS: Modified by Wayne Landsman to have the ROWS keyword.
+               (See e-mail exchange with him on 24-Jul-2003).
+
+-------------------------------------------------------------------------------
+v4_10_4 (Jul 5, 2003)
+Tagged for photoop v0_12.
+
+MWRFITS_CHUNKS- Added /APPEND option.
+UCAC_READGC - Check to see if outdat has any elements.
+USNO_READGC - Check to see if outdat has any elements.
+
+-------------------------------------------------------------------------------
+v4_10_3 (Jun 27, 2003)
+Tagged for photoop v0_10.
+
+ATV          - Merged with Aaron Barth's version 1.4 (by Finkbeiner).
+               Merged to include using SPLOT/SOPLOT instead of PLOT,
+               use 5 digit pixel coords, some Healpix support (though
+               the libraries are not yet in idlutils).
+               Fink did not merge in support for reversed CTYPE values
+               in FITS headers, e.g. DEC,RA instead of RA,DEC.
+CAP_DISTANCE: New function, moved from photoop/RESOLVE_RUN_LOCAL.
+GVERTS: Fix zero-area failure.
+MUNU_TO_RADEC,RADEC_TO_MUNU: Computation of PHI now done properly in both
+               routines, and done analytically rather than numerically.
+               Before this, I at least had a correct numerical computation
+               in MUNU_TO_RADEC.
+src/mangle1.2/balkanize.c, harmonize.c, poly2poly.c, ransack.c,
+               snap.c, unify.c - Fixed ransack bug where it wasn't
+               checking for NULL polygons after throwing them away.
+
+-------------------------------------------------------------------------------
+v4_10_2 (Jun 20, 2003)
+Tagged for photoop v0_9.  Make sure that mangle code builds.
+
+data/sdss/sdssMaskbits.par: Add RESOLVE_STATUS flag, which probably
+                deprecates the RESOLVE flag.
+lib/Makefile: When installing, copy over *.a files and Makefile, not 
+                that they're needed.
+src/Makefile: Note that mangle1.2 must be built before idlmangle!
+                This prevented the mangle code from building in v4_10_0,v4_10_1.
+src/idlmangle/Makfile: Copy source code when installing, not that it's needed.
+
+-------------------------------------------------------------------------------
+v4_10_1 (Jun 18, 2003)
+Tagged for photoop v0_9.  Also ATV bug fixes for IDL 5.5 and later.
+
+ATV           - Call PSCONFIG instead of CMPS_FORM for making PostScript
+                plots.  This change was necessary to work with IDL 5.5.
+ATV_JOE_WRITEPS - Write a PostScript file of the current ATV display
+                w/out using a widget
+CROSSPROD     - New function to compute cross product of two vectors or
+                arrays of vectors.
+DJS_BATCH     - Fix bug introduced when SELECTHOST option was added.
+FINDOPFILE    - This routine was hard-wired to a 5-digit MJD, but
+                we need it to work for numbers with any number of digits.
+                For example, for the photoop product, we use this routine
+                to select from 6-digit run numbers (like for flat files).
+FSC_DROPLIST,FSC_FIELD,FSC_FILESELECT,FSC_INPUTFIELD,FSC_PLOTWINDOW,
+FSC_PSCONFIG__DEFINE,PSCONFIG - New routines downloaded from David Fanning
+                for use with ATV.  Downloaded from:
+                "http://www.dfanning.com/documents/programs.html#FSCPSCONFIG"
+GROW_OBJECT   - New proc to identify objects as the contiguous non-zero pixels
+                in an image.  This calls a C program.
+TNMIN         - Two loop variables (lines 559 and 601) changed from "0"
+                to "0L".
+UCAC_READZONE - New function to read the raw UCAC data files for a specific
+                declination zone within a given RA range.
+USNO_READGC   - New proc to read the UCAC data files for a great circle
+                on the sky, analogous to UCAC_READGC.
+WCSXY2SPH     - Add HealCart projection.
+YANNY_READ    - Don't crash when FILENAME is a 1-element array!
+                The last step trims each structure to the actual number
+                of elements.  Be sure to free memory from the untrimmed,
+                unused pointers.
+YANNY_READONE - Free pointers before returning.
+
+bin/Makefile  - Take out "evilinstall" which has now moved to evilups product.
+src/image/grow_obj.c - New code for IDL proc GROW_OBJECT.
+src/math/nr.h - Comment-out line 93 which defines "float fmin(float x[]);".
+               This conflicts with a definition in one of the include files
+               under Mac OS X: "/usr/include/architecture/ppc/math.h".
+               Note that we don't actually use the fmin() function anywhere
+               in this directory anyway.
+ups/Makefile - Get rid of the confusing dependency on
+               $(SDSSTOOLS_DIR)/bin/install_ups_table.
+
+In the Goddard utitilies:
+MATCH         - Simple fix to allow this to work with scalar values.
+
+-------------------------------------------------------------------------------
+v4_10_0 (Mar 29, 2003)
+Tagged for photoop v0_6, and includes updated Goddard libraries.
+
+data/filters/Makefile - This file is no longer needed, since the Makefile
+               one directory up takes care of copying these filter files.
+pro/Makefile - This was missing several subdirectories.
+goddard      - This library was brought up to the 2003-Mar-21 version
+               of Landsman's library.  There were changes to 192 files
+               in the past 14 months.
+
+-------------------------------------------------------------------------------
+v4_9_14 (Mar 25, 2003)
+Tagged for photoop v0_5.
+

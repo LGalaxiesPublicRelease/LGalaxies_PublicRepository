@@ -1,0 +1,47 @@
+c-----------------------------------------------------------------------
+c * Basic data relating angular reference frames
+
+c........index to angular reference frame
+      integer UNKNOWN,
+     *  EQUATORIAL,EQUATORIAL2K,GALACTIC,ECLIPTIC,ECLIPTIC2K,SDSS
+      parameter (
+     *    UNKNOWN=0,
+     *    EQUATORIAL=1,
+     *    EQUATORIAL2K=2,
+     *    GALACTIC=3,
+     *    ECLIPTIC=4,
+     *    ECLIPTIC2K=5,
+     *    SDSS=6
+     *  )
+
+c........equatorial (RA & Dec) 1950 <-> galactic
+      real*8 RAG,DECG,L2P
+      parameter (
+c        RA & Dec of galactic north pole in deg
+     *  RAG=192.25d0,DECG=27.4d0,
+c        galactic longitude of NCP in deg; note b2p=decg
+     *  L2P=123.d0)
+
+c........equatorial <-> ecliptic
+c Ecliptic latitude of NCP depends on epoch (e.g. 1950, 2000);
+c real*8 function felp(epoch) gives ecliptic latitude of NCP.
+c        coefficients of expansion of ecliptic latitude of NCP
+      real*8 E1,E2,E3,E4
+      parameter (E1=23.452294d0,E2=-1.30125d-2,E3=-1.64d-6,E4=5.03d-7)
+      real*8 EAZP,RAEZ
+      parameter (
+c        ecliptic longitude of NCP in deg
+     *  EAZP=90.d0,
+c        RA of ecliptic NP in deg
+     *  RAEZ=270.d0)
+
+c........equatorial 2000 <-> SDSS
+      real*8 RASDNP,DECSDNP,ETANCP
+      parameter (
+c        RA, Dec J2000 FK5 of SDSS NP (lambda=90 deg) in deg
+     *  RASDNP=275.d0,DECSDNP=0.d0,
+c        SDSS longitude (eta) of North Celestial Pole in deg
+c ETANCP is per the SDSS convention, which is minus the normal
+c convention for longitudes!
+     *  ETANCP=57.2d0)
+

@@ -1,0 +1,19 @@
+                                                         October 2003
+ 
+This directory contains procedures (mainly written by Markus Feldt, MPI
+Heidelberg) which use the IDL SOCKET command to access Web servers.   All these
+procedures require IDL V5.4 or later on either Unix or Windows machines
+
+Dominic Zarro (LAC/GSFC) has written an independent set of routines to use IDL
+sockets to access Web servers.   His routines use object-oriented code and are
+available at http://orpheus.nascom.nasa.gov/~zarro/idl/sockets.html
+
+WEBGET() - Use the IDL SOCKET procedure to get data from http servers
+QUERYGSC() - Query the Guide Star Catalog (GSC V2.2) at the Space
+    Telescope Science Institute by position  
+QUERYDSS - Query the digital sky survey (DSS) on-line at the European
+     Space Observatory (ESO) or STSCI servers
+QUERYSIMBAD - Query the SIMBAD or NED name resolvers to obtain J2000
+     coordinates
+QUERYUSNO - Query the USNO-A2.0 Catalog at the ESO/ST-ECF Archive by position	   
+QUERYVIZIER - Positional query of an catalog in the VIZIER database

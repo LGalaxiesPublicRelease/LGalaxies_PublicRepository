@@ -1,0 +1,189 @@
+: # -*-Perl-*-
+eval 'exec perl -w -S $0 ${1+"$@"}' # Portability kludge
+    if 0;
+# 
+# pstogif.pl v1.0, July 1994, by Nikos Drakos <nikos@cbl.leeds.ac.uk>
+# Computer Based Learning Unit, University of Leeds.
+#
+# Accompanies LaTeX2HTML Version 96.1
+#
+# Script to convert an arbitrary PostScript image to a cropped GIF image
+# suitable for incorporation into HTML documents as inlined images to be
+# viewed with WWW browsers.
+#
+# This is based on the pstoepsi script 
+# by Doug Crabill dgc@cs.purdue.edu
+#
+# Please note the following:
+# - The source PostScript file must end
+#   in a .ps extention.  This is a GhostScript requirement, not mine...
+# - The -density argument has no effect unless the 
+#   color depth (set with the -depth argument) is equal to 1.
+# - Valid arguments for -depth are 1,8, or 24.
+#  
+# This software is provided as is without any guarantee.
+#
+# Nikos Drakos (ND), nikos@cbl.leeds.ac.uk
+# Computer Based Learning Unit, University of Leeds.
+#
+# 15 Jan 96 HS Call ppmquant only if needed.  Fixed bug relative to
+#    V 95.3 .
+#
+# 15 Dec 95 HS (Herbert Swan <dprhws.edp.Arco.com> Added support for
+#    the flip=option.  This allows images to be oriented differently
+#    in the paper versus the electronic media
+#
+# 1 Nov 95 jmn - modified for use with gs ppm driver - from jhrg's patches
+#    note that ppmtops.ps and ppmtops3.ps are no longer needed
+#
+# 20 JUL 94 ND Converted to Perl and made several changes eg it now accepts 
+#    parameters from environment variables or from command line or will use 
+#    default ones. 
+#      
+# 1  APR 94 ND Changed the suffixes of multi-page files from xbm to gif (oops!)
+#
+# 
+
+#####################################################################
+$| =1;
+&read_args;
+
+### You may need to specify some pathnames here if you want to
+### run the script without LaTeX2HTML
+
+# Ghostscript
+$GS= $ENV{'GS'} || 'gs';
+
+# Comes with LaTeX2HTML (For ghostscript versions greater than 3.0 
+# you need the newer pstoppm.ps)
+#$PSTOPPM= $ENV{'PSTOPPM'} ||
+#    'pstoppm.ps';
+
+# Available in the PBMPLUS libary	   
+$PNMCROP=$ENV{'PNMCROP'} || 'pnmcrop' ;
+
+# Also in PBMPLUS
+$PNMFLIP=$ENV{'PNMFLIP'} || 'pnmflip' ;
+
+# Also in PBMPPLUS	  
+$PPMTOGIF=$ENV{'PPMTOGIF'} || 'ppmtogif' ;
+
+# Also in PBMPPLUS	  
+$REDUCE_COLOR=$ENV{'PPMQUANT'} || 'ppmquant 256' ;
+ 
+$OUTFILE = $ENV{'OUTFILE'} || $out;
+			
+# Valid choices for $COLOR_DEPTH are 1, 8 or 24. 
+$DEPTH = $ENV{'DEPTH'} || $depth || 24;
+
+#Default density is 72
+$DENSITY = $ENV{'DENSITY'} || $density || 72;
+    
+# Valid choices are any numbers greater than zero
+# Useful choices are numbers between 0.1 - 5
+# Large numbers may generate very large intermediate files
+# and will take longer to process
+$SCALE = $ENV{'SCALE'} || $scale; # No default value
+
+$PAPERSIZE = $ENV{'PAPERSIZE'} || $papersize; # No default value;
+
+$DEBUG = $ENV{'DEBUG'} || $DEBUG || 0;
+
+######################################################################
+
+&main;
+
+sub read_args {
+    local($_);
+    local($color);
+    while ($ARGV[0] =~ /^-/) {
+	$_ = shift @ARGV;
+	if (/^-h(elp)?$/) {
+	    &usage; exit}
+        elsif (/^-out$/) {
+            $out = shift @ARGV;
+	}
+	elsif (/^-(.*)$/) {
+	    eval "\$$1 = shift \@ARGV"; # Create and set a flag $<name>
+	    }
+    }
+}		 
+
+sub main {
+    local($base, $outfile, $i, $j);
+    $base = &test_args;
+    $outfile = $OUTFILE || "$base.gif";
+    open(STDERR, ">/dev/null") unless $DEBUG;
+    &convert($base);
+    if (-f "$base.ppm") {
+	&crop_scale_etc("$base.ppm", $outfile);
+    }
+    else {
+	foreach $i (<$base.[1-9]*ppm>) {
+	$j = $i; 
+	$j =~ s/\.(.*)ppm/$1.gif/;
+	&crop_scale_etc($i, $j)}
+    }				
+    &cleanup($base);
+}
+
+sub crop_scale_etc {
+    local($in, $out) = @_;
+    local($tmp) = $in . ".tmp";
+    open(STDERR, ">/dev/null") unless $DEBUG;
+
+    if ($flip) {
+	rename($tmp, $in) unless system("$PNMFLIP -$flip $in > $tmp");
+	}
+    system("$PNMCROP $in > $tmp");
+
+    if (system("$PPMTOGIF $tmp > $out")) {
+	print "Running ppmquant for $out\n";
+	system("$REDUCE_COLOR < $tmp|$PPMTOGIF - > $out");
+	}
+    unlink $tmp;
+    print "Writing $out\n";
+}
+
+sub test_args {
+    local($file) = $ARGV[0];
+    if (! ($file =~ s/\.ps$//)) {
+	print "The name of the input file must end in '.ps'\n";
+	exit}
+    elsif (! ( -f "$file.ps")) {
+	print "Cannot find file $file.ps\n.";
+	exit}
+    elsif (! ($DEPTH =~ /^(1|8|24)$/)) {
+	print "The color depth must be 1 or 8 or 24. You specified $DEPTH\n";
+	exit			
+	}
+    if (defined $SCALE) {
+	if ($SCALE > 0) {
+	    $DENSITY = int($SCALE * $DENSITY)}
+	else {
+	    print "Error: The scale must be greater than 0.\n" .
+		"You specified $SCALE\n";
+	    exit}
+    }
+    $file;
+}
+   
+sub convert {
+    local($base) = @_;
+    local($paperopt) = "-sPAPERSIZE=$PAPERSIZE" if $PAPERSIZE;
+    local($ppmtype) = join('', "ppm",$DEPTH,"run");
+    local($density) = "-r$DENSITY" if ($DENSITY != 72);
+    open (GS, "|$GS -q -dNOPAUSE -dNO_PAUSE -sDEVICE=ppmraw $density -sOutputFile=$base.ppm $paperopt $base.ps");
+    close GS;
+}
+
+sub cleanup {
+    local($base) = @_;
+    unlink <$base[0-9.]*ppm>;
+}
+
+sub usage {
+    print "Usage: pstogif [-h(elp)] [-out <output file>] [-depth <color depth 1, 8 or 24>]  [-flip <Flip_code>] [-density <pixel density>] <file>.ps\n\n";
+}
+
+
