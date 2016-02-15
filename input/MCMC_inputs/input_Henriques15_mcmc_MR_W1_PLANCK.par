@@ -31,7 +31,7 @@ MCMCMode                         0    ;acceptance rate option
                                          % 1 find a high likelihood -> AcceptanceLogic = (lhood2 > lhood1)
                                           
 MCMC_LogStep_Size                0.05   ;size of log_normal step when proposing new parameters
-MCMC_Initial_Par_Displacement    0.2   ;size of log_normal displacement for the initial parameters in each chain
+MCMC_Initial_Par_Displacement    0.1   ;size of log_normal displacement for the initial parameters in each chain
 MCMC_Minimum_Obs_Error           0.05  ;minimum value allowed for observation error bars (maximum level of agreement required)
 AddedErrOnMass                   0.08  ;observational scatter on masses with which theoretical masses are convolved to compensate for Eddignton bias
 

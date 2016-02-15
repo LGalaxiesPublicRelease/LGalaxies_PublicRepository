@@ -4,7 +4,7 @@
 
 FileNameGalaxies          SA
 
-FileWithOutputRedshifts   ./input/MCMC_inputs/desired_output_redshifts_for_MCMC.txt
+FileWithOutputRedshifts   ./input/MCMC_inputs/HaloModel_desired_output_redshifts_for_MCMC.txt
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
