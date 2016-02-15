@@ -30,17 +30,17 @@ MCMCMode                         0    ;acceptance rate option
                                          %*0 for normal MCMC -> AcceptanceLogic = (ran < AcceptanceProbability) 
                                          % 1 find a high likelihood -> AcceptanceLogic = (lhood2 > lhood1)
                                           
-MCMC_LogStep_Size                0.0   ;size of log_normal step when proposing new parameters
-MCMC_Initial_Par_Displacement    0.0   ;size of log_normal displacement for the initial parameters in each chain
+MCMC_LogStep_Size                0.05   ;size of log_normal step when proposing new parameters
+MCMC_Initial_Par_Displacement    0.2   ;size of log_normal displacement for the initial parameters in each chain
 MCMC_Minimum_Obs_Error           0.05  ;minimum value allowed for observation error bars (maximum level of agreement required)
 AddedErrOnMass                   0.08  ;observational scatter on masses with which theoretical masses are convolved to compensate for Eddignton bias
 
 %sample files read in read_sample_info(), files available: 2100, 2300, 2500
 MCMCSampleDir                    ./MCMC/Samples/
 MCMCSampleFilePrefix             cut_optimal  ; %*cut_optimal (MCMCSampleFileType = 2)                                                  
-MCMCSampleFile                   300          ;File with IDs of sample of Dark matter trees to use as input 
+MCMCSampleFile                   100          ;File with IDs of sample of Dark matter trees to use as input 
                           
-MCMCTreeSampleFile               2300         ;Sample of Dark Matter trees
+MCMCTreeSampleFile               2100         ;Sample of Dark Matter trees
  
 
 %-------------------------------------------------
@@ -54,7 +54,7 @@ Hashbits                  8     ; needed for Peano hilbert key output with the G
 
 OutputDir                 ./output/
 
-MaxMemSize                10000
+MaxMemSize                5000
 
 MachineTimeOut            71.5            ;time out for the computer cluster in hours
 JobSubmitCommand          qsub            ;qsub or bsub
