@@ -1,3 +1,18 @@
+#  Copyright (C) <2016>  <L-Galaxies>
+
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>
+
 EXEC   = L-Galaxies
 
 OBJS   = ./code/main.o ./code/io_tree.o ./code/init.o ./code/cool_func.o \
@@ -20,9 +35,9 @@ INCL   = ./code/allvars.h  ./code/proto.h  Makefile
 
 
 # Either include the default set of Makefile options, or define your own
-#include My_Makefile_options
+include My_Makefile_options
 #include My_Makefile_options_MCMC
-include My_Makefile_options_MCMC_HaloModel
+#include My_Makefile_options_MCMC_HaloModel
 
 # Choose your system type (needs to match an entry in Makefile_compilers)
 SYSTYPE = "MyMachine"
@@ -38,9 +53,9 @@ CFLAGS =   -g $(OPTIONS) $(OPT) -DCOMPILETIMESETTINGS=\""$(OPT)"\" $(OPTIMIZE) $
 $(EXEC): $(OBJS) 
 	$(CC) $(OPTIMIZE) $(OBJS) $(LIBS)   -o  $(EXEC)  
 
-#$(OBJS): $(INCL) My_Makefile_options Makefile_compilers
+$(OBJS): $(INCL) My_Makefile_options Makefile_compilers
 #$(OBJS): $(INCL) My_Makefile_options_MCMC Makefile_compilers
-$(OBJS): $(INCL) My_Makefile_options_MCMC_haloModel Makefile_compilers
+#$(OBJS): $(INCL) My_Makefile_options_MCMC_haloModel Makefile_compilers
 
 clean:
 	rm -f $(OBJS)
