@@ -1,3 +1,26 @@
+/*  Copyright (C) <2016>  <L-Galaxies>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
+
+/*
+ *  Created in: 1978
+ *  Major Contributors: Qi Guo, Gabriella De Lucia,  Bruno Henriques, Guinevere Kauffmann,
+ *                      Volker Springel, Peter Thomas, Marcel van Daalen, Rob Yates, Simon White
+ *
+ *  Re-written in 2001 by Volker Springel
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -64,9 +87,34 @@ int main(int argc, char **argv)
   time(&global_starting_time);
 #endif
 
-  if(argc > 3)
+
+  if(ThisTask==0)
     {
-      printf("\n  usage: L-Galaxies <parameterfile>\n\n");
+ 	  printf("\n\n\n");
+ 	  printf("**************************************************************************\n");
+ 	  printf("*                                                                        *\n");
+ 	  printf("*                   Copyright (C) <2016>  <L-Galaxies>                   *\n");
+ 	  printf("*                                                                        *\n");
+ 	  printf("*  This program is free software: you can redistribute it and/or modify  *\n");
+ 	  printf("*  it under the terms of the GNU General Public License as published by  *\n");
+ 	  printf("*  the Free Software Foundation, either version 3 of the License, or     *\n");
+ 	  printf("*  (at your option) any later version.                                   *\n");
+ 	  printf("*                                                                        *\n");
+ 	  printf("*  This program is distributed in the hope that it will be useful,       *\n");
+ 	  printf("*  but WITHOUT ANY WARRANTY; without even the implied warranty of        *\n");
+ 	  printf("*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *\n");
+ 	  printf("*  GNU General Public License for more details.                          *\n");
+ 	  printf("*                                                                        *\n");
+ 	  printf("*  You should have received a copy of the GNU General Public License     *\n");
+ 	  printf("*  along with this program.  If not, see <http://www.gnu.org/licenses/>  *\n");
+ 	  printf("*                                                                        *\n");
+ 	  printf("**************************************************************************\n\n\n");
+    }
+
+  if(argc > 3 || argc<2)
+    {
+	  printf("\n  Wrong number of runtime arguments\n\n");
+      printf("\n  usage: ./L-Galaxies <parameterfile>\n\n");
       endrun(0);
     }
 
