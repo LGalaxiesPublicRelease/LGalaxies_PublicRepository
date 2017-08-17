@@ -1,4 +1,0 @@
-echo ""
-includec advise_fmt.c balkanize.c convert.c copy_format.c copy_poly.c drandom.c findtop_.c garea.c gcmlim.c gptin.c gspher.c gvert.c gvlim.c gvphi.c harmonize.c ikrand.c map.c msg.c new_poly.c new_vert.c partition_poly.c places.c poly2poly.c polyid.c prune_poly.c ransack.c rdangle.c rdline.c rdmask.c rdspher.c rotate.c scale.c snap.c snap_poly.c strdict.c unify.c vmid.c weight.c weight_fn.c wrangle.c wrho.c wrmask.c wrspher.c
-echo ""
-includef azell.s.f azel.s.f felp.s.f fframe.s.f findtop.s.f garea.s.f gcmlim.s.f gphi.s.f gptin.s.f gsphera.s.f gspher.s.f gsubs.s.f gvert.s.f gvlim.s.f gvphi.s.f iylm.s.f twodf.f twoqz.f wlm.s.f wrho.s.f
