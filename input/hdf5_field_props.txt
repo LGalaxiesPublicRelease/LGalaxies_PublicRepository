@@ -1,0 +1,77 @@
+Type, ,Galaxy type: 0 for central galaxies of a main halo, 1 for central galaxies in sub-halos, 2 for satellites without halo.
+HaloIndex, , ?Unique ID of MPA halo containing this galaxy
+SnapNum, ,The snapshot number where this galaxy was identified.
+LookBackTimeToSnap,yr ,The time from a given snapshot to z=0
+CentralMvir, 10^10/h Msun , virial mass of background (FOF) halo containing this galaxy
+CentralRvir, Mpc/h , Proper[?] R200 cf critical of background (FOF) halo containing this galaxy
+DistanceToCentralGal, Mpc/h , Proper[?] components of the distance between this galaxy and the galaxy at the centre of the FoF group.
+Pos, 1/h Mpc , Comoving galaxy/subhalo position
+Vel, km/s , Galaxy/subhalo peculiar velocity
+Len, , Number of particles in the associated subhalo  
+Mvir, 10^10/h Msun , M200 cf critical of the halo last time galaxy was type 0
+Rvir, Mpc/h , R200 cf critical of the halo last time galaxy was type 0
+Vvir, km/s , Virial velocity of the halo last time galaxy was type 0
+Vmax, km/s ,Maximum rotational velocity of the subhalo, or the last value for type 2's galaxies.
+ColdGasSpin, Mpc/h km/s , The specific angular momentum of the cold gas disk
+DiskSpin, Mpc/h km/s , The specific angular momentum of the stellar disk
+InfallVmax, km/s , Maximum rotational velocity of the host halo of this galaxy at infall (ie last time a type 0)
+InfallVmaxPeak, km/s , ? Peak Vmax along past history
+InfallSnap, , Most recent (largest) snapnum at which this galaxy's type changed from 0 to 1 or 2
+InfallHotGas, 10^10 Msun/h , Mass in hot gas at the time of infall (same as hotGas for type 0 galaxies).
+HotRadius, Mpc/h , Proper[?] radius out to which hot gas extends: rvir for type 0; 0 for type 2; maximum radius out to which hot gas is not stripped for type 1.
+OriMergTime, yr , Estimated dynamical friction time when the merger clock is set.
+MergTime,yr , Estimated remaining merging time. 
+ColdGas, 10^10/h Msun , Mass in cold gas.
+StellarMass, 10^10/h Msun , Total mass in stars in the disk and the bulge combined
+DiskMass, 10^10/h Msun , Mass of stars in the disk
+BulgeMass, 10^10/h Msun , Mass of stars in the bulge
+HotGas, 10^10/h Msun , Mass in hot gas
+ReheatedGas, 10^10/h Msun , Mass in reheated gas
+EjectedMass, 10^10/h Msun , Mass in ejected gas
+BlackHoleMass, 10^10/h Msun , Mass of central black hole
+BlackHoleGas,float BlackHoleGas; , 10^10/h Msun // Mass in BH accretion disk
+ICM,10^10/h Msun ,Total mass in metals in intra-cluster stars, for type 0,1
+MassFromInSitu, 1e10 Msun/h , Mass formed in situ.
+MassFromMergers, 1e10 Msun/h , Mass accreted from mergers.
+MassFromBursts, 1e10 Msun/h , Mass formed in starbursts
+MetalsColdGas, 10^10/h Msun , Mass in metals in cold gas.
+MetalsStellarMass, 10^10/h Msun ,	Mass in metals in the bulge+disk
+MetalsDiskMass, 10^10/h Msun , Mass in metals in the disk
+MetalsBulgeMass, 10^10/h Msun , Mass in metals in the bulge
+MetalsHotGas, 10^10/h Msun , Mass in metals in the hot gas
+MetalsReheatedGas, 10^10/h Msun , Mass in metals in the Reheated gas
+MetalsEjectedMass, 10^10/h Msun , Mass in metals in the ejected gas
+MetalsICM, 10^10/h Msun , Mass in metals in intra-cluster stars, for type 0,1
+PrimordialAccretionRate, Msun/yr , Accretion rate of primordial gas.
+CoolingRadius, Mpc/h , The radius within which the cooling time scale is shorter than the dynamical timescale
+CoolingGas,float CoolingGas; , Mpc/h // Mass of cooling gas
+CoolingRate, Msun/yr , Cooling rate of the hot gas
+CoolingRate_beforeAGN, Msun/yr , What the cooling rate of the hot gas would have been if there was no AGN feedback.
+QuasarAccretionRate, Msun/yr , Rate at which cold gas is accreted into the central black hole in the quasar mode.
+RadioAccretionRate, Msun/yr , Rate at which hot gas is accreted into the central black hole in the radio mode.
+Sfr, Msun/yr , Star formation rate
+SfrBulge, Msun/yr , Star formation rate in bulge.
+XrayLum, log10(erg/sec) , (log_10 of) X-Ray luminosity
+BulgeSize, Mpc/h , Half mass radius of bulge
+DiskRadius, Mpc/h , Size of the stellar disk, 3x the scale length.
+ColdGasRadius, Mpc/h , Size of the gas disk, 3x the scale length.
+StellarHalfMassRadius, Mpc/h , stellar Half mass radius
+StellarHalfLightRadius, Mpc/h , stellar Half light radius
+CosInclination, deg , Inclination of the galaxy. Derived from the angle between the stellar spins of the galaxy and the z-axis
+DisruptOn, , 0: galaxy merged onto merger center 1: galaxy was disrupted before merging onto its descendant, matter went into ICM of merger center;
+MergeOn, , 0: standard delucia-like merger behaviour for type 1 galaxy; 1: galaxy mass > halo mass, separate dynamical friction time calculated ....
+MagDust, , dust corrected, rest-frame absolute mags
+Mag, , rest-frame absolute mags
+MagBulge, , rest-frame absolute mags for the bulge
+MassWeightAge,10^9yr ,The age of this galaxy weighted by mass of its components.
+rbandWeightAge, 10^9yr , The age of this galaxy weighted by mass of its components.
+sfh_ibin, , Index of highest star formation history bin currently in use
+sfh_numbins, , Number of non empty star formation history bins
+sfh_time,float sfh_time[SFH_NBIN]; , yr // lookback time to middle of star formation history bin.
+sfh_dt,float sfh_dt[SFH_NBIN]; , yr // Width of star formation history bin.
+sfh_DiskMass,10^10 Msun/h , Star formation history in the disk.
+sfh_BulgeMass,10^10 Msun/h , Star formation history in the bulge.
+sfh_ICM,10^10 Msun/h , Star formation history in intra-cluster stars.
+sfh_MetalsDiskMass,10^10 Msun/h , Metal formation history in the disk.
+sfh_MetalsBulgeMass,10^10 Msun/h , Metal formation history in the bulge.
+sfh_MetalsICM,10^10 Msun/h , Metal formation history in the ICM.

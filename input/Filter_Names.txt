@@ -133,18 +133,10 @@ WFPC2_F450W.txt 0.45 WFPC450
 GALEX_FUV.txt 0.1480 GFUV
 GALEX_NUV.txt 0.21916 GNUV 
 u_band_trans.dat 0.3551 us
-c_johnson_B.dat 0.435 B
 g_band_trans.dat 0.4686 gs
 r_band_trans.dat 0.6165 rs
 i_band_trans.dat 0.7481 is
 z_band_trans.dat 0.8931 zs
-vista_johnson_Z.dat 0.88 Z
-vista_johnson_Y.dat 1.02 Y
-vista_johnson_J.dat 1.26 J
-vista_johnson_H.dat 1.60 H
-vista_johnson_Ks.dat 2.16 Ks
-i1_band.dat 3.60 i1
-i2_band.dat 4.50 i2
 
 40
 c_johnson_U.dat 0.36 U
