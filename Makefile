@@ -1,61 +1,72 @@
-#  Copyright (C) <2016>  <L-Galaxies>
+EXEC  = L-Galaxies
 
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
+# Default object files (others may be added with -D options)
+OBJS  = ./code/main.o \
+	./code/io_tree.o \
+	./code/init.o \
+	./code/cool_func.o \
+	./code/save.o \
+	./code/save_galtree.o \
+	./code/mymalloc.o \
+	./code/read_parameters.o \
+	./code/peano.o \
+	./code/allvars.o \
+	./code/age.o \
+	./code/update_type_two.o \
+	./code/metals.o \
+	./code/model_infall.o \
+	./code/model_cooling.o \
+	./code/model_starformation_and_feedback.o \
+	./code/model_reincorporation.o \
+	./code/model_mergers.o \
+	./code/model_dust.o \
+	./code/model_misc.o \
+	./code/model_disrupt.o \
+	./code/model_stripping.o \
+	./code/scale_cosmology.o
 
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <http://www.gnu.org/licenses/>
-
-EXEC   = L-Galaxies
-
-OBJS   = ./code/main.o ./code/io_tree.o ./code/init.o ./code/cool_func.o \
-     ./code/save.o ./code/save_galtree.o \
-     ./code/mymalloc.o ./code/read_parameters.o \
-	 ./code/peano.o ./code/allvars.o ./code/age.o ./code/update_type_two.o \
-	 ./code/metals.o \
-	 ./code/model_infall.o \
-	 ./code/model_cooling.o \
-	 ./code/model_starformation_and_feedback.o \
-	 ./code/model_reincorporation.o \
-	 ./code/model_mergers.o \
-	 ./code/model_dust.o \
-	 ./code/model_misc.o \
-	 ./code/model_disrupt.o \
-	 ./code/model_stripping.o \
-	 ./code/scale_cosmology.o
-
-INCL   = ./code/allvars.h  ./code/proto.h  Makefile
-
+# The following is used only to set dependencies
+INCL  = Makefile \
+    ./code/allvars.h \
+	./code/h_funcs.h \
+	./code/h_params.h \
+	./code/h_metals.h \
+	./code/h_galaxy_output.h \
+	./code/h_galaxy_tree_data.h \
+	./code/h_galaxy.h \
+	./code/h_halo_data.h \
+	./code/h_halo_ids_data.h \
+	./code/h_halo_aux_data.h \
+	./code/h_lightcone.h \
+	./code/h_variables.h \
+	./code/proto.h
+ifeq (ALL_SKY_LIGHTCONE,$(findstring ALL_SKY_LIGHTCONE,$(OPT)))
+INCL  += ./code/lightcone.h
+endif
 
 # Either include the default set of Makefile options, or define your own
+#include Makefile_options
 include My_Makefile_options
+#include My_Makefile_options_Rob
 #include My_Makefile_options_MCMC
-#include My_Makefile_options_MCMC_HaloModel
+#include My_Makefile_options_MCMC_Halo_Model
 
 # Choose your system type (needs to match an entry in Makefile_compilers)
-SYSTYPE = "MyMachine"
+SYSTYPE = "ETH"
 include Makefile_compilers
+# Alternatively, My_Makefile_compilers is an extract from Makefile_compilers
+#include My_Makefile_compilers
 
+LIBS   =   -g $(LDFLAGS) -lm  $(GSL_LIBS)  $(RLIBS) -lgsl -lgslcblas $(HDF5_LIBS) -lhdf5_serial -lhdf5_serial_hl
 
+CFLAGS =   -g $(OPTIONS) $(OPT) -DCOMPILETIMESETTINGS=\""$(OPT)"\" $(OPTIMIZE) $(GSL_INCL) $(HDF5_INCL)
 
-
-LIBS   =   -g $(LDFLAGS) -lm  $(GSL_LIBS)  $(RLIBS) -lgsl -lgslcblas 
-
-CFLAGS =   -g $(OPTIONS) $(OPT) -DCOMPILETIMESETTINGS=\""$(OPT)"\" $(OPTIMIZE) $(GSL_INCL)
+all: metadata $(EXEC)
 
 $(EXEC): $(OBJS) 
 	$(CC) $(OPTIMIZE) $(OBJS) $(LIBS)   -o  $(EXEC)  
 
-$(OBJS): $(INCL) My_Makefile_options Makefile_compilers
-#$(OBJS): $(INCL) My_Makefile_options_MCMC Makefile_compilers
-#$(OBJS): $(INCL) My_Makefile_options_MCMC_haloModel Makefile_compilers
+$(OBJS): $(INCL) Makefile Makefile_options My_Makefile_options My_Makefile_options_MCMC My_Makefile_options_MCMC_Halo_Model Makefile_compilers ##My_Makefile_compilers
 
 clean:
 	rm -f $(OBJS)
@@ -65,27 +76,31 @@ tidy:
 
 # use next target to generate metadata about the result files
 # uses -E compiler option to preprocess the allvars.h file, stores result in allvars.i
+# uses -CC compiler option to save comments, needed for HDF5 output
 # then calls awk scripts from ./awk/ folder to extract cleand-up version of GALAXY_OUTPUT struct
 # and generate different representations of use for post-processing the result 	
 metadata:
-	${CC_MD} ${OPT} ${CFLAGS} -E ./code/allvars.h -o ./code/allvars.i
-	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_TypeString.awk > ./AuxCode/awk/L-Galaxies_Types.txt
-	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_DDL.awk > ./AuxCode/awk/L-Galaxies_DDL.sql	
+	${CC_MD} ${OPT} ${CFLAGS} -E -CC ./code/h_galaxy_output.h -o ./code/h_galaxy_output.i
+	${CC_MD} ${OPT} ${CFLAGS} -E -CC ./code/h_metals.h -o ./code/h_metals.i
+	awk -f ./AuxCode/awk/extract_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_TypeString.awk > ./AuxCode/awk/output/L-Galaxies_Types.txt
+	awk -f ./AuxCode/awk/extract_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_DDL.awk > ./AuxCode/awk/output/L-Galaxies_DDL.sql	
 ifeq (NORMALIZEDDB,$(findstring NORMALIZEDDB,$(OPT)))
-	awk -f ./AuxCode/awk/extractSFH_BIN.awk ./code/allvars.i |awk -f ./AuxCode/awk/SFH_BIN_2_DDL.awk >> ./AuxCode/awk/L-Galaxies_DDL.sql
+	awk -f ./AuxCode/awk/extract_SFH_BIN.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/SFH_BIN_2_DDL.awk >> ./AuxCode/awk/output/L-Galaxies_DDL.sql
 else
-	awk -f ./AuxCode/awk/extractSFH_Time.awk ./code/allvars.i |awk -f ./AuxCode/awk/SFH_Time_2_DDL.awk >> ./AuxCode/awk/L-Galaxies_DDL.sql
+	awk -f ./AuxCode/awk/extract_SFH_Time.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/SFH_Time_2_DDL.awk >> ./AuxCode/awk/output/L-Galaxies_DDL.sql
 endif	
-	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/idl/GALAXY_OUTPUT_2_IDL_struct.awk >  ./AuxCode/awk/idl/LGalaxy.pro
-	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/idl/GALAXY_OUTPUT_2_IDL_hists.awk > ./AuxCode/awk/idl/LGalaxy_plot.pro
-	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/idl/GALAXY_OUTPUT_2_IDL_testfloats.awk > ./AuxCode/awk/idl/LGalaxy_testfloats.pro
-	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/idl/GALAXY_OUTPUT_2_IDL_zerofloats.awk > ./AuxCode/awk/idl/LGalaxy_zerofloats.pro
-	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_LGalaxy.awk > ./AuxCode/awk/L-Galaxies.h
-	awk -f ./AuxCode/awk/extractGALAXY_OUTPUT.awk ./code/allvars.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_FileFormat.awk > ./AuxCode/awk/L-Galaxies_FileFormat.csv
-	awk -f ./AuxCode/awk/extractSFH_BIN.awk ./code/allvars.i |awk -f ./AuxCode/awk/MOMAF_INPUT_2_MoMaFGalaxy.awk >> ./AuxCode/awk/L-Galaxies.h
+	awk -f ./AuxCode/awk/extract_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_IDL_struct.awk >  ./AuxCode/awk/output/idl/LGalaxy.pro
+	awk -f ./AuxCode/awk/extract_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_IDL_hists.awk > ./AuxCode/awk/output/idl/LGalaxy_plot.pro
+	awk -f ./AuxCode/awk/extract_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_IDL_testfloats.awk > ./AuxCode/awk/output/idl/LGalaxy_testfloats.pro
+	awk -f ./AuxCode/awk/extract_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_IDL_zerofloats.awk > ./AuxCode/awk/output/idl/LGalaxy_zerofloats.pro
+	awk -f ./AuxCode/awk/extract_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_LGalaxy.awk > ./AuxCode/awk/output/L-Galaxies.h
+	awk -f ./AuxCode/awk/extract_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_FileFormat.awk > ./AuxCode/awk/output/L-Galaxies_FileFormat.csv
+	awk -f ./AuxCode/awk/extract_SFH_BIN.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/MOMAF_INPUT_2_MoMaFGalaxy.awk >> ./AuxCode/awk/output/L-Galaxies.h
+	awk -f ./AuxCode/awk/extract_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_python_struct.awk >  ./AuxCode/awk/output/python/LGalaxy.py
+	awk -f ./AuxCode/awk/extract_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_HDF5.awk > ./code/io_hdf5.h
+	awk -f ./AuxCode/awk/extract_GALAXY_OUTPUT_props.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_prop_2_HDF5_proptable.awk > ./input/hdf5_field_props.txt
 
-metadata_db:
-	awk -f ./AuxCode/awk/extract_struct_metals.awk ./code/allvars.i > ./AuxCode/awk/structs.dat
-	awk -f ./AuxCode/awk/extract_struct_elements.awk ./code/allvars.i >> ./AuxCode/awk/structs.dat
-	awk -f ./AuxCode/awk/extract_struct_GALAXY_OUTPUT.awk ./code/allvars.i >> ./AuxCode/awk/structs.dat
+	awk -f ./AuxCode/awk/extract_struct_metals.awk ./code/h_metals.i > ./AuxCode/awk/output/structs.dat
+	awk -f ./AuxCode/awk/extract_struct_elements.awk ./code/h_metals.i >> ./AuxCode/awk/output/structs.dat
+	awk -f ./AuxCode/awk/extract_struct_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i >> ./AuxCode/awk/output/structs.dat
 	
