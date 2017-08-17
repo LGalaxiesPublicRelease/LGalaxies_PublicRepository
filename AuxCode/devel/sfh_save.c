@@ -519,9 +519,16 @@ snap=27 mass=5.958786 Time=6.144953 (10^6yr)
  			  }*/
 
   /*  NOTE: in Msun/yr */
+#ifdef STAR_FORMATION_HISTORY
+  for(j = 0; j < MAXSNAPS; j++)
+    {
+      o->Sfr[j] = g->Sfr[j] * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;
+      o->SfrBulge[j] = g->SfrBulge[j] * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;
+    }
+#else
   o->Sfr = g->Sfr* UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;
   o->SfrBulge =  g->SfrBulge * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;
-
+#endif
   //- o->StarMerge=g->StarMerge;
   o->XrayLum = g->XrayLum;
   o->GasDiskRadius = g->GasDiskRadius;
