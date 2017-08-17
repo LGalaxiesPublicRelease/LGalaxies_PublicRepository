@@ -1,8 +1,8 @@
-GO_old
+GO
 ==
 
-The shell script go_old is an example script to run the code originally writen
-by Darren Croton. Here some information he provided:
+The shell script go is an example script to run the code provided by Darren
+Croton. Here some information he provided:
 
 Firstly, edit the script and change "base_output_dir" to point to the place
 where your galaxies are to be stored.  To start with you will perhaps want to

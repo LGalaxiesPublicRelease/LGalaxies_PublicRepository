@@ -1,7 +1,8 @@
 #! /bin/csh
 
-
+# set base_output_dir = "./output/$1"
 set base_output_dir = "/ptmp/darren/results/$1"
+# set base_output_dir = "/u/darren/results/$1"
 
 
 if !( { test $1 } ) then
