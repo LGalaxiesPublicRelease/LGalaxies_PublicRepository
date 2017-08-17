@@ -18,7 +18,7 @@ else
 	
 	echo running SA model: on $processors processors
 	mpirun -np $processors ./L-Galaxies $var1$simulation$var2
-
+ 
 fi
 
 echo finished 
