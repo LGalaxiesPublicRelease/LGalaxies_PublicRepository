@@ -1,18 +1,3 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,8 +7,8 @@
 #include "allvars.h"
 #include "proto.h"
 
-/** @file model_dust.c
- *  @brief model_dust.c is used to compute dust extinction as described
+/** @file recipe_dust.c
+ *  @brief recipe_dust.c is used to compute dust extinction as described
  *         in Delucia2007 + redshift dependence as Kitzbichler & White 2007.
 
  *  There are 2 extinction sources:
@@ -75,18 +60,21 @@ void dust_model(int p, int snap, int halonr)
     {
 
       /* 0.94 = 2.83/3. -> 3 to get scale lenght and 2.83 = 1.68^2 */
-      nh = Gal[p].ColdGas / (M_PI * pow(Gal[p].GasDiskRadius * 0.94, 2) * 1.4);
+      nh = Gal[p].ColdGas / (M_PI * pow(Gal[p].ColdGasRadius * 0.94, 2) * 1.4);
+      //nh = Gal[p].ColdGas / (M_PI * pow((Gal[p].Rvir / 10.0) * 0.94, 2) * 1.4);
+
       /* now convert from 10^10 M_sun/h / (Mpc/h)^2 to (2.1 10^21 atoms/cm^2) */
       nh = nh / 3252.37;	// 3252.37 = 10^(3.5122) ... ha ha ! 
 
       /*redshift dependence */
+     // nh = nh * pow(1 + ZZ[Halo[halonr].SnapNum], -0.4);
       nh = nh * pow(1 + ZZ[Halo[halonr].SnapNum], -1.0);
 
+      Gal[p].CosInclination = fabs(Gal[p].DiskSpin[2]) /
+      	                    	 sqrt(Gal[p].DiskSpin[0]*Gal[p].DiskSpin[0]+
+      		                        	Gal[p].DiskSpin[1]*Gal[p].DiskSpin[1]+
+      			                     	  Gal[p].DiskSpin[2]*Gal[p].DiskSpin[2]);
 
-      Gal[p].CosInclination = fabs(Gal[p].StellarSpin[2]) /
-                                  sqrt(Gal[p].StellarSpin[0]*Gal[p].StellarSpin[0]+
-                                       Gal[p].StellarSpin[1]*Gal[p].StellarSpin[1]+
-                                       Gal[p].StellarSpin[2]*Gal[p].StellarSpin[2]);
       cosinc = Gal[p].CosInclination;
       if(cosinc < 0.2)
     	cosinc = 0.2;		// minimum inclination ~80 degrees
@@ -96,7 +84,7 @@ void dust_model(int p, int snap, int halonr)
        * and width 0.2 (MUWIDTH), truncated at 0.1 and 1.  */
       mu = -1.;
       while (mu < 0) 
-	{
+        {
     	  mu = gasdev(&mu_seed) * MUWIDTH + MUCENTER;
     	  if(mu < 0.1 || mu > 1.0)
     		mu = -1.;
@@ -121,6 +109,7 @@ void dust_model(int p, int snap, int halonr)
     		alam = 1.;
 
     	  Lum_disk = Gal[p].Lum[k][snap] - Gal[p].LumBulge[k][snap];
+    	  Gal[p].LumDust[k][snap] = Gal[p].LumBulge[k][snap] + Lum_disk;
     	  Gal[p].LumDust[k][snap] = Gal[p].LumBulge[k][snap] + Lum_disk * alam;
 
     	  // now remove light from young stars absorbed by birth clouds
@@ -271,40 +260,40 @@ double get_extinction(int mag, double Zg, double redshift)
   b=0.0;
 
   if(x<=1.1)
-    {
-      a=a_IR*pow(x,1.61f);
-      b=b_IR*pow(x,1.61f);
-      //a=a_IR*pow(x,-1.14f);
-      //b=b_IR*pow(x,-1.14f);
-    }
+  {
+  	a=a_IR*pow(x,1.61f);
+  	b=b_IR*pow(x,1.61f);
+  	//a=a_IR*pow(x,-1.14f);
+  	//b=b_IR*pow(x,-1.14f);
+  }
   else if(x>=1.1 && x<=3.3)
-    {
-      y=x-1.82;
-      x=y;
-      a=1.;
-      b=0.;
-      for(k=0;k<7;k++)
-	{
-	  a+=a_opt[k]*y;
+  {
+  	y=x-1.82;
+  	x=y;
+  	a=1.;
+  	b=0.;
+  	for(k=0;k<7;k++)
+  	{
+  		a+=a_opt[k]*y;
   	  b+=b_opt[k]*y;
   	  y*=x;
-	}
-    }
+  	}
+  }
   else if(x>=3.3 && x<= 8.0)
-    {
-      a=a_UV[0]+a_UV[1]*x+a_UV[2]/((x+a_UV[3])*(x+a_UV[3])+a_UV[4]);
-      b=b_UV[0]+b_UV[1]*x+b_UV[2]/((x+b_UV[3])*(x+b_UV[3])+b_UV[4]);
-    }
+  {
+  	a=a_UV[0]+a_UV[1]*x+a_UV[2]/((x+a_UV[3])*(x+a_UV[3])+a_UV[4]);
+  	b=b_UV[0]+b_UV[1]*x+b_UV[2]/((x+b_UV[3])*(x+b_UV[3])+b_UV[4]);
+  }
   else if(x>=8.0 && x<=10.0)
-    {
-      a=1.0;
-      b=13.415;
-    }
+  {
+  	a=1.0;
+  	b=13.415;
+  }
   else if(x>=10.0)
-    {
-      a=1.0;
-      b=16.732;
-    }
+  {
+  	a=1.0;
+  	b=16.732;
+  }
 
   A_Av=(a+b/R_V);
 

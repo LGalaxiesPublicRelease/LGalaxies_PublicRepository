@@ -1,23 +1,3 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
-/*
- *  Created in: 2009
- *      Author: Chiara Tonini & Bruno Henriques
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -45,12 +25,15 @@ void setup_RedshiftTab()
 
   for(snap=0;snap<(LastDarkMatterSnapShot+1);snap++)
     {
-      RedshiftTab[snap]=ZZ[snap];
-      //for the photometry calculation do not allow negative times (it can happen for scaled cosmologies)
-      if(ZZ[snap]<0.0)
-	RedshiftTab[snap]=0.;
+  		RedshiftTab[snap]=ZZ[snap];
+  		//for the photometry calculation do not allow negative times (it can happen for scaled cosmologies)
+  		if(ZZ[snap]<0.0)
+  			RedshiftTab[snap]=0.;
     }
+
+
 }
+
 
 
 void read_vega_spectra(double *LambdaVega, double *FluxVega)
@@ -62,9 +45,9 @@ void read_vega_spectra(double *LambdaVega, double *FluxVega)
   sprintf(buf, "%s/FullSEDs/VEGA_A0V_KUR_BB.SED",SpecPhotDir);
   if((fa=fopen(buf,"r"))==NULL)
     {
-      char sbuf[1000];
-      sprintf(sbuf, "Can't open file %s\n", buf);
-      terminate(sbuf);
+  		char sbuf[1000];
+  		sprintf(sbuf, "Can't open file %s\n", buf);
+  		terminate(sbuf);
     }
 
   for (i=0;i<NLambdaVega;i++)
@@ -86,38 +69,41 @@ void read_filters(double LambdaFilter[NMAG][MAX_NLambdaFilter], double FluxFilte
   sprintf(buf, "%s",FileWithFilterNames);
   if((fa=fopen(buf,"r"))==NULL)
     {
-      char sbuf[1000];
-      sprintf(sbuf, "Can't open file %s\n", buf);
-      terminate(sbuf);
+  		char sbuf[1000];
+  		sprintf(sbuf, "Can't open file %s\n", buf);
+  		terminate(sbuf);
     }
 
   fscanf(fa,"%d" ,&NFilters);
   if (NFilters != NMAG) {printf("NFilters not equal to  NMAG, line %d of read_filters.c!!! ",__LINE__);exit(0);}
 
   for(bandn=0;bandn<NMAG;bandn++)
-    {
-      fscanf(fa,"%s %f %s" ,FilterFile, &FilterLambda[bandn],FilterName);
-      sprintf(buf2, "%s/Filters/%s",SpecPhotDir,FilterFile);
+  {
 
-      if((fb=fopen(buf2,"r"))==NULL)
-	{
-	  char sbuf[1000];
-	  sprintf(sbuf, "Can't open file %s\n", buf2);
-	  terminate(sbuf);
+  	fscanf(fa,"%s %f %s" ,FilterFile, &FilterLambda[bandn],FilterName);
+  	sprintf(buf2, "%s/Filters/%s",SpecPhotDir,FilterFile);
+
+  	if((fb=fopen(buf2,"r"))==NULL)
+  	{
+  		char sbuf[1000];
+  		sprintf(sbuf, "Can't open file %s\n", buf2);
+  		terminate(sbuf);
   	}
 
-      fscanf(fb,"%d" ,&NLambdaFilter[bandn]);
-      if(NLambdaFilter[bandn]>MAX_NLambdaFilter)
-	{
-	  char sbuf[1000];
-	  sprintf(sbuf, "NLambdaFilter[%d]>MAX_NLambdaFilter \n", bandn);
-	  terminate(sbuf);
+
+  	fscanf(fb,"%d" ,&NLambdaFilter[bandn]);
+  	if(NLambdaFilter[bandn]>MAX_NLambdaFilter)
+  	{
+  		char sbuf[1000];
+  		sprintf(sbuf, "NLambdaFilter[%d]>MAX_NLambdaFilter \n", bandn);
+  		terminate(sbuf);
   	}
 
-      for(j=0;j<NLambdaFilter[bandn];j++)
-	fscanf(fb,"%lf %lf" ,&LambdaFilter[bandn][j], &FluxFilter[bandn][j]);
+  	for(j=0;j<NLambdaFilter[bandn];j++)
+  		fscanf(fb,"%lf %lf" ,&LambdaFilter[bandn][j], &FluxFilter[bandn][j]);
 
-      fclose(fb);
+
+  	fclose(fb);
   }
 
   fclose(fa);
@@ -126,38 +112,38 @@ void read_filters(double LambdaFilter[NMAG][MAX_NLambdaFilter], double FluxFilte
 
 void read_MetalTab()
 {
-  int i,dumb_ssp_nmetallicites;
-  FILE *fa;
-  char buf[1000];
+	int i,dumb_ssp_nmetallicites;
+	FILE *fa;
+	char buf[1000];
 #ifdef M05
-  char *SSP = {"M05"};
+	char *SSP = {"M05"};
 #endif
 #ifdef CB07
-  char *SSP = {"CB07"};
+	char *SSP = {"CB07"};
 #endif
 #ifdef BC03
-  char *SSP = {"BC03"};
+	char *SSP = {"BC03"};
 #endif
 
-  sprintf(buf, "%s/FullSEDs/%s_%s_Metallicity_list.dat", SpecPhotDir, SSP, SpecPhotIMF);
-  if(!(fa = fopen(buf, "r")))
-    {
-      char sbuf[1000];
-      sprintf(sbuf, "file `%s' not found.\n", buf);
-      terminate(sbuf);
-    }
+	sprintf(buf, "%s/FullSEDs/%s_%s_Metallicity_list.dat", SpecPhotDir, SSP, SpecPhotIMF);
+	if(!(fa = fopen(buf, "r")))
+  {
+  	char sbuf[1000];
+  	sprintf(sbuf, "file `%s' not found.\n", buf);
+  	terminate(sbuf);
+  }
 
   fscanf(fa, "%d", &dumb_ssp_nmetallicites);
   if(dumb_ssp_nmetallicites != SSP_NMETALLICITES)
-    {
-      terminate("nmetallicites on file not equal to SSP_NMETALLICITES");
-    }
+  {
+ 	 terminate("nmetallicites on file not equal to SSP_NMETALLICITES");
+  }
 
   for(i=0;i<SSP_NMETALLICITES;i++)
-    {
-      fscanf(fa, "%f", &SSP_logMetalTab[i]);
-      SSP_logMetalTab[i]=log10(SSP_logMetalTab[i]);
-    }
+  {
+		fscanf(fa, "%f", &SSP_logMetalTab[i]);
+		SSP_logMetalTab[i]=log10(SSP_logMetalTab[i]);
+  }
 
   fclose(fa);
 }
@@ -185,11 +171,11 @@ void read_InputSSP_spectra(double LambdaInputSSP[SSP_NAGES][SSP_NLambda], double
   sprintf(buf1, "%s/FullSEDs/%s_%s_FullSED_m%0.4f.dat",SpecPhotDir, SSP, SpecPhotIMF, pow(10,SSP_logMetalTab[MetalLoop]));
 
   if((fa=fopen(buf1,"r"))==NULL)
-    {
-      char sbuf[1000];
-      sprintf(sbuf, "Can't open file %s\n", buf1);
-      terminate(sbuf);
-    }
+  {
+  	char sbuf[1000];
+  	sprintf(sbuf, "Can't open file %s\n", buf1);
+  	terminate(sbuf);
+  }
 
   for(ageloop=0;ageloop<SSP_NAGES;ageloop++)
     for(i=0;i<SSP_NLambda;i++)
@@ -199,18 +185,21 @@ void read_InputSSP_spectra(double LambdaInputSSP[SSP_NAGES][SSP_NLambda], double
       }
 
   for(ageloop=0;ageloop<SSP_NAGES;ageloop++)
-    {
-      for (i=0;i<SSP_NLambda;i++)
-	{
-	  fscanf(fa,"%lf %lf %lf %lf\n" , &age, &Dumb1,&LambdaInputSSP[ageloop][i], &FluxInputSSP[ageloop][i]);
-	  FluxInputSSP[ageloop][i]=1e11*FluxInputSSP[ageloop][i]*LambdaInputSSP[ageloop][i]*LambdaInputSSP[ageloop][i]/(C*1.e8);
+  {
+  	for (i=0;i<SSP_NLambda;i++)
+  	{
+  		fscanf(fa,"%lf %lf %lf %lf\n" , &age, &Dumb1,
+  				&LambdaInputSSP[ageloop][i], &FluxInputSSP[ageloop][i]);
+  	  		FluxInputSSP[ageloop][i]=1e11*FluxInputSSP[ageloop][i]*
+  				LambdaInputSSP[ageloop][i]*LambdaInputSSP[ageloop][i]/(C*1.e8);
+
   	}
-      if(MetalLoop==0) //only read age table once
-	if(age>0.)
-	  SSP_logAgeTab[ageloop]=log10(age / 1.0e6 / UnitTime_in_Megayears * Hubble_h);
-	else
-	  SSP_logAgeTab[ageloop]=0.;
-    }
+  	if(MetalLoop==0) //only read age table once
+  		if(age>0.)
+  			SSP_logAgeTab[ageloop]=log10(age / 1.0e6 / UnitTime_in_Megayears * Hubble_h);
+  		else
+  			SSP_logAgeTab[ageloop]=0.;
+  }
 
   fclose(fa);
 }

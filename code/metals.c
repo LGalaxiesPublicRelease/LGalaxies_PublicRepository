@@ -1,18 +1,3 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
 /*
  * metals.c
  *
@@ -50,8 +35,6 @@
 #include "allvars.h"
 #include "proto.h"
 
-
-
 #ifdef DETAILED_METALS_AND_MASS_RETURN
 
 /* Defined in allvars.h
@@ -65,7 +48,7 @@
 
 struct metals metals_add(struct metals m1,
 			 struct metals m2,
-			 float fraction)
+			 double fraction)
 {
   struct metals m;
   m.type1a=m1.type1a+fraction*m2.type1a;
@@ -84,6 +67,7 @@ struct metals metals_init()
   return(m);
 }
 
+
 void metals_print(char s[],struct metals m)
 {
   printf("%s.type1a [Msun] = %.2f\n",s,m.type1a*1.0e10/Hubble_h);
@@ -92,7 +76,7 @@ void metals_print(char s[],struct metals m)
   return;
 }
 
-float metals_total(struct metals m)
+double metals_total(struct metals m)
 {
   return(m.type1a+m.type2+m.agb);
 }
@@ -101,29 +85,27 @@ float metals_total(struct metals m)
 
 // The following mimics the original code with a single metallicity
 
-float metals_add(float m1,
-		 float m2,
-		 float fraction)
+double metals_add(double m1,
+		 double m2,
+		 double fraction)
 {
   return(m1+fraction*m2);
 }
 
-float metals_init()
+double metals_init()
 {
   return(0.);
 }
 
-void metals_print(char s[],float m)
+void metals_print(char s[],double m)
 {
   printf("%s=%f\n",s,m);
   return;
 }
 
-float metals_total(float m)
+double metals_total(double m)
 {
   return(m);
 }
 
 #endif
-
-

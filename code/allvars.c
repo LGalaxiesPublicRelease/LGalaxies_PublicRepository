@@ -1,21 +1,9 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
-
+// TODO add description for all variables that do not have one yet
 #include "allvars.h"
 
+#ifdef ALL_SKY_LIGHTCONE
+struct dist_table *TimeTable, *DistanceTable;
+#endif
 
 struct GALAXY			/* Galaxy data */
  *Gal, *HaloGal;
@@ -26,6 +14,8 @@ struct halo_aux_data		/* auxiliary halo data */
  *HaloAux;
 
 struct halo_ids_data *HaloIDs, *HaloIDs_Data;
+
+double MinGalOutputMass;
 
 int FirstFile;			/* first and last file for processing */
 int LastFile;
@@ -49,6 +39,7 @@ char SpecPhotIMF[50];
 char McFile[512];
 char FileWithFilterNames[512];
 char CoolFunctionsDir[512];
+char CosmologyTablesDir[512];
 char OutputDir[512];
 char FinalOutputDir[512];
 char FileNameGalaxies[512];
@@ -101,9 +92,14 @@ int ThisTask, NTask;
 int GalCount;
 int TotGalCount;
 struct galaxy_tree_data *GalTree;
+#ifdef NORMALIZEDDB
+int TotGalSFHBinCount;
+#endif
 #endif
 
 size_t HighMark;
+
+
 
 
 /* cosmological parameters */
@@ -134,18 +130,28 @@ double BoxSize_OriginalCosm_MRII;
 
 
 /* flags */
-int ReionizationModel;
-int DiskRadiusModel;
 int StarFormationModel;
+#ifdef H2_AND_RINGS
+int H2FractionRecipe;
+int SFRtdyn;
+#endif
+#ifdef EXCESS_MASS
+int InfallModel;
+#endif
 int FeedbackReheatingModel;
+int FeedbackReheatingDeansityScaling;
 int FeedbackEjectionModel;
+int FeedbackEagleScaling;
 int FateOfSatellitesGas;
 int ReIncorporationModel;
+int ReionizationModel;
+int BlackHoleGrowth;
 int AGNRadioModeModel;
+int DiskRadiusModel;
 int DiskInstabilityModel;
 int BHGrowthInDiskInstabilityModel;
 int HotGasStripingModel;
-int DisruptionModel;
+int HotGasOnType2Galaxies;
 int StarBurstModel;
 int BulgeFormationInMinorMergersOn;
 int MetallicityOption;
@@ -154,6 +160,7 @@ int MetallicityOption;
 double Reionization_z0;
 double Reionization_zr;
 double RamPressureStrip_CutOffMass;
+double RamPressureRadiusThreshold;
 double SfrEfficiency;
 double SfrColdCrit;
 double SfrBurstEfficiency;
@@ -164,7 +171,9 @@ double ThreshMajorMerger;
 double MergerTimeMultiplier;
 double AgnEfficiency;
 double BlackHoleGrowthRate;
+double BlackHoleDisruptGrowthRate;
 double BlackHoleSeedMass;
+double BlackHoleAccretionRate;
 double BlackHoleCutoffVelocity;
 double FeedbackReheatingEpsilon;
 double ReheatPreVelocity;
@@ -173,19 +182,36 @@ double FeedbackEjectionEfficiency;
 double EjectPreVelocity;
 double EjectSlope;
 double ReIncorporationFactor;
+double ReincZpower;
+double ReincVelocitypower;
+double FracZtoHot;
+#ifdef FEEDBACK_COUPLED_WITH_MASS_RETURN
 double EnergySNcode, EnergySN;
+double EnergySNIIcode, EnergySNII;
+double EnergySNIacode, EnergySNIa;
+double EnergyAGBcode, EnergyAGB;
+#else
+double EnergySNcode, EnergySN;
+#endif
 double EtaSNcode, EtaSN;
 
-double UnitTime_in_s,
+#ifdef H2_AND_RINGS
+double Clumpingfactor;
+double GasInflowVel;
+double RingRadius[RNUM];
+#endif
+
+double UnitLength_in_cm,
+  UnitTime_in_s,
+  UnitVelocity_in_cm_per_s,
+  UnitMass_in_g,
+  RhoCrit,
   UnitPressure_in_cgs,
   UnitDensity_in_cgs,
   UnitCoolingRate_in_cgs,
   UnitEnergy_in_cgs,
   UnitTime_in_Megayears,
   UnitTime_in_years,
-#ifdef HALOMODEL
-  RhoCrit,
-#endif
   G,
   Hubble,
   a0, ar;
@@ -233,11 +259,9 @@ float FilterLambda[NMAG+1];	//wavelength of each filter + 1 for V-band
 #ifdef SPEC_PHOTABLES_ON_THE_FLY
 int NLambdaFilter[NMAG];
 #endif
-
-
 // dust
 long mu_seed;
-#endif
+#endif //COMPUTE_SPECPHOT_PROPERTIES
 
 void *TreeAuxData;
 
@@ -261,6 +285,13 @@ size_t offset_galaxydata, maxstorage_galaxydata, filled_galaxydata;
 size_t offset_galsnapdata[NOUT], maxstorage_galsnapdata[NOUT], filled_galsnapdata[NOUT];
 #endif
 
+
+/*H2 formation table */
+#ifdef H2_AND_RINGS
+double h2frac[LENSIGMAH][LENZ];
+float Rho[RHO_LEN];
+float H2[RHO_LEN][Z_LEN];
+#endif
 /* reionization Okamoto et al. 2008*/
 float Reion_z[46],Reion_Mc[46];
 
@@ -271,6 +302,20 @@ FILE *FdGalTree;
 FILE *FdGalTreeSFH;
 FILE *FdGalDumps[NOUT];
 
+#ifdef DEBUG
+FILE *FdGalDebug;
+#ifdef H2_AND_RINGS
+#define NDebugProps 23
+char DebugProperties[NDebugProps][100] = {"HotGas","ColdGas","EjectedMass","DiskMass","BulgeMass","DiskRadius","BulgeSize",
+					  "MetalsHotGas","MetalsColdGas","MetalsDiskMass","MetalsBulgeMass",
+					  "ColdGasRing0","ColdGasRing1","ColdGasRing2","ColdGasRing3","ColdGasRing4","ColdGasRing5",
+					  "ColdGasRing6","ColdGasRing7","ColdGasRing8","ColdGasRing9","ColdGasRing10","ColdGasRing11"};
+#else
+#define NDebugProps 11
+char DebugProperties[NDebugProps][100] = {"HotGas","ColdGas","EjectedMass","DiskMass","BulgeMass","DiskRadius","BulgeSize",
+					  "MetalsHotGas","MetalsColdGas","MetalsDiskMass","MetalsBulgeMass"};
+#endif
+#endif
 
 
 

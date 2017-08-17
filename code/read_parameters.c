@@ -1,18 +1,3 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,7 +36,6 @@ void read_parameter_file(char *fname)
 #else
   printf("\nreading parameter file:\n\n");
 #endif
-
 
   strcpy(tag[nt], "OutputDir");
   addr[nt] = OutputDir;
@@ -95,7 +79,6 @@ void read_parameter_file(char *fname)
   addr[nt] = FileWithFilterNames;
   id[nt++] = STRING;
 
-
   strcpy(tag[nt], "CoolFunctionsDir");
   addr[nt] = CoolFunctionsDir;
   id[nt++] = STRING;
@@ -108,14 +91,22 @@ void read_parameter_file(char *fname)
   addr[nt] = &Hashbits;
   id[nt++] = INT;
 
+  /*strcpy(tag[nt], "NumWrittenInParallel");
+  addr[nt] = &NumWrittenInParallel;
+  id[nt++] = INT;*/
+
+  strcpy(tag[nt], "MinGalOutputMass");
+  addr[nt] = &MinGalOutputMass;
+  id[nt++] = DOUBLE;
+
 //Variables used in the MCMC
 #ifdef MCMC
   strcpy(tag[nt], "MCMCStartingParFile");
   addr[nt] = MCMCStartingParFile;
   id[nt++] = STRING;
 
-  strcpy(tag[nt], "MCMCParPriorsAndSwitchesFile");
-  addr[nt] = MCMCParPriorsAndSwitchesFile;
+  strcpy(tag[nt], "MCMCParameterPriorsAndSwitches");
+  addr[nt] = MCMCParameterPriorsAndSwitches;
   id[nt++] = STRING;
 
   strcpy(tag[nt], "MCMCObsConstraints");
@@ -124,6 +115,10 @@ void read_parameter_file(char *fname)
 
   strcpy(tag[nt], "MCMCWeightsObsConstraints");
   addr[nt] = MCMCWeightsObsConstraints;
+  id[nt++] = STRING;
+
+  strcpy(tag[nt], "CosmologyTablesDir");
+  addr[nt] = CosmologyTablesDir;
   id[nt++] = STRING;
 
   strcpy(tag[nt], "ObsConstraintsDir");
@@ -160,22 +155,28 @@ void read_parameter_file(char *fname)
   id[nt++] = INT;
 #endif
 
-#ifdef HALOMODEL
-  strcpy(tag[nt], "MCMCHaloModelDir");
-  addr[nt] = MCMCHaloModelDir;
-  id[nt++] = STRING;
-#endif
-
   strcpy(tag[nt], "MCMCTreeSampleFile");
   addr[nt] = &MCMCTreeSampleFile;
   id[nt++] = INT;
+
+  strcpy(tag[nt], "MCMCHaloModelDir");
+  addr[nt] = MCMCHaloModelDir;
+  id[nt++] = STRING;
 
   strcpy(tag[nt], "ChainLength");
   addr[nt] = &ChainLength;
   id[nt++] = INT;
 
-  strcpy(tag[nt], "Time_Dependent_PhysPar");
-  addr[nt] = &Time_Dependent_PhysPar;
+  strcpy(tag[nt], "Sample_Physical_Parameters");
+  addr[nt] = &Sample_Physical_Parameters;
+  id[nt++] = INT;
+
+  strcpy(tag[nt], "Time_Dependant_PhysPar");
+  addr[nt] = &Time_Dependant_PhysPar;
+  id[nt++] = INT;
+
+  strcpy(tag[nt], "Sample_Cosmological_Parameters");
+  addr[nt] = &Sample_Cosmological_Parameters;
   id[nt++] = INT;
 
   strcpy(tag[nt], "MCMCMode");
@@ -363,6 +364,13 @@ void read_parameter_file(char *fname)
 
 
   //Physical Recipes
+
+#ifdef EXCESS_MASS
+  strcpy(tag[nt], "InfallModel");
+  addr[nt] = &InfallModel;
+  id[nt++] = INT;
+#endif
+
   strcpy(tag[nt], "ReionizationModel");
   addr[nt] = &ReionizationModel;
   id[nt++] = INT;
@@ -383,12 +391,25 @@ void read_parameter_file(char *fname)
   addr[nt] = &FeedbackEjectionModel;
   id[nt++] = INT;
 
+  strcpy(tag[nt], "FeedbackEagleScaling");
+  addr[nt] = &FeedbackEagleScaling;
+  id[nt++] = INT;
+
+  strcpy(tag[nt], "FeedbackReheatingDeansityScaling");
+  addr[nt] = &FeedbackReheatingDeansityScaling;
+  id[nt++] = INT;
+
+
   strcpy(tag[nt], "FateOfSatellitesGas");
   addr[nt] = &FateOfSatellitesGas;
   id[nt++] = INT;
 
   strcpy(tag[nt], "ReIncorporationModel");
   addr[nt] = &ReIncorporationModel;
+  id[nt++] = INT;
+
+  strcpy(tag[nt], "BlackHoleGrowth");
+  addr[nt] = &BlackHoleGrowth;
   id[nt++] = INT;
 
   strcpy(tag[nt], "AGNRadioModeModel");
@@ -407,8 +428,8 @@ void read_parameter_file(char *fname)
   addr[nt] = &HotGasStripingModel;
   id[nt++] = INT;
 
-  strcpy(tag[nt], "DisruptionModel");
-  addr[nt] = &DisruptionModel;
+  strcpy(tag[nt], "HotGasOnType2Galaxies");
+  addr[nt] = &HotGasOnType2Galaxies;
   id[nt++] = INT;
 
   strcpy(tag[nt], "StarBurstModel");
@@ -422,7 +443,16 @@ void read_parameter_file(char *fname)
   strcpy(tag[nt], "MetallicityOption");
   addr[nt] = &MetallicityOption;
   id[nt++] = INT;
-
+  
+#ifdef H2_AND_RINGS
+  strcpy(tag[nt], "H2FractionRecipe");
+  addr[nt] = &H2FractionRecipe;
+  id[nt++] = INT;    
+  
+  strcpy(tag[nt], "SFRtdyn");
+  addr[nt] = &SFRtdyn;
+  id[nt++] = INT; 
+#endif
 
 
   //Physical Parameters
@@ -455,6 +485,10 @@ void read_parameter_file(char *fname)
   addr[nt] = &RamPressureStrip_CutOffMass;
   id[nt++] = DOUBLE;
 
+  strcpy(tag[nt], "RamPressureRadiusThreshold");
+  addr[nt] = &RamPressureRadiusThreshold;
+  id[nt++] = DOUBLE;
+
   strcpy(tag[nt], "SfrEfficiency");
   addr[nt] = &SfrEfficiency;
   id[nt++] = DOUBLE;
@@ -479,8 +513,16 @@ void read_parameter_file(char *fname)
   addr[nt] = &BlackHoleGrowthRate;
   id[nt++] = DOUBLE;
 
+  strcpy(tag[nt], "BlackHoleDisruptGrowthRate");
+  addr[nt] = &BlackHoleDisruptGrowthRate;
+  id[nt++] = DOUBLE;
+
   strcpy(tag[nt], "BlackHoleSeedMass");
   addr[nt] = &BlackHoleSeedMass;
+  id[nt++] = DOUBLE;
+
+  strcpy(tag[nt], "BlackHoleAccretionRate");
+  addr[nt] = &BlackHoleAccretionRate;
   id[nt++] = DOUBLE;
 
   strcpy(tag[nt], "BlackHoleCutoffVelocity");
@@ -515,13 +557,55 @@ void read_parameter_file(char *fname)
   addr[nt] = &ReIncorporationFactor;
   id[nt++] = DOUBLE;
 
+  strcpy(tag[nt], "ReincZpower");
+  addr[nt] = &ReincZpower;
+  id[nt++] = DOUBLE;
+
+  strcpy(tag[nt], "ReincVelocitypower");
+  addr[nt] = &ReincVelocitypower;
+  id[nt++] = DOUBLE;
+
+  strcpy(tag[nt], "FracZtoHot");
+  addr[nt] = &FracZtoHot;
+  id[nt++] = DOUBLE;
+
+//in the future ready in different energies for each type of SN
+//#ifdef FEEDBACK_COUPLED_WITH_MASS_RETURN
+//#else
   strcpy(tag[nt], "EnergySN");
   addr[nt] = &EnergySN;
   id[nt++] = DOUBLE;
+//#endif
 
   strcpy(tag[nt], "EtaSN");
   addr[nt] = &EtaSN;
   id[nt++] = DOUBLE;
+
+#ifdef H2_AND_RINGS
+  strcpy(tag[nt], "Clumpingfactor");
+  addr[nt] = &Clumpingfactor;
+  id[nt++] = DOUBLE;  
+
+  strcpy(tag[nt], "GasInflowVel");
+  addr[nt] = &GasInflowVel;
+  id[nt++] = DOUBLE;
+#endif
+
+
+  //UNITS
+
+  strcpy(tag[nt], "UnitVelocity_in_cm_per_s");
+  addr[nt] = &UnitVelocity_in_cm_per_s;
+  id[nt++] = DOUBLE;
+
+  strcpy(tag[nt], "UnitLength_in_cm");
+  addr[nt] = &UnitLength_in_cm;
+  id[nt++] = DOUBLE;
+
+  strcpy(tag[nt], "UnitMass_in_g");
+  addr[nt] = &UnitMass_in_g;
+  id[nt++] = DOUBLE;
+
 
   if((fd = fopen(fname, "r")))
     {
@@ -584,14 +668,25 @@ void read_parameter_file(char *fname)
     }
 
 
-  for(i = 0; i < nt; i++)
-    {
-      if(*tag[i])
-        {
-          printf("Error. I miss a value for tag '%s' in parameter file '%s'.\n", tag[i], fname);
-          errorFlag = 1;
-        }
+  for(i = 0; i < nt; i++) {
+    if(*tag[i]) {
+      if (strcmp("MinGalOutputMass", tag[i]) == 0)
+	MinGalOutputMass=0.;
+#ifdef EXCESS_MASS
+      else if (strcmp("InfallModel", tag[i]) == 0)
+	InfallModel=0;
+#endif
+      else if (strcmp("FeedbackEagleScaling", tag[i]) == 0)
+      	FeedbackEagleScaling=0;
+      else if (strcmp("FeedbackReheatingDeansityScaling", tag[i]) == 0)
+	FeedbackReheatingDeansityScaling=0;
+
+      else {
+	printf("Error. I miss a value for tag '%s' in parameter file '%s'.\n", tag[i], fname);
+	errorFlag = 1;
+      }
     }
+  }
 
   if(errorFlag)
     terminate("parameterfile incorrect");

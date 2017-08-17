@@ -1,18 +1,3 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
 #ifdef PARALLEL
 #include <mpi.h>
 #endif
@@ -85,11 +70,12 @@ void report_detailed_memory_usage_of_largest_task(size_t * OldHighMarkBytes, con
     {
       *OldHighMarkBytes = AllocatedBytes;
 
-//#ifndef MCMC
-      printf("\nAt '%s', %s()/%s/%d: Allocation = %g Mbyte (on task=%d)\n\n",
-	         label, func, file, line, AllocatedBytes / (1024.0 * 1024.0), ThisTask);
+      if(ThisTask==0)
+	{
+	  printf("\nAt '%s', %s()/%s/%d: Allocation = %g Mbyte (on task=%d)\n\n",
+		 label, func, file, line, AllocatedBytes / (1024.0 * 1024.0), ThisTask);
 	  dump_memory_table();
-//#endif
+	}
 	  
       fflush(stdout);
     }

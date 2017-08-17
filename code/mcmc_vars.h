@@ -1,22 +1,3 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
-/*
- *  Created in: 2008
- *      Author: Bruno Henriques
- */
 
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_sf.h>
@@ -31,15 +12,16 @@
 #include <gsl/gsl_spline.h>
 #include <gsl/gsl_deriv.h>
 
-
+#include <time.h>
 
 // Variables for the MCMC sampling
 
 int MCMCNpar; //Number of parameters to sample
-#define MCMCNConstraints 27  //Nr of Observational Constraints
+#define MCMCNConstraints 36  //Nr of Observational Constraints
 #define MCMCMaxObsBins 100 //maximum number of bins per observation per redshift
 
 double MCMCConstraintsZZ[NOUT];
+#define NgridCosm 50
 //Nr of SAM galaxies used to compare with data
 int TotMCMCGals[NOUT];
 //To allocate structure with SAM Galaxies
@@ -48,6 +30,7 @@ int TotMCMCGals[NOUT];
 long MCMCseed;
 int Nbins[NOUT][MCMCNConstraints]; //bins on each obs test
 double lhood1;
+double MaxLikelihood;
 
 int NFofsInSample[NOUT];
 int UsedFofsInSample[NOUT];
@@ -66,7 +49,7 @@ FILE *FILE_MCMC_PredictionsPerStep[NOUT][MCMCNConstraints];
 
 //READ FROM input.par
 char MCMCStartingParFile[512];
-char MCMCParPriorsAndSwitchesFile[512];
+char MCMCParameterPriorsAndSwitches[512];
 char MCMCObsConstraints[512];
 char MCMCWeightsObsConstraints[512];
 char ObsConstraintsDir[512];
@@ -79,13 +62,13 @@ char MCMCSampleFilePrefix_MRII[512];
 int  MCMCSampleFile_MR;
 int  MCMCSampleFile_MRII;
 #endif
-#ifdef HALOMODEL
-char MCMCHaloModelDir[512];
-#endif
 int  MCMCTreeSampleFile;
+char MCMCHaloModelDir[512];
 int  ChainLength;
 int  FirstChainNumber;
-int  Time_Dependent_PhysPar;
+int  Sample_Physical_Parameters;
+int  Time_Dependant_PhysPar;
+int  Sample_Cosmological_Parameters;
 int  MCMCMode;
 double MCMC_LogStep_Size;
 double MCMC_Initial_Par_Displacement;
@@ -115,11 +98,19 @@ struct MCMC_OBSCONSTRAINTS
 
 struct MCMC_GALAXY
 {
-  float StellarMass[NOUT];
+  int Type[NOUT];
   float ColdGas[NOUT];
+  float HI[NOUT];
+  float log10_StellarMass[NOUT];
+  float StellarMass[NOUT];
+  float DiskMass[NOUT];
   float BulgeMass[NOUT];
   float BlackHoleMass[NOUT];
+  float MetalsStellarMass[NOUT];
+  float MetalsColdGas[NOUT];
+  float GasMetallicity[NOUT];
   float Sfr[NOUT];
+  float StellarHalfMassRadius[NOUT];
   float MagU[NOUT];
   float MagB[NOUT];
   float MagV[NOUT];
@@ -143,15 +134,46 @@ struct MCMC_GALAXY
 #endif
 } *MCMC_GAL;
 
+/*struct MCMC_GALAXY_reorder
+{
+  float StellarMass[NOUT];
+  float ColdGas[NOUT];
+  float BulgeMass[NOUT];
+  float BlackHoleMass[NOUT];
+  float Sfr[NOUT];
+  float MagU[NOUT];
+  float MagB[NOUT];
+  float MagV[NOUT];
+  float MagJ[NOUT];
+  float MagK[NOUT];
+  float Magu[NOUT];
+  float Magg[NOUT];
+  float Magr[NOUT];
+  float Magi[NOUT];
+  float Magz[NOUT];
+  float Weight[NOUT];
+#ifdef HALOMODEL
+  int fofid[NOUT];
+  float M_Crit200[NOUT];
+  float x[NOUT];
+  float y[NOUT];
+  float z[NOUT];
+  int Type[NOUT];
+  int ngal[NOUT];
+#endif
+} *MCMC_GAL2;*/
+
+
 
 struct MCMC_PAR
 {
-    char   Name[1000];
-  	double Value[NOUT];
-  	double PropValue[NOUT];
-  	double PriorMin;
-  	double PriorMax;
-    int    Sampling_Switch;
+  char   Name[1000];
+  double Value[NOUT];
+  double PropValue[NOUT];
+  double PriorMin;
+  double PriorMax;
+  char   Type[1000];
+  int    Sampling_Switch;
 } *MCMC_PAR;
 
 struct MCMC_FOF_struct
@@ -159,14 +181,11 @@ struct MCMC_FOF_struct
 	//values for the sample of FoF groups
 	double Weight[NOUT];
 	long long FoFID[NOUT];
-#ifdef HALOMODEL
 	float M_Crit200[NOUT];
 	float M_Mean200[NOUT];
 	int NGalsInFoF[NOUT];
 	int IndexOfCentralGal[NOUT];
-#endif
 } *MCMC_FOF, *MCMC_FOF2;
-
 
 
 //Variables to construct the halo model and compute
@@ -240,4 +259,11 @@ gsl_spline *paSpline,*pbSpline,*pcSpline;
 
 
 #endif //END of variables to construct the halo model
+
+
+
+
+
+
+
 
