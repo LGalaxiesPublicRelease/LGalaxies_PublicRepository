@@ -1,4 +1,6 @@
 
+#include "../HaloModel/main.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -19,11 +21,10 @@
 #include <gsl/gsl_spline.h>
 #include <gsl/gsl_deriv.h>
 
-#include "main.h"
-#include "allvars.h"
+#include "../HaloModel/allvars.h"
+#include "../HaloModel/read_fofs.h"
+#include "../HaloModel/read_gals.h"
 #include "halomodel.h"
-#include "read_gals.h"
-#include "read_fofs.h"
 
 int main(int argc, char *argv[]) {
   MPI_Init(&argc, &argv);

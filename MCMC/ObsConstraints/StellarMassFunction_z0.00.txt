@@ -63,7 +63,7 @@ reduced errors on the knee
  
 
 Baldry 2008 + Li & White 2009 + Baldry 2012 - z=0 stellar mass function
-bin_low / bin_high / number counts / error
+bin_low (Msun/h^2)/ bin_high / number counts (Mpc^3/h-3) / error 
 
 
 

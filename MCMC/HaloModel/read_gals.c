@@ -1,7 +1,8 @@
+#include "../HaloModel/read_gals.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "read_gals.h"
 
 long get_number_of_galaxies(char *filename) {
   int np;
