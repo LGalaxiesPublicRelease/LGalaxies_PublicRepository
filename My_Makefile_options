@@ -19,7 +19,7 @@ OPT += -DTRACK_MASSGROWTH_CHANNELS
 #OPT += -DCATERPILLAR
 
 
-#OPT += -DFAST_TESTING_MODE
+OPT += -DFAST_TESTING_MODE
 #OPT += -DCHECK_SFH_AND_RINGS
 #OPT += -DCHECK_NO_NEGATIVE_VALUES
 #OPT += -DTRACK_SPLASHBACKS
@@ -29,7 +29,7 @@ OPT += -DTRACK_MASSGROWTH_CHANNELS
 #OPT += -DGUO10
 #OPT += -DGUO13 
 #OPT += -DHENRIQUES13
-OPT += -DHENRIQUES15
+#OPT += -DHENRIQUES15
 
 # Debugging options
 #OPT+= -DDEBUG
@@ -47,7 +47,7 @@ endif
 OPT += -DMERGE01             # allows type 1s to merge with type 0s
 OPT += -DINFALL_UPDATE   #search also outside rvir to compute infall mass
 
-#OPT += -DH2_AND_RINGS
+OPT += -DH2_AND_RINGS
 ifeq (H2_AND_RINGS,$(findstring H2_AND_RINGS,$(OPT)))
 OBJS  += ./code/model_radial_flow.o
 OPT += -DOUTPUT_RINGS
@@ -122,7 +122,7 @@ endif #FULL_SPECTRA
 endif ### COMPUTE_SPECPHOT_PROPERTIES
 
 # Chemical enrichment of individual element yields
-#OPT += -DDETAILED_METALS_AND_MASS_RETURN
+OPT += -DDETAILED_METALS_AND_MASS_RETURN
 ifeq (DETAILED_METALS_AND_MASS_RETURN,$(findstring DETAILED_METALS_AND_MASS_RETURN,$(OPT)))
 
 

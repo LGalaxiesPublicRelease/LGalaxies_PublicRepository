@@ -188,7 +188,7 @@ struct GALAXY_OUTPUT {
 #endif
 #endif       //H2_AND_RINGS
     float MetalsHotGas; // 10^10/h Msun // Mass in metals in the hot gas
-    float MetalsReheatedGas; // 10^10/h Msun // Mass in metals in the Reheated gas
+//float MetalsReheatedGas; // 10^10/h Msun // Mass in metals in the Reheated gas
     float MetalsEjectedMass; // 10^10/h Msun // Mass in metals in the ejected gas
 #ifdef       EXCESS_MASS
     float MetalsExcessMass; // 10^10/h Msun // Mass in metals associated with ExcessMass component

@@ -22,9 +22,14 @@ HotRadius, Mpc/h , Proper[?] radius out to which hot gas extends: rvir for type 
 OriMergTime, yr , Estimated dynamical friction time when the merger clock is set.
 MergTime,yr , Estimated remaining merging time. 
 ColdGas, 10^10/h Msun , Mass in cold gas.
+ColdGasRings, 1e10 Msun/h , ? Mass of clod gas in each annulur ring.
+H2fraction, , ?
+H2fractionRings, , ? H2 fraction within each annular ring.
 StellarMass, 10^10/h Msun , Total mass in stars in the disk and the bulge combined
 DiskMass, 10^10/h Msun , Mass of stars in the disk
 BulgeMass, 10^10/h Msun , Mass of stars in the bulge
+DiskMassRings, 1e10 Msun/h , ? Mass of stars within each annular ring
+BulgeMassRings, 1e10 Msun/h , ? Mass of stars within each annular ring
 HotGas, 10^10/h Msun , Mass in hot gas
 ReheatedGas, 10^10/h Msun , Mass in reheated gas
 EjectedMass, 10^10/h Msun , Mass in ejected gas
@@ -34,14 +39,17 @@ ICM,10^10/h Msun ,Total mass in metals in intra-cluster stars, for type 0,1
 MassFromInSitu, 1e10 Msun/h , Mass formed in situ.
 MassFromMergers, 1e10 Msun/h , Mass accreted from mergers.
 MassFromBursts, 1e10 Msun/h , Mass formed in starbursts
-MetalsColdGas, 10^10/h Msun , Mass in metals in cold gas.
-MetalsStellarMass, 10^10/h Msun ,	Mass in metals in the bulge+disk
-MetalsDiskMass, 10^10/h Msun , Mass in metals in the disk
-MetalsBulgeMass, 10^10/h Msun , Mass in metals in the bulge
-MetalsHotGas, 10^10/h Msun , Mass in metals in the hot gas
-MetalsReheatedGas, 10^10/h Msun , Mass in metals in the Reheated gas
-MetalsEjectedMass, 10^10/h Msun , Mass in metals in the ejected gas
-MetalsICM, 10^10/h Msun , Mass in metals in intra-cluster stars, for type 0,1
+, 10^10/h Msun , Mass in metals in cold gas.
+, 10^10/h Msun , Mass in metals in cold gas in each annular ring
+, 10^10/h Msun , Mass in metals in the disk
+, 10^10/h Msun , Mass in metals in the disk
+, 10^10/h Msun , Mass in metals in the bulge
+, 10^10/h Msun , Mass in metals in stars in each annular ring
+, 10^10/h Msun , Mass in metals in stars in each annular ring
+, 10^10/h Msun , Mass in metals in the hot gas
+,struct metals MetalsReheatedGas; , 10^10/h Msun // Mass in metals in the Reheated gas
+, 10^10/h Msun , Mass in metals in the ejected gas
+, 10^10/h Msun , Mass in metals in intra-cluster stars, for type 0,1
 PrimordialAccretionRate, Msun/yr , Accretion rate of primordial gas.
 CoolingRadius, Mpc/h , The radius within which the cooling time scale is shorter than the dynamical timescale
 CoolingGas,float CoolingGas; , Mpc/h // Mass of cooling gas
@@ -50,6 +58,7 @@ CoolingRate_beforeAGN, Msun/yr , What the cooling rate of the hot gas would have
 QuasarAccretionRate, Msun/yr , Rate at which cold gas is accreted into the central black hole in the quasar mode.
 RadioAccretionRate, Msun/yr , Rate at which hot gas is accreted into the central black hole in the radio mode.
 Sfr, Msun/yr , Star formation rate
+SfrRings, Msun/yr , Star formation rate within each annular ring
 SfrBulge, Msun/yr , Star formation rate in bulge.
 XrayLum, log10(erg/sec) , (log_10 of) X-Ray luminosity
 BulgeSize, Mpc/h , Half mass radius of bulge
@@ -71,7 +80,23 @@ sfh_time,float sfh_time[SFH_NBIN]; , yr // lookback time to middle of star forma
 sfh_dt,float sfh_dt[SFH_NBIN]; , yr // Width of star formation history bin.
 sfh_DiskMass,10^10 Msun/h , Star formation history in the disk.
 sfh_BulgeMass,10^10 Msun/h , Star formation history in the bulge.
+sfh_DiskMassRings,10^10 Msun/h , Star formation history in the disk RINGS.
+sfh_BulgeMassRings,10^10 Msun/h , Star formation history in the bulge RINGS.
 sfh_ICM,10^10 Msun/h , Star formation history in intra-cluster stars.
-sfh_MetalsDiskMass,10^10 Msun/h , Metal formation history in the disk.
-sfh_MetalsBulgeMass,10^10 Msun/h , Metal formation history in the bulge.
-sfh_MetalsICM,10^10 Msun/h , Metal formation history in the ICM.
+,10^10 Msun/h , Metal formation history in the disk.
+,10^10 Msun/h , Metal formation history in the bulge.
+,10^10 Msun/h , Metal formation history in the ICM.
+,All: [H][He][Cb][N][O][Ne][Mg][Si][S][Ca][Fe] or ,Only [H][He][O][Mg][Fe]
+sfh_DiskMass_elements,10^10 Msun/h , History of mass of elements locked up in stars in disk.
+sfh_BulgeMass_elements,10^10 Msun/h , History of mass of elements locked up in stars in bulge.
+sfh_ICM_elements,10^10 Msun/h , History of mass of elements locked up in stars in the ICM.
+DiskMass_elements,10^10 Msun/h ,Mass of elements locked up in stars in disk.
+BulgeMass_elements,10^10 Msun/h ,Mass of elements locked up in stars in bulge.
+DiskMassRings_elements,10^10 Msun/h ,Mass of elements locked up in stars in each annular ring.
+BulgeMassRings_elements,10^10 Msun/h ,Mass of elements locked up in stars in each annular ring.
+ColdGas_elements,10^10 Msun/h ,Mass of elements locked up in stars in cold gas.
+ColdGasRings_elements,10^10 Msun/h ,Mass of elements locked up in cold gas in each annular ring.
+HotGas_elements,10^10 Msun/h ,Mass of elements locked up in hot gas.
+ReheatedGas_elements,float ReheatedGas_elements[NUM_ELEMENTS]; ,10^10 Msun/h //Mass of elements locked up in reheated gas.
+ICM_elements,10^10 Msun/h ,Mass of elements locked up in stars in the ICM
+EjectedMass_elements,10^10 Msun/h ,Mass of elements locked up in ejected gas.
