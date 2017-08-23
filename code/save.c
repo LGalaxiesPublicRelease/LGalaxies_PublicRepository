@@ -124,8 +124,7 @@ void save_galaxy_append(int tree, int i, int n)
       galaxy_output_hdf5[n][b[n]]=galaxy_output;
       b[n]++;
   }
-  else {compute_SN_reheat
-      EAGLE2015_rescale_of_EnergySN
+  else {
       // Append the data to the HDF5 table if b[n]==NRECORDS_APP
       hdf5_append_data(n,galaxy_output_hdf5[n],NRECORDS_APP);
       b[n]=0;
