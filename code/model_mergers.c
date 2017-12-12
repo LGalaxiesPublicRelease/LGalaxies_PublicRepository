@@ -555,7 +555,7 @@ void add_galaxies_together(int t, int p, double deltaT)
     transfer_material_with_rings(t,"DiskMass",p,"DiskMass",fractionRings,"model_mergers.c", __LINE__);
 
   if(Gal[p].BulgeMass>0.)
-#ifdef RINGS_IN_BULGESRStellarDiskSat
+#ifdef RINGS_IN_BULGES
     transfer_material_with_rings(t,"BulgeMass",p,"BulgeMass",fractionRings,"model_mergers.c", __LINE__);
 #else
     transfer_material(t,"BulgeMass",p,"BulgeMass",1.,"model_mergers.c", __LINE__);
