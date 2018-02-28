@@ -46,18 +46,20 @@ endif
 
 # Either include the default set of Makefile options, or define your own
 #include Makefile_options
-include My_Makefile_options
+#include My_Makefile_options
 #include My_Makefile_options_Rob
 #include My_Makefile_options_MCMC
 #include My_Makefile_options_MCMC_Halo_Model
+include My_Makefile_options_rings
 
 # Choose your system type (needs to match an entry in Makefile_compilers)
 SYSTYPE = "ETH"
-include Makefile_compilers
+#include Makefile_compilers
 # Alternatively, My_Makefile_compilers is an extract from Makefile_compilers
-#include My_Makefile_compilers
+include My_Makefile_compilers
 
-LIBS   =   -g $(LDFLAGS) -lm  $(GSL_LIBS)  $(RLIBS) -lgsl -lgslcblas $(HDF5_LIBS) -lhdf5_serial -lhdf5_serial_hl
+#LIBS   =   -g $(LDFLAGS) -lm  $(GSL_LIBS)  $(RLIBS) -lgsl -lgslcblas $(HDF5_LIBS) -lhdf5_serial -lhdf5_serial_hl
+LIBS   =   -g $(LDFLAGS) -lm  $(GSL_LIBS)  $(RLIBS) -lgsl -lgslcblas $(HDF5_LIBS) -lhdf5 -lhdf5_hl
 
 CFLAGS =   -g $(OPTIONS) $(OPT) -DCOMPILETIMESETTINGS=\""$(OPT)"\" $(OPTIMIZE) $(GSL_INCL) $(HDF5_INCL)
 
@@ -103,4 +105,3 @@ endif
 	awk -f ./AuxCode/awk/extract_struct_metals.awk ./code/h_metals.i > ./AuxCode/awk/output/structs.dat
 	awk -f ./AuxCode/awk/extract_struct_elements.awk ./code/h_metals.i >> ./AuxCode/awk/output/structs.dat
 	awk -f ./AuxCode/awk/extract_struct_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i >> ./AuxCode/awk/output/structs.dat
-	

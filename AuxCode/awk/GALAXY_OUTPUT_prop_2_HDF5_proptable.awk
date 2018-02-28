@@ -7,26 +7,28 @@ BEGIN{
 	split(line,fields)
 	type=fields[1]
 	if(type=="//")
-		next
+	    next
 
 	fieldname=fields[2]
 	if(type == "long" && fieldname == "long") 
-    	fieldname=fields[3]
+	    fieldname=fields[3]
+	if(type == "struct")
+	    fieldname=fields[3]	    
 	ia=index(fieldname,";")
 	fieldname=substr(fieldname,0,ia-1)
 	ib=index(fieldname,"[")
 	if(ib!=0)
-		fieldname=substr(fieldname,0,ib-1)
+	    fieldname=substr(fieldname,0,ib-1)
 
-    unitidx=match(line,"//")
-    if(unitidx!=0){
-		slice_line=substr(line,unitidx+2)
-		descidx=match(slice_line,"//")
-		unit=substr(slice_line,0,descidx-1)
-		desc=substr(slice_line,descidx+2)
-		print fieldname "," unit "," desc
+	unitidx=match(line,"//")
+	if(unitidx!=0){
+	    slice_line=substr(line,unitidx+2)
+	    descidx=match(slice_line,"//")
+	    unit=substr(slice_line,0,descidx-1)
+	    desc=substr(slice_line,descidx+2)
+	    print fieldname "," unit "," desc
 	}
 	else
-		print fieldname ", ," 
+	    print fieldname ", ," 
     
 }
