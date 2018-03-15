@@ -4,6 +4,7 @@
 *.class
 *.dll
 *.exe
+*.i
 *.o
 *.so
 
@@ -35,3 +36,24 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+CoolFunctions
+MergerTrees
+SpecPhotTables
+YieldTables
+batch_apollo.sh
+input/desired_output_redshifts.txt
+input/input.500
+input/temp.par
+input_rings.par
+My_Makefile_options
+My_Makefile_options_old
+My_Makefile_options_rings
+My_Makefile_compilers
+README_*
+input_batch
+logs
+output
+success_test.sh
+AuxCode/awk/output/*
+L-Galaxies
