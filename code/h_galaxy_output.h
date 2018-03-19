@@ -5,8 +5,8 @@
 #ifdef LIGHT_OUTPUT
 
 struct GALAXY_OUTPUT {
-    int   Type; //  // Galaxy type: 0 for central galaxies of a main halo, 1 for central galaxies in sub-halos, 2 for satellites without halo.
-    int   SnapNum; //  // Number of snapshot in which this galaxy resides.
+    int   Type; // None // Galaxy type: 0 for central galaxies of a main halo, 1 for central galaxies in sub-halos, 2 for satellites without halo.
+    int   SnapNum; // None // Number of snapshot in which this galaxy resides.
     float CentralMvir; // 10^10/h Msun // Virial mass of background (FOF) halo containing this galaxy
     float CentralRvir; // 10^10/h Msun // Virial mass of background (FOF) halo containing this galaxy
     float Pos[3]; // 1/h Mpc // Galaxy position (comoving)
@@ -24,10 +24,10 @@ struct GALAXY_OUTPUT {
     /* magnitudes in various bands */
 #ifdef   COMPUTE_SPECPHOT_PROPERTIES
 #ifdef     OUTPUT_OBS_MAGS
-    float ObsMagDust[NMAG]; // // Dust corrected, observed-frame absolute mags
+    float ObsMagDust[NMAG]; // AB mag // Dust corrected, observed-frame absolute mags
 #endif     //OUTPUT_OBS_MAGS
 #ifdef     OUTPUT_REST_MAGS
-    float MagDust[NMAG]; // // Dust corrected, rest-frame absolute mags
+    float MagDust[NMAG]; // AB mag // Dust corrected, rest-frame absolute mags
 #endif     //OUTPUT_REST_MAGS
 #endif   //COMPUTE_SPECPHOT_PROPERTIES
 };
@@ -38,36 +38,36 @@ struct GALAXY_OUTPUT {
 struct GALAXY_OUTPUT {
 #ifdef   NO_PROPS_OUTPUTS
 #ifdef     GALAXYTREE
-    long long GalID; // // ID of galaxy, unique within simulation and SAM run.
+    long long GalID; // None // ID of galaxy, unique within simulation and SAM run.
 #endif     //GALAXYTREE
 #else    //NO_PROPS_OUTPUTS
 #ifdef     GALAXYTREE
-    long long GalID; // // ID of galaxy, unique within simulation and SAM run.
-    long long HaloID; // // Unique ID of MPA halo containing this galaxy
+    long long GalID; // None // ID of galaxy, unique within simulation and SAM run.
+    long long HaloID; // None // Unique ID of MPA halo containing this galaxy
 #endif     //GALAXYTREE
 #ifdef     MBPID
-    long long MostBoundID; // // Most bound particle at centre of subhalo last associated with this galaxy.  
+    long long MostBoundID; // None // Most bound particle at centre of subhalo last associated with this galaxy.  
 #endif     //MBPID
 #ifdef     GALAXYTREE
-    long long FirstProgGal; // // Main progenitor of this galaxy. Also the first progenitor in a linked list representation of the merger tree.
-    long long NextProgGal; // // Next progenitor of this galaxy in linked list representation of merger tree
-    long long LastProgGal; // // Galaxies with id between this galaxyId and this lastProgenitorId form the merger tree rooted in this galaxy.
-    long long FOFCentralGal; // // The galaxy id of the central galaxy of the FOF group this galaxy is in.
+    long long FirstProgGal; // None // Main progenitor of this galaxy. Also the first progenitor in a linked list representation of the merger tree.
+    long long NextProgGal; // None // Next progenitor of this galaxy in linked list representation of merger tree
+    long long LastProgGal; // None // Galaxies with id between this galaxyId and this lastProgenitorId form the merger tree rooted in this galaxy.
+    long long FOFCentralGal; // None // The galaxy id of the central galaxy of the FOF group this galaxy is in.
 #ifdef       NIFTY
-    long long FOFCentralID; // //
+    long long FOFCentralID; // None // The galaxy id of the central galaxy of the FOF group this galaxy is in?
 #endif       //NIFTY
-    long long FileTreeNr; // // Number of the tree file
-    long long DescendantGal; // // Pointer to the descendant of this galaxy in its merger tree; -1 if there is no descendant
-    long long MainLeafId; // //galaxyId of the leaf on the main branch this galaxy is part of. Obtained by following firstProgenitorId as far as it goes.
-    long long TreeRootId; // //The galaxyId of the galaxy at the root of the merger tree this galaxy is in. Especially useful for speeding up queries for descendants for a given progenitor.
-    long long SubID; // //Id of the subhalo containing this galaxy as given by the column subhaloFileID in the MillenniumII..SubHalo miniMilII..SubHalo table (for MRII and mMRII) and by the column subhaloId in the MField.FOFSubHalo millimil..FOFSubHalo tables (for MR and mMR). Alternative to haloId.
-    long long MMSubID; // // fofId, the subhaloid of the subhalo at the center of the fof group
-    int   PeanoKey; // // Peano-Hilbert key, (bits=8), for position in 500/h Mpc box
-    float Redshift; // // redshift of the snapshot where this galaxy resides
+    long long FileTreeNr; // None // Number of the tree file
+    long long DescendantGal; // None // Pointer to the descendant of this galaxy in its merger tree; -1 if there is no descendant
+    long long MainLeafId; // None //galaxyId of the leaf on the main branch this galaxy is part of. Obtained by following firstProgenitorId as far as it goes.
+    long long TreeRootId; // None //The galaxyId of the galaxy at the root of the merger tree this galaxy is in. Especially useful for speeding up queries for descendants for a given progenitor.
+    long long SubID; // None //Id of the subhalo containing this galaxy as given by the column subhaloFileID in the MillenniumII..SubHalo miniMilII..SubHalo table (for MRII and mMRII) and by the column subhaloId in the MField.FOFSubHalo millimil..FOFSubHalo tables (for MR and mMR). Alternative to haloId.
+    long long MMSubID; // None // fofId, the subhaloid of the subhalo at the center of the fof group
+    int   PeanoKey; // None // Peano-Hilbert key, (bits=8), for position in 500/h Mpc box
+    float Redshift; // None // redshift of the snapshot where this galaxy resides
 #endif     //GALAXYTREE
-    int   Type; // //Galaxy type: 0 for central galaxies of a main halo, 1 for central galaxies in sub-halos, 2 for satellites without halo.
+    int   Type; // None //Galaxy type: 0 for central galaxies of a main halo, 1 for central galaxies in sub-halos, 2 for satellites without halo.
 #ifndef    GALAXYTREE
-    int   HaloIndex; // // ?Unique ID of MPA halo containing this galaxy
+    int   HaloIndex; // None // ?Unique ID of MPA halo containing this galaxy
 #endif     //GALAXYTREE
 #ifdef     HALOPROPERTIES
     float HaloM_Mean200; // 1e10 Msun/h // M200 cf mean last time this halo was a type 0
@@ -79,14 +79,14 @@ struct GALAXY_OUTPUT {
     float HaloVmax; // km/s // Maximum circular velocity of halo.
     float HaloSpin[3]; // km/s Mpc/h // specific spin of the halo.
 #endif     //HALOPROPERTIES
-    int   SnapNum; // //The snapshot number where this galaxy was identified.
-    float LookBackTimeToSnap; //yr //The time from a given snapshot to z=0
+    int   SnapNum; // None //The snapshot number where this galaxy was identified.
+    float LookBackTimeToSnap; // yr // The time from a given snapshot to z=0
     float CentralMvir; // 10^10/h Msun // virial mass of background (FOF) halo containing this galaxy
     float CentralRvir; // Mpc/h // Proper[?] R200 cf critical of background (FOF) halo containing this galaxy
     float DistanceToCentralGal[3];  // Mpc/h // Proper[?] components of the distance between this galaxy and the galaxy at the centre of the FoF group.
     float Pos[3]; // 1/h Mpc // Comoving galaxy/subhalo position
     float Vel[3]; // km/s // Galaxy/subhalo peculiar velocity
-    int   Len; // // Number of particles in the associated subhalo  
+    int   Len; // None // Number of particles in the associated subhalo  
     /* properties of subhalo at the last time this galaxy was a central galaxy */
     float Mvir; // 10^10/h Msun // M200 cf critical of the halo last time galaxy was type 0
     float Rvir; // Mpc/h // R200 cf critical of the halo last time galaxy was type 0
@@ -96,7 +96,7 @@ struct GALAXY_OUTPUT {
     float DiskSpin[3]; // Mpc/h km/s // The specific angular momentum of the stellar disk
     float InfallVmax; // km/s // Maximum rotational velocity of the host halo of this galaxy at infall (ie last time a type 0)
     float InfallVmaxPeak; // km/s // ? Peak Vmax along past history
-    int InfallSnap; // // Most recent (largest) snapnum at which this galaxy's type changed from 0 to 1 or 2
+    int InfallSnap; // None // Most recent (largest) snapnum at which this galaxy's type changed from 0 to 1 or 2
     float InfallHotGas; // 10^10 Msun/h // Mass in hot gas at the time of infall (same as hotGas for type 0 galaxies).
     float HotRadius; // Mpc/h // Proper[?] radius out to which hot gas extends: rvir for type 0; 0 for type 2; maximum radius out to which hot gas is not stripped for type 1.
     /*dynamical friction merger time*/
@@ -108,19 +108,19 @@ struct GALAXY_OUTPUT {
     float MergRadius; // Mpc/h // ? Current proper[?] radius
 #endif     //HT09_DISRUPTION
 #ifdef TRACK_SPLASHBACKS
-    int flagSplashBack;
-    float TimeSinceSplashBack;
+    int flagSplashBack; // None // SplashBack flag
+    float TimeSinceSplashBack; // yr? // Time since SplashBack
 #endif
 #ifdef TRACK_NMERGERS
-    float NMajorMergers;
-    float NMinorMergers;
+    float NMajorMergers; // None // Number of major mergers
+    float NMinorMergers; // None // Number of minor mergers
 #endif
     /* baryonic reservoirs */
     float ColdGas; // 10^10/h Msun // Mass in cold gas.
 #ifdef OUTPUT_RINGS
     float ColdGasRings[RNUM]; // 1e10 Msun/h // ? Mass of clod gas in each annulur ring.
-    float H2fraction; // // ?
-    float H2fractionRings[RNUM]; // // ? H2 fraction within each annular ring.
+    float H2fraction; // None // ? Fraction of ColdGas in the form of H_2
+    float H2fractionRings[RNUM]; // None // ? H2 fraction within each annular ring.
 #endif     //H2_AND_RINGS
     float StellarMass; // 10^10/h Msun // Total mass in stars in the disk and the bulge combined
     float DiskMass; // 10^10/h Msun // Mass of stars in the disk
@@ -218,44 +218,44 @@ struct GALAXY_OUTPUT {
     float StellarHalfMassRadius; // Mpc/h // stellar Half mass radius
     float StellarHalfLightRadius; // Mpc/h // stellar Half light radius
     float CosInclination; // deg // Inclination of the galaxy. Derived from the angle between the stellar spins of the galaxy and the z-axis
-    int   DisruptOn; // // 0: galaxy merged onto merger center 1: galaxy was disrupted before merging onto its descendant, matter went into ICM of merger center;
+    int   DisruptOn; // None // 0: galaxy merged onto merger center 1: galaxy was disrupted before merging onto its descendant, matter went into ICM of merger center;
 #ifdef     MERGE01
-    int   MergeOn; // // 0: standard delucia-like merger behaviour for type 1 galaxy; 1: galaxy mass > halo mass, separate dynamical friction time calculated ....
+    int   MergeOn; // None // 0: standard delucia-like merger behaviour for type 1 galaxy; 1: galaxy mass > halo mass, separate dynamical friction time calculated ....
 #endif     //MERGE01
 #endif   //NO_PROPS_OUTPUTS
 
        /* magnitudes in various bands */
 #ifdef   COMPUTE_SPECPHOT_PROPERTIES
 #ifdef     OUTPUT_REST_MAGS
-    float MagDust[NMAG]; // // dust corrected, rest-frame absolute mags
-    float Mag[NMAG]; // // rest-frame absolute mags
-    float MagBulge[NMAG]; // // rest-frame absolute mags for the bulge
+    float MagDust[NMAG]; // AB mag // dust corrected, rest-frame absolute mags
+    float Mag[NMAG]; // AB mag // rest-frame absolute mags
+    float MagBulge[NMAG]; // AB mag // rest-frame absolute mags for the bulge
 #ifdef       ICL
-    float MagICL[NMAG]; // // rest-frame absolute mags of ICL
+    float MagICL[NMAG]; // AB mag // rest-frame absolute mags of ICL
 #endif       //ICL
 #endif     //OUTPUT_REST_MAGS
 #ifdef     OUTPUT_OBS_MAGS
-    float ObsMagDust[NMAG]; // // dust-corrected, obs-frame absolute mags
-    float ObsMag[NMAG]; // // obs-frame absolute mags
-    float ObsMagBulge[NMAG]; // // obs-frame absolute mags for the bulge
+    float ObsMagDust[NMAG]; // AB mag // dust-corrected, obs-frame absolute mags
+    float ObsMag[NMAG]; // AB mag // obs-frame absolute mags
+    float ObsMagBulge[NMAG]; // AB mag // obs-frame absolute mags for the bulge
 #ifdef       ICL
-    float ObsMagICL[NMAG]; // // observer-frame absolute mags for intra-cluster light
+    float ObsMagICL[NMAG]; // AB mag // observer-frame absolute mags for intra-cluster light
 #endif       //ICL
 #ifdef       OUTPUT_MOMAF_INPUTS
     // define luminosities as if the galaxy were one snapshot earlier, i.e. higher redshift, than its actual snapshot
-    float ObsMagDust[NMAG]; // // Dust-corrected obs-frame absolute mags
-    float ObsMag[NMAG]; // // Obs-frame absolute mags
-    float ObsMagBulge[NMAG]; // // Obs-frame absolute mags for the bulge
+    float ObsMagDust[NMAG]; // AB mag // Dust-corrected obs-frame absolute mags
+    float ObsMag[NMAG]; // AB mag // Obs-frame absolute mags
+    float ObsMagBulge[NMAG]; // AB mag // Obs-frame absolute mags for the bulge
 #ifdef         ICL
-    float dObsMagICL[NMAG];  // // Obs-frame absolute mags of ICL
+    float dObsMagICL[NMAG];  // AB mag // Obs-frame absolute mags of ICL
 #endif	       //ICL
 #ifdef         KITZBICHLER
     // define luminosities as if the galaxy were one snapshot later, i.e. lower redshift, than its actual snapshot
-    float dObsMagDust_forward[NMAG]; // // Dust-corrected, one snapshot later-frame absolute mags
-    float dObsMag_forward[NMAG]; // // One snapshot later-frame absolute mags
-    float dObsMagBulge_forward[NMAG]; // // One snapshot later-frame absolute mags for the bulge
+    float dObsMagDust_forward[NMAG]; // AB mag // Dust-corrected, one snapshot later-frame absolute mags
+    float dObsMag_forward[NMAG]; // AB mag // One snapshot later-frame absolute mags
+    float dObsMagBulge_forward[NMAG]; // AB mag // One snapshot later-frame absolute mags for the bulge
 #ifdef           ICL
-    float dObsMagICL_forward[NMAG]; // // One snapshot later absolute mags for intra-cluster light 
+    float dObsMagICL_forward[NMAG]; // AB mag // One snapshot later absolute mags for intra-cluster light 
 #endif	         //ICL
 #endif         //KITZBICHLER
 #endif	     //OUTPUT_MOMAF_INPUTS
@@ -267,36 +267,36 @@ struct GALAXY_OUTPUT {
     float rbandWeightAge; // 10^9yr // The age of this galaxy weighted by mass of its components.
 #endif   //POST_PROCESS_MAGS
 #ifdef OUTPUT_SFH
-    int sfh_ibin; // // Index of highest star formation history bin currently in use
-    int sfh_numbins; // // Number of non empty star formation history bins
+    int sfh_ibin; // None // Index of highest star formation history bin currently in use
+    int sfh_numbins; // None // Number of non empty star formation history bins
 #ifndef    NORMALIZEDDB
     //float sfh_time[SFH_NBIN]; // yr // lookback time to middle of star formation history bin.
     //float sfh_dt[SFH_NBIN]; // yr // Width of star formation history bin.
-    float sfh_DiskMass[SFH_NBIN]; //10^10 Msun/h // Star formation history in the disk.
-    float sfh_BulgeMass[SFH_NBIN]; //10^10 Msun/h // Star formation history in the bulge.
+    float sfh_DiskMass[SFH_NBIN]; // 10^10 Msun/h // Star formation history in the disk.
+    float sfh_BulgeMass[SFH_NBIN]; // 10^10 Msun/h // Star formation history in the bulge.
 #ifdef OUTPUT_RINGS
-    float sfh_DiskMassRings[RNUM][SFH_NBIN]; //10^10 Msun/h // Star formation history in the disk RINGS.
+    float sfh_DiskMassRings[RNUM][SFH_NBIN]; // 10^10 Msun/h // Star formation history in the disk RINGS.
 #ifdef RINGS_IN_BULGES
-    float sfh_BulgeMassRings[RNUM][SFH_NBIN]; //10^10 Msun/h // Star formation history in the bulge RINGS.
+    float sfh_BulgeMassRings[RNUM][SFH_NBIN]; // 10^10 Msun/h // Star formation history in the bulge RINGS.
 #endif
 #endif
-    float sfh_ICM[SFH_NBIN]; //10^10 Msun/h // Star formation history in intra-cluster stars.
+    float sfh_ICM[SFH_NBIN]; // 10^10 Msun/h // Star formation history in intra-cluster stars.
 #ifdef       DETAILED_METALS_AND_MASS_RETURN
-    struct metals sfh_MetalsDiskMass[SFH_NBIN]; //10^10 Msun/h // Metal formation history in the disk.
-    struct metals sfh_MetalsBulgeMass[SFH_NBIN]; //10^10 Msun/h // Metal formation history in the bulge.
-    struct metals sfh_MetalsICM[SFH_NBIN]; //10^10 Msun/h // Metal formation history in the ICM.
+    struct metals sfh_MetalsDiskMass[SFH_NBIN]; // 10^10 Msun/h // Metal formation history in the disk.
+    struct metals sfh_MetalsBulgeMass[SFH_NBIN]; // 10^10 Msun/h // Metal formation history in the bulge.
+    struct metals sfh_MetalsICM[SFH_NBIN]; // 10^10 Msun/h // Metal formation history in the ICM.
 #else        //DETAILED_METALS_AND_MASS_RETURN
-    float sfh_MetalsDiskMass[SFH_NBIN]; //10^10 Msun/h // Metal formation history in the disk.
-    float sfh_MetalsBulgeMass[SFH_NBIN]; //10^10 Msun/h // Metal formation history in the bulge.
-    float sfh_MetalsICM[SFH_NBIN]; //10^10 Msun/h // Metal formation history in the ICM.
+    float sfh_MetalsDiskMass[SFH_NBIN]; // 10^10 Msun/h // Metal formation history in the disk.
+    float sfh_MetalsBulgeMass[SFH_NBIN]; // 10^10 Msun/h // Metal formation history in the bulge.
+    float sfh_MetalsICM[SFH_NBIN]; // 10^10 Msun/h // Metal formation history in the ICM.
 #endif       //DETAILED_METALS_AND_MASS_RETURN
 #ifdef TRACK_SFH_MASSGROWTH_CHANNELS
-    float sfh_MassFromInSitu[SFH_NBIN]; //10^10 Msun/h // Star formation history of stars formed in situ.
-    float sfh_MassFromMergers[SFH_NBIN]; //10^10 Msun/h // Star formation history of stars accreted from mergers.
-    float sfh_MassFromBursts[SFH_NBIN]; //10^10 Msun/h // Star formation history of stars formed in starbursts.
+    float sfh_MassFromInSitu[SFH_NBIN]; // 10^10 Msun/h // Star formation history of stars formed in situ.
+    float sfh_MassFromMergers[SFH_NBIN]; // 10^10 Msun/h // Star formation history of stars accreted from mergers.
+    float sfh_MassFromBursts[SFH_NBIN]; // 10^10 Msun/h // Star formation history of stars formed in starbursts.
 #endif
 #ifdef TRACK_BURST
-    float sfh_BurstMass[SFH_NBIN]; //10^10 Msun/h // Star formation history of stars formed in starbursts.
+    float sfh_BurstMass[SFH_NBIN]; // 10^10 Msun/h // Star formation history of stars formed in starbursts.
 #endif //TRACK_BURST
 #endif     //NORMALIZEDDB
 #endif   //OUTPUT_SFH
@@ -304,26 +304,26 @@ struct GALAXY_OUTPUT {
 #ifdef OUTPUT_ELEMENTS
     //All: [H][He][Cb][N][O][Ne][Mg][Si][S][Ca][Fe] or //Only [H][He][O][Mg][Fe]
 #ifdef OUTPUT_SFH
-    float sfh_DiskMass_elements[SFH_NBIN][NUM_ELEMENTS]; //10^10 Msun/h // History of mass of elements locked up in stars in disk.
-    float sfh_BulgeMass_elements[SFH_NBIN][NUM_ELEMENTS]; //10^10 Msun/h // History of mass of elements locked up in stars in bulge.
-    float sfh_ICM_elements[SFH_NBIN][NUM_ELEMENTS]; //10^10 Msun/h // History of mass of elements locked up in stars in the ICM.
+    float sfh_DiskMass_elements[SFH_NBIN][NUM_ELEMENTS]; // 10^10 Msun/h // History of mass of elements locked up in stars in disk.
+    float sfh_BulgeMass_elements[SFH_NBIN][NUM_ELEMENTS]; // 10^10 Msun/h // History of mass of elements locked up in stars in bulge.
+    float sfh_ICM_elements[SFH_NBIN][NUM_ELEMENTS]; // 10^10 Msun/h // History of mass of elements locked up in stars in the ICM.
 #endif
-    float DiskMass_elements[NUM_ELEMENTS]; //10^10 Msun/h //Mass of elements locked up in stars in disk.
-    float BulgeMass_elements[NUM_ELEMENTS]; //10^10 Msun/h //Mass of elements locked up in stars in bulge.
+    float DiskMass_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in disk.
+    float BulgeMass_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in bulge.
 #ifdef OUTPUT_RINGS
-    float DiskMassRings_elements[RNUM][NUM_ELEMENTS]; //10^10 Msun/h //Mass of elements locked up in stars in each annular ring.
+    float DiskMassRings_elements[RNUM][NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in each annular ring.
 #ifdef RINGS_IN_BULGES
-    float BulgeMassRings_elements[RNUM][NUM_ELEMENTS]; //10^10 Msun/h //Mass of elements locked up in stars in each annular ring.
+    float BulgeMassRings_elements[RNUM][NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in each annular ring.
 #endif
 #endif     //H2_AND_RINGS
-    float ColdGas_elements[NUM_ELEMENTS]; //10^10 Msun/h //Mass of elements locked up in stars in cold gas.
+    float ColdGas_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in cold gas.
 #ifdef OUTPUT_RINGS
-    float ColdGasRings_elements[RNUM][NUM_ELEMENTS]; //10^10 Msun/h //Mass of elements locked up in cold gas in each annular ring.
+    float ColdGasRings_elements[RNUM][NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in cold gas in each annular ring.
 #endif     //H2_AND_RINGS
-    float HotGas_elements[NUM_ELEMENTS]; //10^10 Msun/h //Mass of elements locked up in hot gas.
-    //float ReheatedGas_elements[NUM_ELEMENTS]; //10^10 Msun/h //Mass of elements locked up in reheated gas.
-    float ICM_elements[NUM_ELEMENTS]; //10^10 Msun/h //Mass of elements locked up in stars in the ICM
-    float EjectedMass_elements[NUM_ELEMENTS]; //10^10 Msun/h //Mass of elements locked up in ejected gas.
+    float HotGas_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in hot gas.
+    //float ReheatedGas_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in reheated gas.
+    float ICM_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in the ICM
+    float EjectedMass_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in ejected gas.
 #ifdef     EXCESS_MASS
     float ExcessMass_elements[NUM_ELEMENTS]; // 10^10/h Msun // Mass in elements associated with ExcessMass component
 #endif     //EXCESS_MASS
@@ -333,27 +333,27 @@ struct GALAXY_OUTPUT {
 // next only of interest to DB output, which generally requires complete tree
 #ifdef OUTPUT_SFH
 struct SFH_BIN {
-    long long GalID; // // ID of the galaxy
-    short snapnum; // // snapnum of the galaxy, repeated here for faster lookups of times etc
-    short sfh_ibin; // //Index of highest bin currently in use
+    long long GalID; // None // ID of the galaxy
+    short snapnum; // None // snapnum of the galaxy, repeated here for faster lookups of times etc
+    short sfh_ibin; // None //Index of highest bin currently in use
     //    float sfh_time; // yr // Lookback time at the middle of bin.
     //    float sfh_dt; // yr // time width of bin.
     float sfh_DiskMass; // 1e10 Msun/h // SFH of disk
     float sfh_BulgeMass; // 1e10 Msun/h // SFH of bulge
 #ifdef OUTPUT_RINGS
-    float sfh_DiskMassRings[RNUM]; //10^10 Msun/h // Star formation history in the disk RINGS.
+    float sfh_DiskMassRings[RNUM]; // 10^10 Msun/h // Star formation history in the disk RINGS.
 #ifdef RINGS_IN_BULGES
-    float sfh_BulgeMassRings[RNUM]; //10^10 Msun/h // Star formation history in the bulge RINGS.
+    float sfh_BulgeMassRings[RNUM]; // 10^10 Msun/h // Star formation history in the bulge RINGS.
 #endif
 #endif
     float sfh_ICM; // 1e10 Msun/h // SFH of ICM
 #ifdef TRACK_SFH_MASSGROWTH_CHANNELS
-    float sfh_MassFromInSitu; //10^10 Msun/h // Star formation history of stars formed in situ.
-    float sfh_MassFromMergers; //10^10 Msun/h // Star formation history of stars accreted from mergers.
-    float sfh_MassFromBursts; //10^10 Msun/h // Star formation history of stars formed in starbursts.
+    float sfh_MassFromInSitu; // 10^10 Msun/h // Star formation history of stars formed in situ.
+    float sfh_MassFromMergers; // 10^10 Msun/h // Star formation history of stars accreted from mergers.
+    float sfh_MassFromBursts; // 10^10 Msun/h // Star formation history of stars formed in starbursts.
 #endif
 #ifdef TRACK_BURST
-    float sfh_BurstMass; //10^10 Msun/h // Star formation history of stars formed in starbursts.
+    float sfh_BurstMass; // 10^10 Msun/h // Star formation history of stars formed in starbursts.
 #endif //TRACK_BURST
 #ifdef DETAILED_METALS_AND_MASS_RETURN
     struct metals sfh_MetalsDiskMass; // 1e10 Msun/h // Metals locked up in stars in disk.
@@ -367,12 +367,12 @@ struct SFH_BIN {
 };
 
 struct SFH_Time {
-    int snapnum; // // snapnum
-    int bin; // index of current bin
+    int snapnum; // None // snapnum
+    int bin; // None // index of current bin
     double lookbacktime; // yr // lookback time to centeTr of current bin
     // proposal: in output write the start of the bin and its end, rather than center and dt
     double dt; // yr // width of the current bin
-    int nbins; // // # of highest resolution bins used to create current bin
+    int nbins; // None // number of highest resolution bins used to create current bin
 };
 #endif   //OUTPUT_SFH
 #pragma pack()   //structure alignment ends.

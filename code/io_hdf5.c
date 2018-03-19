@@ -9,6 +9,9 @@
 
 void open_hdf5_file( int filenr){
 
+int field_ndim;
+int dimProd;
+
 rowsize=0;
 
 char output_file[80];
@@ -24,88 +27,96 @@ output_offsets=(size_t*)calloc(nfields,sizeof(output_offsets));
 output_sizes=(size_t*)calloc(nfields,sizeof(output_sizes));
 field_types=(hid_t*)calloc(nfields,sizeof(field_types));
 
- printf("\n nfields=%d\n",nfields);
+printf("\n nfields=%d\n",nfields);
  
- //This sets the types and offsets
- for(ifield=0;ifield<nfields;ifield++){
+//This sets the types and offsets
+for(ifield=0;ifield<nfields;ifield++){
  
-   output_offsets[ifield]=rowsize;
-   
-   if(types[ifield]=='i'){
-     field_types[ifield]=H5T_NATIVE_INT;
-     output_sizes[ifield]=sizeof(int);
-     rowsize+=sizeof(int);
-   }
-   else if(types[ifield]=='f'){
-     field_types[ifield]=H5T_NATIVE_FLOAT;
-    output_sizes[ifield]=sizeof(float);
-     rowsize+=sizeof(float);
-   }
-   else if(types[ifield]=='l'){
-     field_types[ifield]=H5T_NATIVE_LLONG;
-     output_sizes[ifield]=sizeof(long long);
-     rowsize+=sizeof(long long);
-   }
-   else if(types[ifield]=='3'){
-     field_types[ifield]=H5Tarray_create(H5T_NATIVE_FLOAT,1,float_dims);
-     output_sizes[ifield]=3*sizeof(float);
-     rowsize+=3*sizeof(float);
-   }
-#ifdef COMPUTE_SPECPHOT_PROPERTIES
-   else if(types[ifield]=='o'){
-     field_types[ifield]=H5Tarray_create(H5T_NATIVE_FLOAT,1,nmag_dims);
-     output_sizes[ifield]=NMAG*sizeof(float);
-     rowsize+=NMAG*sizeof(float);
-   }
-#endif
-#ifdef STAR_FORMATION_HISTORY
-   else if(types[ifield]=='s'){
-     field_types[ifield]=H5Tarray_create(H5T_NATIVE_FLOAT,1,sfh_dims);
-     output_sizes[ifield]=SFH_NBIN*sizeof(float);
-     rowsize+=SFH_NBIN*sizeof(float);
-   }
-#ifdef INDIVIDUAL_ELEMENTS
-    else if(types[ifield]=='m'){
-     field_types[ifield]=H5Tarray_create(H5T_NATIVE_FLOAT,1,float_dims);
-     output_sizes[ifield]=sizeof(struct metals); 
-     rowsize+=sizeof(struct metals);
-   }
-   else if(types[ifield]=='M'){
-     field_types[ifield]=H5Tarray_create(H5T_NATIVE_FLOAT,2,mag_sfh_dims);
-     output_sizes[ifield]=sizeof(struct metals)*SFH_NBIN; 
-     rowsize+=sizeof(struct metals)*SFH_NBIN;
-   }
-   else if(types[ifield]=='e'){
-     field_types[ifield]=H5Tarray_create(H5T_NATIVE_FLOAT,1,numele_dims);
-     output_sizes[ifield]=NUM_ELEMENTS*sizeof(float);
-     rowsize+=NUM_ELEMENTS*sizeof(float);
-   }
-   else if(types[ifield]=='E'){
-     field_types[ifield]=H5Tarray_create(H5T_NATIVE_FLOAT,2,numele_sfh_dims);
-     output_sizes[ifield]=SFH_NBIN*NUM_ELEMENTS*sizeof(float);
-     rowsize+=SFH_NBIN*NUM_ELEMENTS*sizeof(float);
-     }
-#endif //INDIVIDUAL_ELEMENTS
-#ifdef DETAILED_DUST 			//Scott 15/11/2015
-   else if(types[ifield]=='d'){
-     field_types[ifield]=H5Tarray_create(H5T_NATIVE_FLOAT,1,dustrate_dims);
-     output_sizes[ifield]=sizeof(struct DustRates);
-     rowsize+=sizeof(struct DustRates);
-   }
-   else if(types[ifield]=='D'){
-     field_types[ifield]=H5Tarray_create(H5T_NATIVE_FLOAT,2,dustrate_sfh_dims);
-     output_sizes[ifield]=SFH_NBIN*sizeof(struct DustRates);
-     rowsize+=SFH_NBIN*sizeof(struct DustRates);
-   }
-#endif
-#endif // STAR_FORMATION_HISTORY
+    field_ndim=0;
+    dimProd=1;
+    output_offsets[ifield]=rowsize;
 
-    else {
-     char err[100];
-     sprintf(err,"***open_hdf5_file: undefined datatype %c \n", types[ifield]);
-     terminate(err);  
+    // Find out haw many dimensions our arrays have
+    // Note: the ordering of the arrays dimensions is important
+    if (flagRings[ifield]>0) {
+	dims[field_ndim]=RNUM;
+	dimProd*=RNUM;
+	field_ndim++;
+    }	
+    if (flagSFH[ifield]>0) {
+	dims[field_ndim]=SFH_NBIN;
+	dimProd*=SFH_NBIN;
+	field_ndim++;
+    }	
+    if (flagElements[ifield]>0) {
+	dims[field_ndim]=NUM_ELEMENTS;
+	dimProd*=NUM_ELEMENTS;
+	field_ndim++;
+    }	
+    if (flag3[ifield]>0) {
+	dims[field_ndim]=3;
+	dimProd*=3;
+	field_ndim++;
+    }	
+    if (flagMag[ifield]>0) {
+	dims[field_ndim]=NMAG;
+	dimProd*=NMAG;
+	field_ndim++;
+    }	
+
+    // Determine the basic types and their sizes
+    // Structs are implemented by increasing the array dimensions by 1
+    if(types[ifield]=='i'){
+	field_type=H5T_NATIVE_INT;
+	output_size=sizeof(int);
     }
- }
+    else if(types[ifield]=='f'){
+	field_type=H5T_NATIVE_FLOAT;
+	output_size=sizeof(float);
+    }
+    else if(types[ifield]=='l'){
+	field_type=H5T_NATIVE_LLONG;
+	output_size=sizeof(long long);
+    }
+#ifdef DETAILED_DUST
+    else if(types[ifield]=='d'){
+	field_type=H5T_NATIVE_FLOAT;
+	output_size=sizeof(float);
+	dims[field_ndim]=sizeof(struct DustRates)/output_size;
+	dimProd*=dims[field_ndim]
+	field_ndim++;
+    }
+#endif
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+    else if(types[ifield]=='m'){
+	field_type=H5T_NATIVE_FLOAT;
+	output_size=sizeof(float);
+	dims[field_ndim]=sizeof(struct metals)/output_size;
+	dimProd*=dims[field_ndim];
+	field_ndim++;
+    }
+#endif
+    else terminate("Unknown field type\n");
+    
+#ifdef DEBUG_HDF5
+	int idim; 
+	printf("%s[dims]=",field_names[ifield]);
+	for(idim=0;idim<field_ndim;idim++) printf("%d,",(int)dims[idim]);
+	printf("\n");
+	printf("output_size = %d\n",(int)output_size);
+#endif
+
+    if (field_ndim==0) {
+	field_types[ifield]=field_type;
+	output_sizes[ifield]=output_size;
+    }
+    else {
+	field_types[ifield]=H5Tarray_create(field_type,field_ndim,dims);
+	output_sizes[ifield]=dimProd*output_size;
+    }
+    rowsize+=output_sizes[ifield];
+
+}
 }
 
 void create_hdf5_table(int n){
@@ -113,6 +124,7 @@ void create_hdf5_table(int n){
     printf("\n Entering create_hdf5_table");
 
   char table_name[20];
+  const hsize_t nrecords=0 ; // Don't write any records on table creation
 
   output_size=sizeof(struct GALAXY_OUTPUT);
 
@@ -128,7 +140,7 @@ void create_hdf5_table(int n){
   printf("table_name=%s\n",table_name);
   printf("file_id=%d\n",(int)file_id);
   printf("nfields=%d\n",nfields);
-  printf("NRECORDS=%d\n",(int)NRECORDS);
+//  printf("NRECORDS=%d\n",(int)NRECORDS);
   printf("output_size=%d\n",(int)output_size);
   int ifield;
   for (ifield=0;ifield<nfields;ifield++) {
@@ -138,7 +150,7 @@ void create_hdf5_table(int n){
   }
   //exit(1);
 #endif
-  H5TBmake_table(table_name, file_id, table_name,nfields,NRECORDS,
+  H5TBmake_table(table_name, file_id, table_name,nfields,nrecords,
            output_size,field_names, output_offsets, field_types,
            chunk_size, fill_data, COMPRESS, &galaxy_output  );
 
