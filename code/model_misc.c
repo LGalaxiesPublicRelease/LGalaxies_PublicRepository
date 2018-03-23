@@ -346,7 +346,7 @@ double bulgemass(double x)
 
 
 
-
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
 //o->ObsMagDust[nlum]=ObsLumDiskDust+ObsLumBulgeDust;
 /** @brief Calculates the half light radius of satellite galaxies on the Vband, NMAG=2 for 40 bands*/
 double stellar_half_light_radius(struct GALAXY_OUTPUT *o)
@@ -442,6 +442,7 @@ double stellar_half_light_radius(struct GALAXY_OUTPUT *o)
 
   return (r);
 }
+#endif
 
 
 
@@ -563,7 +564,9 @@ void init_galaxy(int p, int halonr)
     }
 #endif
   //inclination defined as the angle between galaxy spin and the z-axis
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
   Gal[p].CosInclination = 0.0;
+#endif
 
   Gal[p].PrimordialAccretionRate = 0.0;
   Gal[p].CoolingRate = 0.0;

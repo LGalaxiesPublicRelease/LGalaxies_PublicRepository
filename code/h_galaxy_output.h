@@ -109,7 +109,7 @@ struct GALAXY_OUTPUT {
 #endif     //HT09_DISRUPTION
 #ifdef TRACK_SPLASHBACKS
     int flagSplashBack; // None // SplashBack flag
-    float TimeSinceSplashBack; // yr? // Time since SplashBack
+    float TimeSinceSplashBack; // yr // Time since SplashBack
 #endif
 #ifdef TRACK_NMERGERS
     float NMajorMergers; // None // Number of major mergers
@@ -118,17 +118,17 @@ struct GALAXY_OUTPUT {
     /* baryonic reservoirs */
     float ColdGas; // 10^10/h Msun // Mass in cold gas.
 #ifdef OUTPUT_RINGS
-    float ColdGasRings[RNUM]; // 1e10 Msun/h // ? Mass of clod gas in each annulur ring.
-    float H2fraction; // None // ? Fraction of ColdGas in the form of H_2
-    float H2fractionRings[RNUM]; // None // ? H2 fraction within each annular ring.
+    float ColdGasRings[RNUM]; // 1e10 Msun/h //  Mass of clod gas in each annulur ring.
+    float H2fraction; // None //  Fraction of ColdGas in the form of H_2
+    float H2fractionRings[RNUM]; // None //  H2 fraction within each annular ring.
 #endif     //H2_AND_RINGS
     float StellarMass; // 10^10/h Msun // Total mass in stars in the disk and the bulge combined
     float DiskMass; // 10^10/h Msun // Mass of stars in the disk
     float BulgeMass; // 10^10/h Msun // Mass of stars in the bulge
 #ifdef OUTPUT_RINGS
-    float DiskMassRings[RNUM]; // 1e10 Msun/h // ? Mass of stars within each annular ring
+    float DiskMassRings[RNUM]; // 1e10 Msun/h // Mass of stars within each annular ring
 #ifdef RINGS_IN_BULGES
-    float BulgeMassRings[RNUM]; // 1e10 Msun/h // ? Mass of stars within each annular ring
+    float BulgeMassRings[RNUM]; // 1e10 Msun/h // Mass of stars within each annular ring
 #endif
 #endif     //H2_AND_RINGS
     float HotGas; // 10^10/h Msun // Mass in hot gas
@@ -216,8 +216,10 @@ struct GALAXY_OUTPUT {
     float DiskRadius; // Mpc/h // Size of the stellar disk, 3x the scale length.
     float ColdGasRadius; // Mpc/h // Size of the gas disk, 3x the scale length.
     float StellarHalfMassRadius; // Mpc/h // stellar Half mass radius
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
     float StellarHalfLightRadius; // Mpc/h // stellar Half light radius
     float CosInclination; // deg // Inclination of the galaxy. Derived from the angle between the stellar spins of the galaxy and the z-axis
+#endif
     int   DisruptOn; // None // 0: galaxy merged onto merger center 1: galaxy was disrupted before merging onto its descendant, matter went into ICM of merger center;
 #ifdef     MERGE01
     int   MergeOn; // None // 0: standard delucia-like merger behaviour for type 1 galaxy; 1: galaxy mass > halo mass, separate dynamical friction time calculated ....

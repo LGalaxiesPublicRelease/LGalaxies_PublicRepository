@@ -155,7 +155,9 @@ struct GALAXY			/* Galaxy data */
 #endif
   // float halfradius;
   //float periradius;
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
   float CosInclination; //angle between galaxy spin and the z-axis
+#endif
 #ifndef HT09_DISRUPTION
   float OriMergTime;
   float MergTime;
