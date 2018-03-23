@@ -85,11 +85,11 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
 #ifdef H2_AND_RINGS
   update_h2fraction(p);
 
-  //sfe=SfrEfficiency/1.0e-4;    // the unit of sfe here is (km/s)/(Mpc/h)=1.022e-3 h^{+1} /Gyr
-  sfe=SfrEfficiency*UnitTime_in_years/Hubble_h; //convert from yr-1 into code units of time
-  //printf("sfe=%e\n",sfe);
+  sfe=SfrEfficiency*UnitTime_in_years/Hubble_h; //convert from yr-1 into code units of time // the unit of sfe here is (km/s)/(Mpc/h)=1.022e-3 h^{+1} /Gyr
+  //sfe=SfrEfficiency*UnitTime_in_years/Hubble_h/pow((1+ZZ[Gal[p].SnapNum]),1.0); //convert from yr-1 into code units of time
+
   if(SFRtdyn==1)
-    sfe= (sfe/tdyn)/UnitTime_in_years*Hubble_h; // for star formation rate proportional to 1/t_dyn
+    sfe= (sfe/tdyn)/UnitTime_in_years*Hubble_h*1e7; // for star formation rate proportional to 1/t_dyn
     //sfe= sfe/1.8/tdyn; // for star formation rate proportional to 1/t_dyn
 
   for(j=0;j<RNUM;j++)
@@ -132,8 +132,25 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
 
       else if(StarFormationModel == 4)	/*The star formation law in Fu et al. 2010*/
 	{
+	  double sigma_H2, N_sf=1.0, sigma2_crit=70, area;
+	  //area in pc^2
+	  if(j==0)
+	    area = RingRadius[j]*RingRadius[j]*1e12/Hubble_h;
+	  else
+	    area = (RingRadius[j]*RingRadius[j]-RingRadius[j-1]*RingRadius[j-1])*1e12/Hubble_h;
+	  sigma_H2 = Gal[p].ColdGasRings[j]*1e10/Hubble_h*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR/area;
+
 	  if(Gal[p].H2fractionRings[j]>=0.0)
-	      strdotr[j] = sfe * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR ; //Only cold H2 component is proportional to star formation rate.
+	    {
+	     strdotr[j] = sfe * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR ; //Only cold H2 component is proportional to star formation rate.
+
+	     //strdotr[j] = (12e7/tdyn)/UnitTime_in_years*Hubble_h * sigma_H2/10. * pow(1+sigma_H2/(sigma2_crit), N_sf)/pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),5.);
+	    
+	      //Somerville
+	      //strdotr[j] = (sfe*pow(10.,6.0))/UnitTime_in_years*Hubble_h * sigma_H2/10. * pow(1+sigma_H2/(sigma2_crit), N_sf);
+	      //area is in pc^2, *1e6 makes it in Kpc^2 as needed
+	      //strdotr[j] = strdotr[j] * (area * 1e6) /1e10*Hubble_h;
+	    }
 	  else strdotr[j]=0.0;
 	}
 
@@ -514,35 +531,28 @@ void SN_feedback(int p, int centralgal, double stars, double starsRings[], char 
   if(reheated_mass > Gal[p].ColdGas)
      reheated_mass = Gal[p].ColdGas;
 
-  /*
-      double rd, ringtot;
-    int jj;
-     rd=Gal[p].ColdGasRadius;
-    ringtot=1.-(1+RingRadius[RNUM-1]/rd)/exp(RingRadius[RNUM-1]/rd);
-    reheated_massr[0]=(1-(1+RingRadius[0]/rd)/exp(RingRadius[0]/rd))/ringtot*reheated_mass;
-    //aux_mass=reheated_massr[0];
-    for(jj=1; jj<RNUM; jj++)
-      {
-      reheated_massr[jj]= ((1+RingRadius[jj-1]/rd)/exp(RingRadius[jj-1]/rd)-(1+RingRadius[jj]/rd)/exp(RingRadius[jj]/rd))/ringtot*reheated_mass;
-      //aux_mass+=reheated_massr[jj];
-      }
-
-  */
-
-
 #endif
 
 
   // Determine ejection (for FeedbackEjectionModel 0 we have the dependence on Vmax) Guo2010 - eq 22
-  // Note that satellites can now retain gas and have their own gas cycle
   //EJECT
   if(FeedbackEagleScaling == 1)
-    {
-      Radius_low=0.;
-      ReScaled_EnergySNcode=EnergySNcode*EAGLE2015_rescale_of_EnergySN(Gal[p].ColdGas, metals_total(Gal[p].MetalsColdGas), Radius_low, Gal[p].ColdGasRadius);
-    }
-  else
-    ReScaled_EnergySNcode=EnergySNcode;
+     {
+       //ReScaled_EnergySNcode=EnergySNcode*EAGLE2015_rescale_of_EnergySN (ColdGas, MetalsColdGas, Radius_low, Radius_high);
+       //ReScaled_EnergySNcode=EnergySNcode/pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),4.0);
+       double SigmaGas;
+       SigmaGas = Gal[p].ColdGas / (M_PI*(Gal[p].ColdGasRadius*Gal[p].ColdGasRadius-Radius_low*Gal[p].ColdGasRadius));
+       // convert from 10^10 M_sun/h / (Mpc/h)^2 to (M_sun/pc^2)
+       SigmaGas=SigmaGas*0.01*Hubble_h;
+
+       ReScaled_EnergySNcode=EnergySNcode*SigmaGas;
+
+       if(ReScaled_EnergySNcode>EnergySNcode)
+          ReScaled_EnergySNcode=EnergySNcode;
+     }
+   else
+     ReScaled_EnergySNcode=EnergySNcode;
+
 
   if (Gal[Gal[p].CentralGal].Type == 0)
     {
@@ -620,7 +630,24 @@ double compute_SN_reheat(int p, int centralgal, double stars, double ColdGas, do
    * If it is outside, the Vvir of its central subhalo is used. */
 
   if(FeedbackEagleScaling == 1)
-    ReScaled_EnergySNcode=EnergySNcode*EAGLE2015_rescale_of_EnergySN (ColdGas, MetalsColdGas, Radius_low, Radius_high);
+    {
+      //ReScaled_EnergySNcode=EnergySNcode*EAGLE2015_rescale_of_EnergySN (ColdGas, MetalsColdGas, Radius_low, Radius_high);
+      //ReScaled_EnergySNcode=EnergySNcode/pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),4.0);
+
+      double SigmaGas;
+#ifdef H2_AND_RINGS
+      SigmaGas = ColdGas/(M_PI *(Radius_high*Radius_high-Radius_low*Radius_low))/WARM_PHASE_FACTOR*Clumpingfactor;
+#else
+      SigmaGas = ColdGas / (M_PI*(Radius_high*Radius_high-Radius_low*Radius_low));
+#endif
+      // convert from 10^10 M_sun/h / (Mpc/h)^2 to (M_sun/pc^2)
+      SigmaGas=SigmaGas*0.01*Hubble_h;
+
+      ReScaled_EnergySNcode=EnergySNcode*SigmaGas;
+
+      if(ReScaled_EnergySNcode>EnergySNcode)
+         ReScaled_EnergySNcode=EnergySNcode;
+    }
   else
     ReScaled_EnergySNcode=EnergySNcode;
 
@@ -648,7 +675,9 @@ double compute_SN_reheat(int p, int centralgal, double stars, double ColdGas, do
 	      SigmaGas=SigmaGas*0.01*Hubble_h;
 
 	      if(SigmaGas>0.)
-		reheated_mass/=SigmaGas;
+		reheated_mass*=pow(SigmaGas*0.05,2);
+	     // reheated_mass/=pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),5.0); - much lower reheating, much higher metals
+	     // reheated_mass*=pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),2.0); // much higher reheating, much lower stellar metals, gas metals high-z unnafected
 	    }
 
 	  if (reheated_mass * Gal[Gal[p].CentralGal].Vvir * Gal[Gal[p].CentralGal].Vvir > stars * (EtaSNcode * ReScaled_EnergySNcode))
@@ -661,6 +690,18 @@ double compute_SN_reheat(int p, int centralgal, double stars, double ColdGas, do
   if(reheated_mass > ColdGas)
     reheated_mass = ColdGas;
 
+ /*
+      double rd, ringtot;
+    int jj;
+     rd=Gal[p].ColdGasRadius;
+    ringtot=1.-(1+RingRadius[RNUM-1]/rd)/exp(RingRadius[RNUM-1]/rd);
+    reheated_massr[0]=(1-(1+RingRadius[0]/rd)/exp(RingRadius[0]/rd))/ringtot*reheated_mass;
+    //aux_mass=reheated_massr[0];
+    for(jj=1; jj<RNUM; jj++)
+      {
+      reheated_massr[jj]= ((1+RingRadius[jj-1]/rd)/exp(RingRadius[jj-1]/rd)-(1+RingRadius[jj]/rd)/exp(RingRadius[jj]/rd))/ringtot*reheated_mass;
+      //aux_mass+=reheated_massr[jj];
+      }*/
 
   return reheated_mass;
 
@@ -1289,7 +1330,7 @@ void update_h2fraction(int p)
 	      s=log(1.+0.6*khi+0.01*khi*khi)/(0.6*tau);
 
 	      if(s<2.0)
-		Gal[p].H2fractionRings[j]=1-0.75*s/(1+0.25*s);
+		Gal[p].H2fractionRings[j]=(1-0.75*s/(1+0.25*s));///pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),0.75);	    
 	      else
 		Gal[p].H2fractionRings[j]=0.0;
 	      //if(Gal[p].H2fractionRings[j]<0.01) Gal[p].H2fractionRings[j]=0.01;
