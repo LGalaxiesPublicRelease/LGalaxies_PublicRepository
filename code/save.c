@@ -299,7 +299,9 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
   o->MetalsICM = g->MetalsICM;
   o->QuasarAccretionRate = g->QuasarAccretionRate * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;
   o->RadioAccretionRate = g->RadioAccretionRate * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
   o->CosInclination = g->CosInclination;
+#endif
 
 #ifndef HT09_DISRUPTION
   if(g->Type == 2 || (g->Type == 1 && g->MergeOn == 1)) {
@@ -701,12 +703,16 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
       {
   	  o->MassWeightAge = g->MassWeightAge[n] / (g->DiskMass+g->BulgeMass);
   	  o->MassWeightAge = o->MassWeightAge / 1000. * UnitTime_in_Megayears / Hubble_h;	//Age in Gyr
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
   	  o->StellarHalfLightRadius=stellar_half_light_radius(o);
+#endif
       }
     else
       {
   	o->MassWeightAge = 0.;
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
   	o->StellarHalfLightRadius= 0.;
+#endif
       }
 #endif
 
