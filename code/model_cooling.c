@@ -208,6 +208,9 @@ void do_AGN_heating(double dt, int ngal, int FOF_centralgal)
 	     // if(ZZ[Gal[p].SnapNum]<1.)
 		  AGNrate =	AgnEfficiency * (UnitTime_in_s*SOLAR_MASS)/(UnitMass_in_g*SEC_PER_YEAR)
 		    * Gal[p].BlackHoleMass/Hubble_h* (HotGas/Hubble_h) * 10.;
+		//  AGNrate =	AgnEfficiency * (UnitTime_in_s*SOLAR_MASS)/(UnitMass_in_g*SEC_PER_YEAR)
+		// 		    * Gal[p].BlackHoleMass/Hubble_h* 5000.;
+
 
 	      ///((1+ZZ[Gal[p].SnapNum])*(1+ZZ[Gal[p].SnapNum])*(1+ZZ[Gal[p].SnapNum]));
 	      /*AGNrate = AgnEfficiency * (UnitTime_in_s*SOLAR_MASS)/(UnitMass_in_g*SEC_PER_YEAR)
