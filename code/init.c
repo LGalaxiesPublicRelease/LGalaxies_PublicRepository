@@ -153,8 +153,10 @@ void init(void)
   int i;
   for(i=0; i<RNUM; i++)
    // {
+   // RingRadius[i]= 0.0001*pow(3.0,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
+    RingRadius[i]= 0.01*pow(2.0,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
     //RingRadius[i]= 0.44*pow(1.5,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
-    RingRadius[i]= 0.1*pow(1.7,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
+   // RingRadius[i]= 0.1*pow(1.7,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
     //RingRadius[i]= 0.2*pow(1.6,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
     //RingRadius[i]= 0.34*pow(1.52,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
   // printf("%0.3f\n,",RingRadius[i]*1000.);
