@@ -304,8 +304,9 @@ double isothermal_mass(double Mvir, double Rvir, double dr);
 double diskmass(double x);
 double bulgemass(double x);
 double half_mass_radius(int p, int do_ColdGas, int do_DiskMass, int do_BulgeMass);
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
 double stellar_half_light_radius(struct GALAXY_OUTPUT *o);
-
+#endif
 
 void update_type_2(int ngal,int halonr, int prog,int mostmassive);
 void update_centralgal(int ngal,int halonr);
