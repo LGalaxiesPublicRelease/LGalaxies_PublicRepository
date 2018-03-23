@@ -375,6 +375,8 @@ void grow_black_hole(int merger_centralgal, double mass_ratio, double deltaT)
     {
       BHaccrete = BlackHoleGrowthRate * mass_ratio
 	  / (1.0 + pow2((BlackHoleCutoffVelocity / Gal[merger_centralgal].Vvir))) * Gal[merger_centralgal].ColdGas;
+     // BHaccrete = BlackHoleGrowthRate * mass_ratio * Gal[merger_centralgal].ColdGas;
+
       // redshift dependent accretion, not published
       // BHaccrete = BlackHoleGrowthRate * (1.0 + ZZ[Halo[halonr].SnapNum]) * mass_ratio
 
