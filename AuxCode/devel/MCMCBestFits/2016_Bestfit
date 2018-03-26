@@ -27,6 +27,147 @@ to correct 1 and 2 together is harder
 7) BHGrowthInDiskInstabilityModel *0.1 to be similar to that in mergers
 
 
+8) try playing with reheating and fraczhot - doesn't work, in order to reduce metals at high-z, reheating much be reduced a lot destroying stellar mass function
+- decrease reheating - more star formation - less gas -  increase metallicity - BUT MASS FUNCTIONS GETS SCREWED (too many low mass an knee galaxies)
+
+4.0e-09 0.14 0.64 0.002 0.06 2.0e+03 1.0 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.6 0.38 1.7 4.8e+03
+4.0e-09 0.14 0.64 0.002 0.06 2.0e+03 0.4 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.8 0.38 1.7 4.8e+03
+4.0e-09 0.14 0.64 0.002 0.06 2.0e+03 0.7 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.7 0.38 1.7 4.8e+03 - BEST BUT SMF still not good enough, no compromise between SMF and metals
+
+- increase reheating - a lot more gas - massive galaxies get metal poor, balanced by low ejection in low mass galaxies - get metal rich 
+more reheat and eject - lower metallicity
+
+increasing ejection changes very little
+decrease SN energy with redshift + increase fraczhot - wrong evolution of gas metallicity, highier at high-z
+
+
+only on reheating
+ ReScaled_EnergySNcode=EnergySNcode/pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),3.0); and fraczhot = 0.8 not terrible, but INVERTED evolution in low mass - NO - test0
+ KIND OF WORKS
+ ReScaled_EnergySNcode=EnergySNcode*pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),3.0); and fraczhot = 0.8 not terrible, but still no evolution in low mass - test1
+ might work with SN energy 2.0 e51
+  
+ 
+ KIND OF WORKS - need to look at exact scaling
+
+reheat*sigma , frac zhot=0.1, SFE x 3  - test4    
+reheat*sigma , frac zhot=0.7, SFE x 3  - test4     
+reheat*sigma * 0.1, frac zhot=0.1, SFE x 3  - sweet spot between 0.05 and 0.1        
+reheat*sigma *.5, frac zhot=0.1, SFE x 3  - test4 - worse than *0.1
+reheat*sigma *2.0, frac zhot=0.1, SFE x 3  - test4 - worse than *0.1
+
+
+low reheat*sigma
+reheat*sigma * 0.01, frac zhot=0.1, SFE x 3   
+reheat*sigma * 0.05, frac zhot=0.5, SFE x 3  
+reheat*sigma * 0.05, frac zhot=0.7, SFE x 3   
+reheat*sigma * 0.01, frac zhot=0.9, SFE x 3  - Good for metals not for the mass function   
+reheat*sigma * 0.05, frac zhot=0.8, SFE x 3  - PROBABLY BEST COMPROMISE   
+reheat*sigma * 0.1, frac zhot=0.8, SFE x 3  - metals too low   
+reheat*sigma * 0.1, frac zhot=0.6, SFE x 3  - metals too low
+              
+higher - reheat*sigma   
+anything above reheat*sigma * 0.1 - too much cold gas   
+reheat*sigma * 0.5, frac zhot=0.9, SFE x 3  -  
+reheat*sigma * 0.5, frac zhot=0.9, SFE x 30  -
+reheat*sigma * 0.5, frac zhot=0.9, SFE x 6  -
+reheat*sigma * 0.5, frac zhot=0.5, SFE x 6  -   
+reheat*sigma * 0.5, frac zhot=0.7, SFE x 6    
+reheat*sigma * 0.5, frac zhot=0.8, SFE x 6  - good for everything except - TOO MUCH COLD GAS
+      
+even higher  reheat*sigma 
+reheat*sigma * 5., frac zhot=0.5, SFE x 6 -  worse for cold gas   
+ 
+ 
+REDSHIFT DEPENDECE 
+reheated_mass*=pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),1.0);, frac zhot=0.3, SFE x 3  - test3 - NOT ebough evo in gas metals
+reheated_mass*=pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),1.0);, frac zhot=0.6, SFE x 3  - test3 - metals too low
+reheated_mass*=pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),1.0);, frac zhot=0.45, SFE x 3  - test3 - NOT ebough evo in gas metals 
+reheated_mass*=pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),1.5);, frac zhot=0.45, SFE x 3  - test3 - NOT ebough evo in gas metals
+reheated_mass*=pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),2.0);, frac zhot=0.6, SFE x 3  - test3 - NOT BAD but metals too low
+reheated_mass*=pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),2.0);, frac zhot=0.3, SFE x 3  - test3 - NOT BAD but metals screwed at low mass high-z
+reheated_mass*=pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),2.0);, frac zhot=0.45, SFE x 3  - test3 - BEST! 
+reheated_mass*=pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),3.0);, frac zhot=0.3, SFE x 3  - test3 - BAD, inverted gas metals evolution
+ 
+ 
+ 
+reheat*pow(sigma,2) 
+reheat*pow(sigma*0.05,2), frac zhot=0.45, SFE x 3  
+reheat*pow(sigma*0.05,2), frac zhot=0.7, SFE x 3  - not bad 
+reheat*pow(sigma*0.05,3), frac zhot=0.7, SFE x 3  - BEST SO FAR WITHOUT z-evo
+reheat*pow(sigma*0.05,4), frac zhot=0.7, SFE x 3  
+reheat*pow(sigma*0.01,2), frac zhot=0.7, SFE x 3  - mass function screwed
+reheat*pow(sigma*0.1,2), frac zhot=0.7, SFE x 3  - metals too low, metals screwed in low mass end
+reheat*pow(sigma*0.1,2), frac zhot=0.3, SFE x 3  - metals too high
+reheat*pow(sigma*0.1,2), frac zhot=0.5, SFE x 3  - metals screwed in low mass end
+
+
+DOING 40 FILES
+reheat*pow(sigma*0.05,2), frac zhot=0.6, SFE x 3, AGF radio * 3  - BEST SO FAR
+6.0e-09 0.14 0.64 0.006 0.06 2.0e+03 2.4 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.6 0.38 1.7 4.8e+03
+
+
+9) SF law - SOMERVILLE
+4.0e-09 0.14 0.64 0.002 0.06 2.0e+03 1.2 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.5 0.38 1.7 4.8e+03
+NO REAL GAIN WITH SOMERVILLE
+test1 vs test2 - somerville, fraczhot=0.5
+test4 vs test5 - somerville, fraczhot=0.7
+
+
+10) changes to SF law
+4.0e-09 0.14 0.64 0.002 0.06 2.0e+03 1.2 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.5 0.38 1.7 4.8e+03
+sfe=0.1*SfrEfficiency*pow((1+ZZ[Gal[p].SnapNum]),1.0); - looks good!! - test1
+
+sfe=SfrEfficiency/pow((1+ZZ[Gal[p].SnapNum]),1.0); - probably better!
+
+/tdyn
+10.0e-09 0.14 0.64 0.002 0.06 2.0e+03 1.2 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.5 0.38 1.7 4.8e+03
+
+3.0e-09 0.14 0.64 0.002 0.06 2.0e+03 1.2 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.5 0.38 1.7 4.8e+03
+
+BEST SO FAR  AAAAAAAAAAAAAAAAAAA
+4.0e-09 0.14 0.64 0.0015 0.06 2.0e+03 1.4 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.5 0.38 1.7 4.8e+03
+
+
+
+10) H2 formation law
+
+4.0e-09 0.14 0.64 0.0015 0.06 2.0e+03 1.4 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.6 0.38 1.7 4.8e+03
+
+(1-0.75*s/(1+0.25*s))/pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),.75); - BEST OF THIS
+(1-0.75*s/(1+0.25*s))/pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),1.); - GOOD
+(1-0.75*s/(1+0.25*s))/pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),3.); - mass function too low on knee at high-z
+
+(1-0.75*s/(1+0.25*s))/pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),-1.5); - iverted evolution - NO
+
+
+4.0e-09 0.14 0.64 0.0015 0.06 2.0e+03 1.4 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.6 0.38 1.7 4.8e+03
+H2 formation 2 - metals too low
+
+4.0e-09 0.14 0.64 0.0015 0.06 2.0e+03 1.4 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.1 0.38 1.7 4.8e+03
+H2 formation 2 - metals no evo
+
+2.0e-09 0.14 0.64 0.0015 0.06 2.0e+03 0.8 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.1 0.38 1.7 4.8e+03
+H2 formation 2 - metals too low
+
+2.0e-09 0.14 0.64 0.0015 0.06 2.0e+03 1.4 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.1 0.38 1.7 4.8e+03
+H2 formation 1 - metals too low, no evo
+
+changing parameters on H2 formation doesn't help a lot, just khi*10 works more or less
+
+tau|* 10 - GOOD FOR METALS - BUT DESTRIYS GAS FRACTIONS
+1.0e-09 0.14 0.64 0.0015 0.06 2.0e+03 1.4 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.1 0.38 1.7 4.8e+03
+
+tau|* 2 -LOOKS GOOD AAAAAAAAAAAAAAAAAAAAAAAA - 
+1.0e-09 0.14 0.64 0.0015 0.06 2.0e+03 1.4 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.1 0.38 1.7 4.8e+03
+
+
+
+
+
+
+
+
 
 
 GOOD
@@ -69,6 +210,14 @@ without fast testing:
 95 - same as 92 - H2_frac=0, v_inflow fixed at 800
 1 131.64781 -8.629509 -0.852699 -0.193913 -2.155438 -1.510766 3.465037 0.373037 2.404864 0.196957 0.596827 2.257719 0.039806 10.330686 -0.805367 -0.415254 0.238472 3.678333
 1 2.2500513e-132 2.3e-09 0.14 0.64 0.007 0.031 2.9e+03 2.4 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.16 0.38 1.7 4.8e+03
+
+works beter with SFE=4.0e-9 (should use fraczhot=0.8)
+4.0e-09 0.14 0.64 0.002 0.06 2.0e+03 2.4 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.16 0.38 1.7 4.8e+03
+
+try with reheat = 1.2!!
+
+
+
 
 
 
@@ -340,7 +489,7 @@ Knee of mass function not good + problem with gas masses (gradients good)
 1 2.2500513e-132 2.3e-09 0.14 0.64 0.007 0.031 2.9e+03 2.4 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.16 0.38 1.7 4.8e+03
 
 BH masses better with (ALMOST PERFECT FOR EVERYTHING) - ***** BEST SO FAR ****** 
-0.002 0.06 2.e+03
+4.0e-09 0.14 0.64 0.002 0.06 2.0e+03 2.4 2.5e+02 1.6 4 1.8e+02 1.1 2.1e+10 0.16 0.38 1.7 4.8e+03
 
 BEST FIT INSIDE 2Sigma
 2.7e-09 0.13 0.54 0.0047 0.042 2.6e+03 1.4 4.1e+02 1.4 5 1.9e+02 1.6 2.1e+10 0.13 0.44 1.7 5.1e+03 
@@ -362,21 +511,17 @@ NOT BETTER
 
 SFE doesn't affect gradients, only in the centre, AGN feedback is the most important but to get gradients down, the mass function also comes
 
+changing the cooling radius can make gradients shallower for low mass, but then to shallow for high mass
 
-
-
-
-
-
-97 - same as 95 (H2_frac=2, v_inflow fixed at 800) - mass function +0.14 at z>0.4
-98 - same as 95 (H2_frac=2, v_inflow fixed at 800) - mass function +0.14 at z>0.4 - BIG INTITIAL DISPLACEMENT
-
-
-101 - same as 91 with big initial displacement
-
-102 - same as 92 with big initial displacement
-
-
+ 
+#TO FIND BEST FIT
+error 0.3
+97 - same as 95 (H2_frac=0, v_inflow fixed at 800) - mass function +0.4 at z>0.4
+1 126.44728 -8.643712 -0.855383 -0.169777 -2.151494 -1.517462 3.470515 0.355785 2.404114 0.182845 0.531668 2.200134 0.091508 10.300292 -0.905654 -0.405981 0.245372 3.670778
+1 3.5704156e-127 2.3e-09 0.14 0.68 0.0071 0.03 3e+03 2.3 2.5e+02 1.5 3.4 1.6e+02 1.2 2e+10 0.12 0.39 1.8 4.7e+03
+98 - same as 95 (H2_frac=0, v_inflow fixed at 800) - mass function +0.4 at z>0.4 - BIG INTITIAL DISPLACEMENT
+1 137.45408 -8.831488 -0.662587 -0.744314 -2.785657 -1.630819 3.137083 0.404528 2.358189 0.226069 0.156305 2.873886 0.333375 10.290738 -0.846933 -0.674955 -0.211691 3.639814
+1 3.5149769e-138 1.5e-09 0.22 0.18 0.0016 0.023 1.4e+03 2.5 2.3e+02 1.7 1.4 7.5e+02 2.2 2e+10 0.14 0.21 0.61 4.4e+03
 
 
 
@@ -385,6 +530,64 @@ SFE doesn't affect gradients, only in the centre, AGN feedback is the most impor
 
 
 
+
+still going 98, 110, 111
+
+TO SAMPLE
+min obs err = 0.1 
+#FINISHED - very broad contours not getting samller
+101 - same as 91 with big initial displacement - no gas metallictiy
+
+#FINISHED - BEST OF SAMPLING
+#going nicely, regions getting smaller, keep going!
+102 - same as 92 with big initial displacement - no gas metallictiy
+
+min obs err = 0.05
+#FINISHED - very broad contours (more constraints needed)
+105 - same as 91 - with big initial displacement + only SMF and red fraction
+
+
+
+
+#TO FIND BEST FIT
+error 15%
+FINISHED
+#not that different (no increase in mass function at z=2) (2000 steps with likelihood)
+97 - same as 95 (H2_frac=0, v_inflow fixed at 800) - mass function +0.4 at z>0.4
+1 287.67719 -8.735328 -0.963172 -0.273595 -2.127864 -1.398234 3.414941 0.052880 2.486726 0.136493 0.657682 2.156333 0.154703 10.260785 -0.776816 -0.355853 0.281603 3.834834
+1 2.1028741e-288 1.8e-09 0.11 0.53 0.0074 0.04 2.6e+03 1.1 3.1e+02 1.4 4.5 1.4e+02 1.4 1.8e+10 0.17 0.44 1.9 6.8e+03
+
+
+error 15%
+FINISHED
+#going now! (small increase in mass functon at z=2) (only 8 steps with likelihood)
+98 - same as 95 (H2_frac=0, v_inflow fixed at 800) - mass function +0.4 at z>0.4 - BIG INTITIAL DISPLACEMENT
+1 137.45408 -8.831488 -0.662587 -0.744314 -2.785657 -1.630819 3.137083 0.404528 2.358189 0.226069 0.156305 2.873886 0.333375 10.290738 -0.846933 -0.674955 -0.211691 3.639814
+1 3.5149769e-138 1.5e-09 0.22 0.18 0.0016 0.023 1.4e+03 2.5 2.3e+02 1.7 1.4 7.5e+02 2.2 2e+10 0.14 0.21 0.61 4.4e+03
+
+9.1e-09 0.34 1.5 0.0022 0.03 7.3e+02 0.49 5e+02 1.5 5.6 3.7e+02 0.34 2.2e+10 0.14 0.44 1.7 6.4e+03
+
+###High fractZHot
+
+#GAS METALS TOO LOW
+##FINISHED
+107 - same as 97, only SMF, redfraction and GasMetallicity, FracZtoHot=0.9, min_obs_err = 0.3
+
+
+#GAS METALS TOO LOW
+##FINISHED
+109 - same as 97, small errors on SMF at z=2, FracZtoHot=0.8, min obs err = 0.2
+1 289.96184 -8.560353 -0.934143 -0.234843 -2.295741 -1.468860 3.471574 0.265541 2.493851 0.220606 0.560690 2.295145 0.096618 10.340020 -0.282831 0.277639 3.594936
+1 1.0918493e-290 2.8e-09 0.12 0.58 0.0051 0.034 3e+03 1.8 3.1e+02 1.7 3.6 2e+02 1.2 2.2e+10 0.52 1.9 3.9e+03
+
+#GAS METALS TOO LOW
+110 - same as 109, FracZtoHot=0.7
+1 229.69692 -8.569065 -0.913128 -0.391987 -2.186848 -1.668201 3.346638 0.213772 2.213077 0.447009 0.548909 2.292247 0.090217 10.320020 -0.189813 0.266954 3.572946
+1 2.0094785e-230 2.7e-09 0.12 0.41 0.0065 0.021 2.2e+03 1.6 1.6e+02 2.8 3.5 2e+02 1.2 2.1e+10 0.65 1.8 3.7e+03
+
+111 - same as 109, FracZtoHot=0.5
+
+112 - new star formation law ()
 
 
 
