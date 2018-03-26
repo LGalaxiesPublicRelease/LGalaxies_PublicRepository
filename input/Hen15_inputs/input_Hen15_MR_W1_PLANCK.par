@@ -3,8 +3,8 @@
 %------------------------------------------
 
 FileNameGalaxies          SA
-FirstFile         0
-LastFile          29
+FirstFile         40
+LastFile          40
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
 McFile				      ./input/Mc.txt
@@ -26,7 +26,7 @@ LastDarkMatterSnapShot  63
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
 %OutputDir               /net/bootes/scratch2/SAM/Henriques2015a/snaps/BackSplashFlag/MR/
-%OutputDir               /net/bootes/scratch-ssd/SAM/test0/MR/
+OutputDir               /net/bootes/scratch-ssd/SAM/test3/MR/
 %OutputDir               /net/bootes/scratch2/SAM/Henriques2015a/snaps/nmerge_10/MR/
 
 %OutputDir                /net/bootes/scratch2/SAM/Hen15_tests/MR/
@@ -39,7 +39,7 @@ Hashbits                8    ;needed for Peano hilbert key output with the GALAX
 %OutputDir                /net/bootes/export/data1/SAM/Hen15_tests/only_ejection/MR/
 %OutputDir                 /net/bootes/scratch2/SAM/Hen15_tests/ejection_cut_high_mass/MR/
 %OutputDir                 /net/bootes/scratch2/SAM/Hen15_tests/ejection_cut_very_low_mass/MR/
-OutputDir                 /net/bootes/scratch2/SAM/Hen15_tests/ejection_cut_very_high_mass/MR/
+%OutputDir                 /net/bootes/scratch2/SAM/Hen15_tests/ejection_cut_very_high_mass/MR/
 
 
 MinGalOutputMass	    0.01
@@ -225,9 +225,9 @@ ReheatPreVelocity	        480.     ;(eq. S19 in Doc) Normalization of SN feedbac
 ReheatSlope		            0.72     ;(eq. S19 in Doc) Slope of the dependence of  SN feedback on Vvir 
 % Ejection of gas from halo
 FeedbackEjectionEfficiency  0.62     ;(eq. S16 in Doc) Fraction SN energy used in reheat and eject 
-%FeedbackEjectionEfficiency  0.2     ;(eq. S16 in Doc) Fraction SN energy used in reheat and eject 
-%EjectPreVelocity	        100.     ;(eq. S17 in Doc) Normalization of total SN 
-EjectPreVelocity	        10000.     ;(eq. S17 in Doc) Normalization of total SN 
+%FeedbackEjectionEfficiency  0.     ;(eq. S16 in Doc) Fraction SN energy used in reheat and eject 
+EjectPreVelocity	        100.     ;(eq. S17 in Doc) Normalization of total SN 
+%EjectPreVelocity	        10000.     ;(eq. S17 in Doc) Normalization of total SN 
 %EjectPreVelocity	        1.     ;(eq. S17 in Doc) Normalization of total SN 
 EjectSlope		            0.80     ;(eq. S17 in Doc) Slope of total SN
 
@@ -255,7 +255,7 @@ RamPressureStrip_CutOffMass  1.2e+4  ;(section 1.11.1 in Doc) In code Units of 1
 %-------------------------------------------
 %% Total SN energy available
 %-------------------------------------------
-EnergySN		    5.0e51           ;(section 1.7 in Doc)
+EnergySN		    1.0e51           ;(section 1.7 in Doc)
 %EnergySN		    3.3e51           ;(section 1.7 in Doc)
 EtaSN			    8.0e-3
 
