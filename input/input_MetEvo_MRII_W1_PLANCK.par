@@ -210,7 +210,7 @@ BlackHoleSeedMass           1e-7     ;10^10 Msun/h
 %% SN feedback
 %-------------------------------------------
 % Heating of cold gas to hot
-FeedbackReheatingEpsilon    1.6     ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
+FeedbackReheatingEpsilon    1.4     ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
 %FeedbackReheatingEpsilon    100.0     ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
 ReheatPreVelocity	        250.     ;(eq. S19 in Henriques15) Normalization of SN feedback
 ReheatSlope		            1.6     ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
