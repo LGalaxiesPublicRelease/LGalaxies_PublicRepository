@@ -4,14 +4,13 @@
 
 FileNameGalaxies          SA
 FirstFile         40
-LastFile          40
+LastFile          79
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               ./SpecPhotTables/
-%SpecPhotDir               /net/bootes/export/data1/Workspace/SpecPhotTables/
+SpecPhotDir               /net/bootes/export/data1/Workspace/SpecPhotTables/
 PhotPrefix                PLANCK ; WMAP7 ;WMAP7
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/Filter_Names.txt
@@ -20,14 +19,13 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %-------------------------------------------------
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
-SimulationDir	        ./MergerTrees/
-%SimulationDir	        /net/bootes/export/data1/Millennium2/BigRun/modified_trees/
+
+SimulationDir	        /net/bootes/export/data1/Millennium2/BigRun/modified_trees/
 
 LastDarkMatterSnapShot  67
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
-OutputDir               ./output/
-%OutputDir               /net/bootes/scratch-ssd/SAM/test2/MRII/
+OutputDir               /net/bootes/scratch-ssd/SAM/test2/MRII/
 %OutputDir                /net/bootes/scratch2/SAM/test95/MRII/
 
 MaxMemSize             7000 ; 70000 ; 100000 galtree
@@ -89,7 +87,7 @@ StarFormationModel                4  ;%*0 -- Croton2006, Delucia2007, Guo2011, H
 									  % 3 -- if OPT += -DH2_AND_RINGS: introduce in Fu2012 - Krumholz et al. 2009 (eq. 6)
 									  %*4 -- if OPT += -DH2_AND_RINGS: introduce in Fu2010 - BIGIEL only one mode now (eq 33)
 		
-SFRtdyn                           0  ;*0 -- constant SFE
+SFRtdyn                           1  ;*0 -- constant SFE
                                      % 1 -- SFE inversly proportional to tdyn: introduced in Fu2012 ((eq. 3 and 5))		
 		
 FeedbackReheatingModel            0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
@@ -178,8 +176,9 @@ Reionization_zr	            7.0  ;using the analytic fit of Kravtsov et al. 2004
 %% Star formation
 %-------------------------------------------
 
-%SfrEfficiency               0.02    ;(eq. S14 in Doc)
+%SfrEfficiency               0.04    ;(eq. S14 in Doc)
 SfrEfficiency               4.0e-9    ;(eq. S14 in Doc)
+%SfrEfficiency              9.1e-3    ;(eq. S14 in Doc)
 
 SfrColdCrit                 0.14     ;(eq. S15 in Doc) In units of 10^10Msun  
 									   % there is a factor 3 difference between the eq in Hen15 and in Guo10 because 
@@ -202,16 +201,16 @@ SfrBurstSlope               0.64      ;(eq. S33 in Doc)
 %-------------------------------------------
 % BH growth and AGN feedback
 %-------------------------------------------
-AgnEfficiency               0.002   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
-BlackHoleGrowthRate	        0.06   ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                                              
-BlackHoleCutoffVelocity     2000.     ;(eq. S23 in Henriques15)
+AgnEfficiency               0.001   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
+BlackHoleGrowthRate	        0.031   ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                                              
+BlackHoleCutoffVelocity     2900.     ;(eq. S23 in Henriques15)
 BlackHoleSeedMass           1e-7     ;10^10 Msun/h
 
 %-------------------------------------------
 %% SN feedback
 %-------------------------------------------
 % Heating of cold gas to hot
-FeedbackReheatingEpsilon    2.4    ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
+FeedbackReheatingEpsilon    1.6     ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
 %FeedbackReheatingEpsilon    100.0     ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
 ReheatPreVelocity	        250.     ;(eq. S19 in Henriques15) Normalization of SN feedback
 ReheatSlope		            1.6     ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
@@ -225,7 +224,7 @@ ReIncorporationFactor	    2.1e+10  ;(eq. S22 in Henriques15) Fraction of ejected
 %-------------------------------------------
 %%Fraction of Metals returned to Hot component
 %-------------------------------------------
-FracZtoHot                  0.16     ;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNII metals put into hot gas
+FracZtoHot                  0.5      ;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNII metals put into hot gas
 
 %-------------------------------------------
 %% IMF

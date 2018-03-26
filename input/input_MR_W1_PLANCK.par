@@ -7,10 +7,11 @@ FirstFile         40
 LastFile          40
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
-McFile			  ./input/Mc.txt
+McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
 SpecPhotDir               ./SpecPhotTables/
+%SpecPhotDir               /net/bootes//export/data1/Workspace/SpecPhotTables/
 PhotPrefix                PLANCK ; WMAP7 ;WMAP7
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/Filter_Names.txt
@@ -21,11 +22,14 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %-------------------------------------------------
 
 SimulationDir	        ./MergerTrees/
+%SimulationDir	        /net/bootes//export/data1/Millennium/modified_trees/
 
 LastDarkMatterSnapShot  63
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
 OutputDir               ./output/
+%OutputDir               /net/bootes/scratch-ssd/SAM/test2/MR/
+%OutputDir               /net/bootes/scratch2/SAM/test95/MR/
 MinGalOutputMass	0.01
 
 MaxMemSize              6000
@@ -177,7 +181,7 @@ Reionization_zr	            7.0  ;using the analytic fit of Kravtsov et al. 2004
 %-------------------------------------------
 
 %SfrEfficiency               0.02    ;(eq. S14 in Doc)
-SfrEfficiency               2.7e-9    ;(eq. S14 in Doc)
+SfrEfficiency               4.0e-9    ;(eq. S14 in Doc)
 
 SfrColdCrit                 0.14     ;(eq. S15 in Doc) In units of 10^10Msun  
 									   % there is a factor 3 difference between the eq in Hen15 and in Guo10 because 
@@ -191,39 +195,39 @@ Clumpingfactor              1.0      ;clumping factor in Krumholz' H2 fraction r
 									   % dependence to solve issues with low-metallicity galaxies
 GasInflowVel                800.      ;km/s/Mpc
 
-
 %-------------------------------------------
 %% Star formation bursts during mergers
 %-------------------------------------------
-SfrBurstEfficiency          0.13     ;(eq. S33 in Doc)
-SfrBurstSlope               0.54      ;(eq. S33 in Doc)
+SfrBurstEfficiency          0.14     ;(eq. S33 in Doc)
+SfrBurstSlope               0.64      ;(eq. S33 in Doc)
 
 %-------------------------------------------
 % BH growth and AGN feedback
 %-------------------------------------------
-AgnEfficiency               0.0047   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
-BlackHoleGrowthRate	        0.042   ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                                              
-BlackHoleCutoffVelocity     2600.     ;(eq. S23 in Henriques15)
+AgnEfficiency               0.002   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
+BlackHoleGrowthRate	        0.06   ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                                              
+BlackHoleCutoffVelocity     2000.     ;(eq. S23 in Henriques15)
 BlackHoleSeedMass           1e-7     ;10^10 Msun/h
 
 %-------------------------------------------
 %% SN feedback
 %-------------------------------------------
 % Heating of cold gas to hot
-FeedbackReheatingEpsilon    1.4     ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
-ReheatPreVelocity	        410.     ;(eq. S19 in Henriques15) Normalization of SN feedback
-ReheatSlope		            1.4     ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
+FeedbackReheatingEpsilon    2.4    ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
+%FeedbackReheatingEpsilon    100.0     ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
+ReheatPreVelocity	        250.     ;(eq. S19 in Henriques15) Normalization of SN feedback
+ReheatSlope		            1.6     ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
 % Ejection of gas from halo
-FeedbackEjectionEfficiency  5.0      ;(eq. S16 in Henriques15) Fraction SN energy used in reheat and eject 
-EjectPreVelocity	        190.     ;(eq. S17 in Henriques15) Normalization of total SN 
-EjectSlope		            1.6     ;(eq. S17 in Henriques15) Slope of total SN
+FeedbackEjectionEfficiency  4.0      ;(eq. S16 in Henriques15) Fraction SN energy used in reheat and eject 
+EjectPreVelocity	        180.     ;(eq. S17 in Henriques15) Normalization of total SN 
+EjectSlope		            1.1     ;(eq. S17 in Henriques15) Slope of total SN
 
 ReIncorporationFactor	    2.1e+10  ;(eq. S22 in Henriques15) Fraction of ejected mass reincorporated per dynamical time to hot
 
 %-------------------------------------------
 %%Fraction of Metals returned to Hot component
 %-------------------------------------------
-FracZtoHot                  0.13      ;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNII metals put into hot gas
+FracZtoHot                  0.16     ;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNII metals put into hot gas
 
 %-------------------------------------------
 %% IMF
@@ -235,13 +239,13 @@ RecycleFraction             0.43     ;(section 1.6 in Henriques15) Fraction of S
 %-------------------------------------------
 %% Mergers
 %-------------------------------------------
-ThreshMajorMerger	        0.44      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
+ThreshMajorMerger	        0.38      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
 MergerTimeMultiplier        1.7      ;(eq. S32 in Henriques15) Adjust the dynamical friction merging time
 
 %-------------------------------------------
 %%Hot Gas stripping
 %-------------------------------------------
-RamPressureStrip_CutOffMass  5.1e+3  ;(section 1.11.1 in Henriques15) In code Units of 10^10 (mass above which there is stripping)
+RamPressureStrip_CutOffMass  4.8e+3  ;(section 1.11.1 in Henriques15) In code Units of 10^10 (mass above which there is stripping)
 
 %-------------------------------------------
 %% Total SN energy available
