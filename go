@@ -14,8 +14,8 @@ else
 	simulation=$2
 	#var1="./input/Guo_inputs/input_"
 	#var2="_W1_W1.par"
-	var1="./input/Hen15_inputs/input_"
-	#var1="./input/input_"
+    #var1="./input/Hen15_inputs/input_"
+	var1="./input/input_"
 	var2="_W1_PLANCK.par"
 	echo $simulation
 	
