@@ -32,6 +32,7 @@ with h5py.File(datadir+'SA_output_%i.h5' %filenr,'r') as f:
     z=f[snap]['Pos'][:,2][selection]
     SfrRings=f[snap]['SfrRings']
     Mag=f[snap]['Mag']
+    MetalsColdGasRings=f[snap]['MetalsColdGasRings']
 
     #Output the possible data labels where the first 3 are: table class, table version, table name
     print(list(f[snap].attrs.values()))
