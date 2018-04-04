@@ -45,18 +45,13 @@ INCL  += ./code/lightcone.h
 endif
 
 # Either include the default set of Makefile options, or define your own
-#include Makefile_options
+# include Makefile_options
 include My_Makefile_options
-#include My_Makefile_options_Rob
-#include My_Makefile_options_MCMC
-#include My_Makefile_options_MCMC_Halo_Model
-#include My_Makefile_options_rings
 
-# Choose your system type (needs to match an entry in Makefile_compilers)
-SYSTYPE = "ETH"
-include Makefile_compilers
-# Alternatively, My_Makefile_compilers is an extract from Makefile_compilers
-#include My_Makefile_compilers
+# Choose your system type (copy an entry from Makefile_compilers)
+# SYSTYPE = "ETH"
+# include Makefile_compilers
+include My_Makefile_compilers
 
 #LIBS   =   -g $(LDFLAGS) -lm  $(GSL_LIBS)  $(RLIBS) -lgsl -lgslcblas $(HDF5_LIBS) -lhdf5_serial -lhdf5_serial_hl
 LIBS   =   -g $(LDFLAGS) -lm  $(GSL_LIBS)  $(RLIBS) -lgsl -lgslcblas $(HDF5_LIBS) -lhdf5 -lhdf5_hl
@@ -68,7 +63,7 @@ all: metadata $(EXEC)
 $(EXEC): $(OBJS) 
 	$(CC) $(OPTIMIZE) $(OBJS) $(LIBS)   -o  $(EXEC)  
 
-$(OBJS): $(INCL) Makefile Makefile_options My_Makefile_options My_Makefile_options_MCMC My_Makefile_options_MCMC_Halo_Model Makefile_compilers ##My_Makefile_compilers
+$(OBJS): $(INCL) Makefile Makefile_compilers My_Makefile_options
 
 clean:
 	rm -f $(OBJS)
