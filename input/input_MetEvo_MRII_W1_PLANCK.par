@@ -1,3 +1,6 @@
+%create symbolic links to other directories if you don't ahve then in the code folder
+%e.g. ln -s /export//Workspace/SpecPhotTables/ ./SpecPhotTables
+
 %------------------------------------------
 %----- SA model inputs       --------------
 %------------------------------------------
@@ -10,7 +13,7 @@ FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               /net/bootes/export/data1/Workspace/SpecPhotTables/
+SpecPhotDir               ./SpecPhotTables/
 PhotPrefix                PLANCK ; WMAP7 ;WMAP7
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/Filter_Names.txt
@@ -20,15 +23,16 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        /net/bootes/export/data1/Millennium2/BigRun/modified_trees/
+SimulationDir	        ./MergerTrees_MRII/
 
 LastDarkMatterSnapShot  67
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
 OutputDir               /net/bootes/scratch-ssd/SAM/test3/MRII/
-%OutputDir                /net/bootes/scratch2/SAM/test95/MRII/
+%OutputDir              ./output/
+MinGalOutputMass	    0.0
 
-MaxMemSize             7000 ; 70000 ; 100000 galtree
+MaxMemSize              7000 ; 70000 ; 100000 galtree
 
 %-------------------------------------------------
 %----- Scaling options  ------------
