@@ -1,5 +1,6 @@
 %create symbolic links to other directories if you don't ahve then in the code folder
 %e.g. ln -s /export/Workspace/SpecPhotTables/ ./SpecPhotTables
+%ln -sfn to change the link
 
 %------------------------------------------
 %----- SA model inputs       --------------
