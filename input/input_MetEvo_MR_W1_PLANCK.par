@@ -3,53 +3,54 @@
 %------------------------------------------
 
 FileNameGalaxies          SA
-FirstFile         	  40
-LastFile          	  40
+FirstFile         5
+LastFile          5
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
-McFile			  ./input/Mc.txt
+McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               ./SpecPhotTables/
+SpecPhotDir               /net/bootes//export/data1/Workspace/SpecPhotTables/
 PhotPrefix                PLANCK ; WMAP7 ;WMAP7
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
-FileWithFilterNames       ./input/Filter_Sloan.txt
+FileWithFilterNames       ./input/Filter_Names.txt
 
 
 %-------------------------------------------------
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir		  ./MergerTrees/MR/
-OutputDir		  ./output
+SimulationDir	        /net/bootes//export/data1/Millennium/modified_trees/
 
-LastDarkMatterSnapShot    63
-Hashbits                  8    ;needed for Peano hilbert key output with the GALAXYTREE option
+LastDarkMatterSnapShot  63
+Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
-MinGalOutputMass	  0.01
+OutputDir               /net/bootes/scratch-ssd/SAM/test3/MR/
+%OutputDir               /net/bootes/scratch2/SAM/test95/MR/
+MinGalOutputMass	0.0
 
-MaxMemSize                6000
+MaxMemSize              6000
 
 %-------------------------------------------------
 %----- Scaling options  ------------
 %-------------------------------------------------
 
-ScalePos		  0.960558
-ScaleMass           	  1.11671
+ScalePos            0.960558
+ScaleMass           1.11671
  
 %------------------------------------------
 %----- Cosmological paramters ------------
 %------------------------------------------
 
 %NEW COSMOLOGY: PLANCK1
-BaryonFrac		      0.155
-Sigma8          	      0.826
-FileWithZList   	      ./input/zlists/zlist_planck_MR.txt 
-PartMass        	      0.0961104    ;should be changed according to the dark matter simulation being used ;new
-BoxSize         	      480.279  
-Omega           	      0.315 
-OmegaLambda     	      0.685 
-Hubble_h        	      0.673
+BaryonFrac      0.155
+Sigma8          0.826
+FileWithZList   ./input/zlists/zlist_planck_MR.txt 
+PartMass        0.0961104    ;should be changed according to the dark matter simulation being used ;new
+BoxSize         480.279  
+Omega           0.315 
+OmegaLambda     0.685 
+Hubble_h        0.673
 
 %ORIGINAL COSMOLOGY: WMAP1
 FileWithZList_OriginalCosm    ./input/zlists/zlist_MR.txt
@@ -65,27 +66,27 @@ Hubble_h_OriginalCosm         0.73
 %----------------------------------------------------
 
 
-ReionizationModel	          0  ;%*0 -- Okamoto 2008 (Guo2010)                                      
+ReionizationModel          	      0	 ;%*0 -- Okamoto 2008 (Guo2010)                                      
                                       % 1 -- Gnedin reionization (Delucia2007) 
-		                      % 2 -- no reionization 
+				                      % 2 -- no reionization 
 
 									  %option 0 is different if H2_AND_RINGS is ON or OFF (if on we only follow the mass in each ring (and therefore rd) if ON we follow each component of the spin (x,y & z))
-DiskRadiusModel                   0  ;%*0 -- use each component (stellar or gas) spin to get disk radius                                      
+DiskRadiusModel          	      0	 ;%*0 -- use each component (stellar or gas) spin to get disk radius                                      
                                       % 1 -- use halo spin parameter to get disk scale radius, 
                                       % 2 -- disk_radius = Gal[p].Rvir / 10.0, 
 
 %Fu 2010 - StarFormationModel 4, H2FractionRecipe 0 & 2
 %Fu 2010 - StarFormationModel 3 & 4 with SFRtdyn 0 + StarFormationModel 2 & 4 with SFRtdyn 1, H2FractionRecipe 0 & 2
-H2FractionRecipe                  0  ;%choice of H2 mass fraction recipe 
+H2FractionRecipe                  0 ;choice of H2 mass fraction recipe 
                                       %*0 -- KMT 2009 (introduced in FU2010, updated in Fu2013 (eq 11 and 12))
                                       % 1 -- Krumholz et al. 2008
                                       % 2 -- pressure recipe, Blitz & Rosolowsky 2006 (introduced in FU2010)
 
 StarFormationModel                4  ;%*0 -- Croton2006, Delucia2007, Guo2011, Henriques2015 
-				      % 1 -- Alternative SF law
-		                      % 2 -- if OPT += -DH2_AND_RINGS: Kennicutt law (set SFRtdyn=1 to have the old SF law, eq 3 in Fu2012)
-				      % 3 -- if OPT += -DH2_AND_RINGS: introduce in Fu2012 - Krumholz et al. 2009 (eq. 6)
-				      %*4 -- if OPT += -DH2_AND_RINGS: introduce in Fu2010 - BIGIEL only one mode now (eq 33)
+				                      % 1 -- Alternative SF law
+		                              % 2 -- if OPT += -DH2_AND_RINGS: Kennicutt law (set SFRtdyn=1 to have the old SF law, eq 3 in Fu2012)
+									  % 3 -- if OPT += -DH2_AND_RINGS: introduce in Fu2012 - Krumholz et al. 2009 (eq. 6)
+									  %*4 -- if OPT += -DH2_AND_RINGS: introduce in Fu2010 - BIGIEL only one mode now (eq 33)
 		
 SFRtdyn                           1  ;*0 -- constant SFE
                                      % 1 -- SFE inversly proportional to tdyn: introduced in Fu2012 ((eq. 3 and 5))		
@@ -201,7 +202,7 @@ SfrBurstSlope               0.64      ;(eq. S33 in Doc)
 %-------------------------------------------
 % BH growth and AGN feedback
 %-------------------------------------------
-AgnEfficiency               0.001   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
+AgnEfficiency               0.0015   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
 BlackHoleGrowthRate	        0.06   ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                                              
 BlackHoleCutoffVelocity     2000.     ;(eq. S23 in Henriques15)
 BlackHoleSeedMass           1e-7     ;10^10 Msun/h
@@ -210,7 +211,7 @@ BlackHoleSeedMass           1e-7     ;10^10 Msun/h
 %% SN feedback
 %-------------------------------------------
 % Heating of cold gas to hot
-FeedbackReheatingEpsilon    1.4    ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
+FeedbackReheatingEpsilon    1.6    ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
 %FeedbackReheatingEpsilon    100.0     ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
 ReheatPreVelocity	        250.     ;(eq. S19 in Henriques15) Normalization of SN feedback
 ReheatSlope		            1.6     ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
