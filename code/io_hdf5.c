@@ -83,7 +83,7 @@ for(ifield=0;ifield<nfields;ifield++){
 	field_type=H5T_NATIVE_FLOAT;
 	output_size=sizeof(float);
 	dims[field_ndim]=sizeof(struct DustRates)/output_size;
-	dimProd*=dims[field_ndim]
+	dimProd*=dims[field_ndim];
 	field_ndim++;
     }
 #endif
