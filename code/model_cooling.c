@@ -286,27 +286,25 @@ void do_AGN_heating(double dt, int ngal, int FOF_centralgal)
 	  AGNheating = AGNcoeff * AGNaccreted;
 
 
-	  if(AGNRadioModeModel == 0 && Gal[p].Type==1)
-	    {
+	  if(AGNRadioModeModel == 0 && Gal[p].Type==1) {
 	      dist=separation_gal(p,FOF_centralgal);
-	      if(dist < Gal[FOF_centralgal].Rvir)
-		{
-		  if(AGNheating > (Gal[p].CoolingGas + Gal[FOF_centralgal].CoolingGas))
-		    {
+	      if(dist < Gal[FOF_centralgal].Rvir) {
+		  if (AGNheating > (Gal[p].CoolingGas + Gal[FOF_centralgal].CoolingGas)) {
 		      AGNheating = (Gal[p].CoolingGas + Gal[FOF_centralgal].CoolingGas);
 		      AGNaccreted = (Gal[p].CoolingGas + Gal[FOF_centralgal].CoolingGas) / AGNcoeff;
-		    }
-		  if(AGNheating > Gal[p].CoolingGas)
-		    LeftOverEnergy = AGNheating - Gal[p].CoolingGas;
-		}
-	    }
+		  }
+		  if (AGNheating > Gal[p].CoolingGas) LeftOverEnergy = AGNheating - Gal[p].CoolingGas;
+	      }
+	      // Added the following line in as a fix because without it Type 1 BHs can grow ridiculously large.
+	      // In actual fact, this whole section needs fully documenting as it is not clear what is supposed to be going on.
+	      else 
+		  if (AGNheating > Gal[p].CoolingGas) AGNaccreted = Gal[p].CoolingGas / AGNcoeff;
+	  }
 	  else
-	    if(AGNheating > Gal[p].CoolingGas)
-	      AGNaccreted = Gal[p].CoolingGas / AGNcoeff;
+	      if (AGNheating > Gal[p].CoolingGas) AGNaccreted = Gal[p].CoolingGas / AGNcoeff;
 
 	  /* limit heating to cooling rate */
-	  if(AGNheating > Gal[p].CoolingGas)
-	    AGNheating = Gal[p].CoolingGas;
+	  if (AGNheating > Gal[p].CoolingGas) AGNheating = Gal[p].CoolingGas;
 
 	  mass_checks(p,"cooling.c",__LINE__);
 
