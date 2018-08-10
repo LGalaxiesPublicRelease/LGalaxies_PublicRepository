@@ -197,7 +197,7 @@ void add_infall_to_hot(double infallingGas) {
 
 #if defined(GUO10) || defined(GUO13) || defined(HENRIQUES13)
   if(infallingGas<0. && -1.*infallingGas>Gal[FOF_centralgal].HotGas)
-    infallingGas=Gal[FOF_centralgal].HotGas;
+    infallingGas=-Gal[FOF_centralgal].HotGas;
 #endif
   Gal[FOF_centralgal].HotGas += infallingGas;
 
