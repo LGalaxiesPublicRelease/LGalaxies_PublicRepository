@@ -236,6 +236,8 @@ void add_infall_to_hot(double infallingGas) {
 	    // Then transfer the rest of M_infalltoHot from the Ejected component to the HotGas component, if required
 	    if (M_infalltoHot > 0.) {
 		fraction = M_infalltoHot/Gal[FOF_centralgal].EjectedMass;
+		// Fix for rounding error whilst still catching genuine bugs.
+		if (fraction>1. && fraction<1.0001) fraction=1.;
 		transfer_material(FOF_centralgal,"HotGas",FOF_centralgal,"EjectedMass",fraction,"add_infall_to_hot", __LINE__);
 	    }
 	} else {  // infallingGas <= 0.
