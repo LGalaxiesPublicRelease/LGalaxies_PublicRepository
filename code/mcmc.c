@@ -30,7 +30,7 @@
  *        proposed parameters.
  *
  * To run you need to chose input_mcmc_wmp7.par and select the
- * desired sample of halos. Also choose the correct desired_output_snap
+ * desired sample of haloes. Also choose the correct desired_output_snap
  * according to the redshift at which you want to run the constraints.
  * Turn on MCMC on the Makefile.
  *
