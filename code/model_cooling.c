@@ -86,10 +86,7 @@ void compute_cooling(int p, double dt, int ngal)
      * probably always HotRadius*/
     Vvir = Gal[p].Vvir;
     Rvir = Gal[p].Rvir;
-    
-      
     tcool = Rvir / Vvir; // tcool = t_dynamical = Rvir/Vvir
-
 
     /* temp -> Temperature of the Gas in Kelvin, obtained from
      * hidrostatic equilibrium KT=0.5*mu_p*(Vc)^2 assuming Vvir~Vc */
