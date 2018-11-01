@@ -1,3 +1,7 @@
+%create symbolic links to other directories if you don't ahve then in the code folder
+%e.g. ln -s /export/Workspace/SpecPhotTables/ ./SpecPhotTables
+%ln -sfn to change the link
+
 %------------------------------------------
 %----- SA model output files --------------
 %------------------------------------------
@@ -23,7 +27,7 @@ MCMCStartingParFile              ./input/MCMC_inputs/MCMCStartingPar.txt
 MCMCObsConstraints               ./input/MCMC_inputs/MCMCObsConstraints.txt
 MCMCWeightsObsConstraints        ./input/MCMC_inputs/MCMCWeightsObsConstraints.txt
 ObsConstraintsDir                ./MCMC/ObsConstraints/
-CosmologyTablesDir               /galformod/scratch/bmh20/Workspace/CosmologyTables/
+CosmologyTablesDir               ./CosmologyTables/
 MCMCHaloModelDir                 ./MCMC/HaloModel/
 
 ChainLength                      1000   ;length of MCMC chains
@@ -50,7 +54,7 @@ MCMCTreeSampleFile               56000         ;Sample of Dark Matter trees
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	          /galformod/scratch/bmh20/Workspace/MergerTrees/
+SimulationDir	          ./MergerTrees_MCMC/
 
 LastDarkMatterSnapShot    63
 Hashbits                  8     ; needed for Peano hilbert key output with the GALAXYTREE option

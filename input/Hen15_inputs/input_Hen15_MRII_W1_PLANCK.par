@@ -50,7 +50,7 @@ ScaleMass           1.11671
 BaryonFrac      0.155
 Sigma8          0.826
 FileWithZList   ./input/zlists/zlist_planck_MRII.txt 
-PartMass        0.000768884   ;should be changed according to the dark matter simul/gpfs/data/dph6bmh/dph6bmh/ation being used ;new
+PartMass        0.000768884   ;should be changed according to the dark matter simulation being used ;new
 BoxSize         96.0558  
 Omega           0.315 
 OmegaLambda     0.685 

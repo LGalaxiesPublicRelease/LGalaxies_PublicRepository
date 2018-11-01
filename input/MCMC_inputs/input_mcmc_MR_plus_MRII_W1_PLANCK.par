@@ -1,3 +1,7 @@
+%create symbolic links to other directories if you don't ahve then in the code folder
+%e.g. ln -s /export/Workspace/SpecPhotTables/ ./SpecPhotTables
+%ln -sfn to change the link
+
 %------------------------------------------
 %----- SA model output files --------------
 %------------------------------------------
@@ -8,7 +12,7 @@ FileWithOutputRedshifts   ./input/MCMC_inputs/desired_output_redshifts_for_MCMC.
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               /export/data1/Workspace/SpecPhotTables/
+SpecPhotDir              ./SpecPhotTables/
 PhotPrefix                PLANCK ; WMAP7
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/MCMC_inputs/Filter_Names_for_MCMC.txt
@@ -23,7 +27,7 @@ MCMCStartingParFile              ./input/MCMC_inputs/MCMCStartingPar.txt
 MCMCObsConstraints               ./input/MCMC_inputs/MCMCObsConstraints.txt
 MCMCWeightsObsConstraints        ./input/MCMC_inputs/MCMCWeightsObsConstraints.txt
 ObsConstraintsDir                ./MCMC/ObsConstraints/
-CosmologyTablesDir               /galformod/scratch/bmh20/Workspace/CosmologyTables/
+CosmologyTablesDir               ./CosmologyTables/
 MCMCHaloModelDir                 ./MCMC/HaloModel/ 
                                      
 ChainLength                      1  ;length of MCMC chains
@@ -53,13 +57,13 @@ MCMCTreeSampleFile               210070       ;Sample of Dark Matter trees
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	             /export/data1/Workspace/MergerTrees/
+SimulationDir	             ./MergerTrees_MCMC/
 LastDarkMatterSnapShot_MR    63
 LastDarkMatterSnapShot_MRII  67
 Hashbits                     8     ; needed for Peano hilbert key output with the GALAXYTREE option
 OutputDir                    ./output/
 
-MaxMemSize                20000
+MaxMemSize                14000
 
 MachineTimeOut            71.5        ;time out for the computer cluster in hours
 JobSubmitCommand          qsub        ;qsub or bsub
@@ -129,16 +133,17 @@ StarFormationModel                4  ;%*0 -- Croton2006, Delucia2007, Guo2011, H
 				                      % 1 -- Alternative SF law
 		                              % 2 -- Availavle if OPT += -DH2_AND_RINGS: sf proportional to tdyn (as in previous models but with rings)
 									  % 3 -- Availavle if OPT += -DH2_AND_RINGS: Krumholz et al. 2009
-									  %*4 -- Availavle if OPT += -DH2_AND_RINGS: Fu et al. 2010
+									  %*4 -- Availavle if OPT += -DH2_AND_RINGS: Fu et al. 2010 (BIGEIL)
 		
-SFRtdyn                           0  ;*0 -- constant SFE
+SFRtdyn                           1  ;*0 -- constant SFE
                                      % 1 -- SFE inversly proportional to tdyn		
 
 FeedbackReheatingModel            0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
-				                      % 1 -- Alternative reheating model
-				                      
-FeedbackReheatingDeansityScaling  1  ;%*0 -- no scaling with local density
-				                      % 1 -- Scaling with local density as eq. 35 in Fu2010				                      	
+				                      % 1 -- Alternative reheating model	
+
+FeedbackReheatingDeansityScaling  0  ;%*0 -- no scaling with local density
+				     	              % 1 -- Scaling with local density as eq. 35 in Fu2010
+
 	
 FeedbackEjectionModel             0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
                                       % 1 -- Constant velocity model
@@ -216,9 +221,11 @@ Reionization_zr	            7.0  ;using the analytic fit of Kravtsov et al. 2004
 %-------------------------------------------
 %% Star formation
 %-------------------------------------------
-%0.2
-SfrEfficiency               0.3     ;(eq. S14 in Doc)
-SfrColdCrit                 0.24     ;(eq. S15 in Doc) In units of 10^10Msun 
+%1e7 larger when using tdyn tdyn 
+SfrEfficiency               0.04     ;(eq. S14 in Doc)
+SfrColdCrit                 0.14     ;(eq. S15 in Doc) In units of 10^10Msun  
+									   % there is a factor 3 difference between the eq in Hen15 and in Guo10 because 
+									   % one use Rgas and the other Rgas,d
 
 Clumpingfactor              1.0      ;clumping factor in Krumholz' H2 fraction recipe 
 									   % Our values in rings are an average over the ring. The clumping factor

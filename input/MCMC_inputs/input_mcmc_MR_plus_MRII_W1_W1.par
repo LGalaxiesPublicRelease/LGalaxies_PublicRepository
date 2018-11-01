@@ -1,3 +1,7 @@
+%create symbolic links to other directories if you don't ahve then in the code folder
+%e.g. ln -s /export/Workspace/SpecPhotTables/ ./SpecPhotTables
+%ln -sfn to change the link
+
 %------------------------------------------
 %----- SA model output files --------------
 %------------------------------------------
@@ -8,7 +12,7 @@ FileWithOutputRedshifts   ./input/MCMC_inputs/desired_output_redshifts_for_MCMC.
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               /net/bootes/export/data1/Workspace/SpecPhotTables/
+SpecPhotDir               ./SpecPhotTables/
 PhotPrefix                WMAP1 ; WMAP7
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/MCMC_inputs/Filter_Names_for_MCMC.txt
@@ -22,7 +26,7 @@ MCMCStartingParFile              ./input/MCMC_inputs/MCMCStartingPar.txt
 MCMCObsConstraints               ./input/MCMC_inputs/MCMCObsConstraints.txt
 MCMCWeightsObsConstraints        ./input/MCMC_inputs/MCMCWeightsObsConstraints.txt
 ObsConstraintsDir                ./MCMC/ObsConstraints/
-CosmologyTablesDir               /galformod/scratch/bmh20/Workspace/CosmologyTables/
+CosmologyTablesDir               ./CosmologyTables/
 MCMCHaloModelDir                 ./MCMC/HaloModel/
 
 ChainLength                      1   ;length of MCMC chains
@@ -50,7 +54,7 @@ MCMCTreeSampleFile               230070       ;Sample of Dark Matter trees
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	             /net/bootes/export/data1/Workspace/MergerTrees/
+SimulationDir	             ./MergerTrees_MCMC/
 LastDarkMatterSnapShot_MR    63
 LastDarkMatterSnapShot_MRII  67
 Hashbits                     8     ; needed for Peano hilbert key output with the GALAXYTREE option

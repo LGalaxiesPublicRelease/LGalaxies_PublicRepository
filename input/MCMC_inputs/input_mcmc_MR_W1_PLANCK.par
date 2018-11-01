@@ -1,3 +1,7 @@
+%create symbolic links to other directories if you don't ahve then in the code folder
+%e.g. ln -s /export/Workspace/SpecPhotTables/ ./SpecPhotTables
+%ln -sfn to change the links
+
 %------------------------------------------
 %----- SA model output files --------------
 %------------------------------------------
@@ -8,7 +12,7 @@ FileWithOutputRedshifts   ./input/MCMC_inputs/desired_output_redshifts_for_MCMC.
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               /net/bootes/export/data1/Workspace/SpecPhotTables/
+SpecPhotDir               ./SpecPhotTables/
 PhotPrefix                PLANCK ; WMAP7
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/MCMC_inputs/Filter_Names_for_MCMC.txt
@@ -23,7 +27,7 @@ MCMCStartingParFile              ./input/MCMC_inputs/MCMCStartingPar.txt
 MCMCObsConstraints               ./input/MCMC_inputs/MCMCObsConstraints.txt
 MCMCWeightsObsConstraints        ./input/MCMC_inputs/MCMCWeightsObsConstraints.txt
 ObsConstraintsDir                ./MCMC/ObsConstraints/
-CosmologyTablesDir               /net/bootes/export/data1/Workspace/CosmologyTables/
+CosmologyTablesDir               ./CosmologyTables/
 MCMCHaloModelDir                 ./MCMC/HaloModel/
 
 ChainLength                      1   ;length of MCMC chains
@@ -51,7 +55,7 @@ MCMCTreeSampleFile               2100         ;Sample of Dark Matter trees
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	          /net/bootes/export/data1/Workspace/MergerTrees/
+SimulationDir	          ./MergerTrees_MCMC/
 
 LastDarkMatterSnapShot    63
 Hashbits                  8     ; needed for Peano hilbert key output with the GALAXYTREE option
@@ -108,7 +112,7 @@ DiskRadiusModel          	      0	 ;%*0 -- use each component (stellar or gas) s
                                       % 1 -- use halo spin parameter to get disk scale radius, 
                                       % 2 -- disk_radius = Gal[p].Rvir / 10.0, 
                                       
-H2FractionRecipe                  2 ;choice of H2 mass fraction recipe 
+H2FractionRecipe                  0 ;choice of H2 mass fraction recipe 
                                       %*0 -- KMT 2009
                                       % 1 -- Krumholz et al. 2008
                                       % 2 -- pressure recipe
@@ -119,7 +123,7 @@ StarFormationModel                4  ;%*0 -- Croton2006, Delucia2007, Guo2011, H
 									  % 3 -- Availavle if OPT += -DH2_AND_RINGS: Krumholz et al. 2009
 									  %*4 -- Availavle if OPT += -DH2_AND_RINGS: Fu et al. 2010 (BIGEIL)
 		
-SFRtdyn                           0  ;*0 -- constant SFE
+SFRtdyn                           1  ;*0 -- constant SFE
                                      % 1 -- SFE inversly proportional to tdyn		
 		            
 FeedbackReheatingModel            0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
@@ -216,7 +220,7 @@ Clumpingfactor              1.0      ;clumping factor in Krumholz' H2 fraction r
 									   % instead concentrated in spiral arms
 									   % for KMT09 H2 formation there is an additional pow((1.0/metallicityr),0.7)
 									   % dependence to solve issues with low-metallicity galaxies
-GasInflowVel                300.      ;km/s/Mpc
+GasInflowVel                700.      ;km/s/Mpc
 
 %-------------------------------------------
 %% Star formation bursts during mergers
@@ -251,13 +255,13 @@ ReIncorporationFactor	    2.0e+10  ;(eq. S22 in Henriques15) Fraction of ejected
 %-------------------------------------------
 %% IMF
 %-------------------------------------------
-Yield			            0.053    ;(section 1.9 in Henriques15) Fraction of metals instantaneously returned after SF (produced by short lived massive stars)
+Yield			            0.046    ;(section 1.9 in Henriques15) Fraction of metals instantaneously returned after SF (produced by short lived massive stars)
 RecycleFraction             0.43     ;(section 1.6 in Henriques15) Fraction of SF mass instantaneously recycled back to cold - IMF dependent
 
 %-------------------------------------------
 %% Mergers
 %-------------------------------------------
-ThreshMajorMerger	        0.75      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
+ThreshMajorMerger	        0.3      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
 MergerTimeMultiplier        2.0      ;(eq. S32 in Henriques15) Adjust the dynamical friction merging time
 
 %-------------------------------------------
@@ -309,7 +313,7 @@ ReincVelocitypower          3.26
 %-------------------------------------------
 %%Fraction of Metals returned to Hot component
 %-------------------------------------------
-FracZtoHot                  0.0 
+FracZtoHot                  0.7  
 
 %-------------------------------------------
 %%Hot Gas stripping

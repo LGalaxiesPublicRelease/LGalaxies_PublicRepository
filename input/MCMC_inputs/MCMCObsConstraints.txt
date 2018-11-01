@@ -27,7 +27,7 @@ BulgeFraction                        maxlike           1                  0     
 ColdGasMassFunction                  chi_sq            0                  0                  0                  0                  0
 ColdGasFractionvsStellarMass         maxlike           0                  0                  0                  0                  0
 StellarMetallicityvsStellarMass      maxlike           1                  0                  0                  0                  0    
-ColdGasMetallicityvsStellarMass      maxlike           1                  0                  0                  0                  0    
+ColdGasMetallicityvsStellarMass      maxlike           1                  0                  0                  1                  0    
 SFRF                                 chi_sq            0                  0                  0                  0                  0
 SFRD                                 chi_sq            0                  0                  0                  0                  0
 BlackHoleBulgeMass                   binomial          1                  0                  0                  0                  0
