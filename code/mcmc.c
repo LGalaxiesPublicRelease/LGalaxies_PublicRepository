@@ -22,7 +22,6 @@
 #define EPS 1.2e-7
 
 
-
 /**@file mcmc.c
  * @brief This is the main mcmc file, it reads in observational tests,
  *        starts a chain, proposes new sets of parameters, calls the
