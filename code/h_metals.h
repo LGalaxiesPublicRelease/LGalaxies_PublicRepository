@@ -16,7 +16,7 @@
    or
       DiskMassElements.arr[0]
 */
-union elements
+/*union elements
 {
     struct elements_str str;
     float arr[NUM_ELEMENTS];
