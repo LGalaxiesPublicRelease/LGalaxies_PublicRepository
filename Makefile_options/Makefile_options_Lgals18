@@ -1,36 +1,29 @@
-# Option to switch on MCMC parameter hunting
-OPT += -DMCMC 
-ifeq (MCMC,$(findstring MCMC,$(OPT)))
-#OPT += -DMR_PLUS_MRII
-OBJS  += ./code/mcmc.o
-OBJS  += ./code/mcmc_likelihood.o 
-OBJS  += ./code/save_mcmc.o 
-INCL  += ./code/mcmc_vars.h 
-INCL  += ./code/mcmc_proto.h
-
-#OPT += -DHALOMODEL
-#to compute correlation functions for MCMC
-ifeq (HALOMODEL,$(findstring HALOMODEL,$(OPT)))
-OBJS  += ./code/mcmc_halomodel.o
-OBJS  += ./code/mcmc_mpfit.o
-INCL  += ./code/mcmc_halomodel.h
-INCL  += ./code/mcmc_mpfit.h
-endif
-endif # end MCMC
+# List of Makefile options
+# see also routine "check_options" in main.c...
 
 # Options that control output
 OPT += -DOVERWRITE_OUTPUT    # overwrite output files if they exist (otherwise will quit without overwriting)
-OPT += -DNOUT=5              # sets the number of output snaps. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
+OPT += -DNOUT=28             # This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
+#OPT += -DNOUT=1             # This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
 
 OPT += -DPARALLEL
-#OPT += -DGALAXYTREE          #  This will enable output of full galaxy merger trees, implicitly sets NOUT to maximum value
-OPT += -DLOADIDS             # Load dbids files
-OPT += -DPRELOAD_TREES       # this will load all the trees of a file in memory, and cache them (useful for MCMC)
+#OPT += -DGALAXYTREE         # This will enable output of full galaxy merger trees, implicitly sets NOUT to maximum value
+#OPT += -DLOADIDS            # Load dbids files
+OPT += -DUPDATETYPETWO       # This updates the positions of type 2 galaxies when the galaxies are written to file (requires aux files to be read)
+OPT += -DTRACK_MASSGROWTH_CHANNELS
+#OPT += -DTRACK_SFH_MASSGROWTH_CHANNELS
 
 # To run with different dark matter simulation
-#OPT += -DMRII      
 
-OPT += -DFAST_TESTING_MODE
+#OPT += -DMRII      
+#OPT += -DCATERPILLAR
+
+
+#OPT += -DFAST_TESTING_MODE
+#OPT += -DCHECK_SFH_AND_RINGS
+#OPT += -DCHECK_NO_NEGATIVE_VALUES
+#OPT += -DTRACK_SPLASHBACKS
+#OPT += -DTRACK_NMERGERS
 
 # predefined some models (to be run with the corresponding input_***.par file)
 #OPT += -DGUO10
@@ -38,7 +31,14 @@ OPT += -DFAST_TESTING_MODE
 #OPT += -DHENRIQUES13
 #OPT += -DHENRIQUES15
 
-OPT += -DUPDATETYPETWO       # This updates the positions of type 2 galaxies when the galaxies are written to file (requires aux files to be read)
+# Debugging options
+#OPT+= -DDEBUG
+#OPT+= -DDEBUG_PRINT
+#OPT+= -DDEBUG_PRINT_TO_CONSOLE
+#OPT+= -DDEBUG_READ_AND_CHECK
+#OPT += -DMASS_CHECKS         # Check for mass conservation at every stage of galaxy building
+
+# Options that control the SA model
 OPT += -DDISRUPTION          # Instantaneously and completely disrupt type 2s
 #OPT += -DHT09_DISRUPTION     # Henriques & Thomas 2009 tidal disruption of stars in satellite galaxies 
 ifeq (HT09_DISRUPTION,$(findstring HT09_DISRUPTION,$(OPT)))
@@ -116,7 +116,7 @@ ifeq (CB07,$(findstring CB07,$(OPT)))
 OPT += -DNMAG=1221
 endif
 else #IF NOT DEFINED FULL_SPECTRA
-OPT += -DNMAG=5
+OPT += -DNMAG=40
 endif #FULL_SPECTRA
 
 endif ### COMPUTE_SPECPHOT_PROPERTIES
@@ -127,7 +127,7 @@ ifeq (DETAILED_METALS_AND_MASS_RETURN,$(findstring DETAILED_METALS_AND_MASS_RETU
 
 
 OPT += -DFEEDBACK_COUPLED_WITH_MASS_RETURN
-#OPT += -DINDIVIDUAL_ELEMENTS
+OPT += -DINDIVIDUAL_ELEMENTS
 ifeq (INDIVIDUAL_ELEMENTS,$(findstring INDIVIDUAL_ELEMENTS,$(OPT)))
 OPT += -DOUTPUT_ELEMENTS
 #OPT += -DMAINELEMENTS  #If on, then only H, He, O, Mg and Fe are tracked. If off, all elements are tracked (H,He,C,N,O,Ne,Mg,Si,S,Ca,Fe)
