@@ -180,7 +180,7 @@ Reionization_zr	            7.0  ;using the analytic fit of Kravtsov et al. 2004
 %-------------------------------------------
 %% Star formation
 %-------------------------------------------
-
+%1e7 larger when using tdyn tdyn 
 %SfrEfficiency               0.02    ;(eq. S14 in Doc)
 SfrEfficiency               4.0e-9    ;(eq. S14 in Doc)
 
