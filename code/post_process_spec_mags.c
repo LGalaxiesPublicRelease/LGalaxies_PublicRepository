@@ -29,13 +29,13 @@ void post_process_spec_mags(struct GALAXY_OUTPUT *o)
 void post_process_spec_mags(struct GALAXY_OUTPUT *o, struct SFH_BIN *sfh_bins)
 #endif
 {
-  int ll, nlum;
+  int ll, nlum, ii;
 #ifdef H2_AND_RINGS
   int jj;
 #endif
   double diskmass, bulgemass, icmmass, diskmetals, bulgemetals, icmmetals, previous_lum;
   double age;
-  double Zg;
+  double Zg=0.;
   //double Small_Age_bin_yr=1.e11, Small_Age_bin, bin_size;
   //double Small_Age_bin_yr=1.e6;
   double Small_Age_bin, bin_size;
@@ -49,14 +49,19 @@ void post_process_spec_mags(struct GALAXY_OUTPUT *o, struct SFH_BIN *sfh_bins)
       sfh_bins[ll].sfh_DiskMass = o->sfh_DiskMass[ll];
       sfh_bins[ll].sfh_BulgeMass = o->sfh_BulgeMass[ll];
       sfh_bins[ll].sfh_ICM = o->sfh_ICM[ll];
-      sfh_bins[ll].sfh_MetalsDiskMass = o->sfh_MetalsDiskMass[ll];
-      sfh_bins[ll].sfh_MetalsBulgeMass = o->sfh_MetalsBulgeMass[ll];
-      sfh_bins[ll].sfh_MetalsICM = o->sfh_MetalsICM[ll];
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	{
+	  sfh_bins[ll].sfh_MetalsDiskMass[ii] = o->sfh_MetalsDiskMass[ll][ii];
+	  sfh_bins[ll].sfh_MetalsBulgeMass[ii] = o->sfh_MetalsBulgeMass[ll][ii];
+	  sfh_bins[ll].sfh_MetalsICM[ii] = o->sfh_MetalsICM[ll][ii];
+	}
     }
 #endif
 
   //used for dust corrections
-  Zg = metals_total(o->MetalsColdGas)/o->ColdGas/0.02;
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+    Zg += o->MetalsColdGas[ii];
+  Zg /= o->ColdGas/0.02;
 
   o->rbandWeightAge=0.0;
 
@@ -137,9 +142,20 @@ void post_process_spec_mags(struct GALAXY_OUTPUT *o, struct SFH_BIN *sfh_bins)
 	      icmmass = sfh_bins[ll].sfh_ICM* 0.1 / (Hubble_h * (1-RecycleFraction) ) / N_AgeBin;
 #endif //DETAILED_METALS_AND_MASS_RETURN
 
-	      diskmetals = metals_total(sfh_bins[ll].sfh_MetalsDiskMass) / sfh_bins[ll].sfh_DiskMass;
-	      bulgemetals = metals_total(sfh_bins[ll].sfh_MetalsBulgeMass) / sfh_bins[ll].sfh_BulgeMass;
-	      icmmetals = metals_total(sfh_bins[ll].sfh_MetalsICM) / sfh_bins[ll].sfh_ICM;
+	      diskmetals = 0.;
+	      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+		diskmetals += sfh_bins[ll].sfh_MetalsDiskMass[ii];
+	      diskmetals /= sfh_bins[ll].sfh_DiskMass;
+
+	      bulgemetals = 0.;
+	      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+		bulgemetals += sfh_bins[ll].sfh_MetalsBulgeMass[ii];
+	      bulgemetals /= sfh_bins[ll].sfh_BulgeMass;
+
+	      icmmetals = 0.;
+	      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+		icmmetals += sfh_bins[ll].sfh_MetalsICM[ii];
+	      icmmetals /= sfh_bins[ll].sfh_ICM;
 
 	      // time = (o->sfh_time[ll])* Hubble_h/UnitTime_in_years;
 	      //time = (SFH_t[o->SnapNum][0][ll]+SFH_dt[o->SnapNum][0][ll]/2.-NumToTime(o->SnapNum));

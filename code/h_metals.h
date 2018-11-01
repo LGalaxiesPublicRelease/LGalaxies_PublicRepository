@@ -1,32 +1,5 @@
 #ifdef DETAILED_METALS_AND_MASS_RETURN
-struct metals
-{
-  float type1a;
-  float type2;
-  float agb;
-};
-
-#ifdef INDIVIDUAL_ELEMENTS
-//Number of chemical elements tracked:
-#ifndef MAINELEMENTS
-#define NUM_ELEMENTS 11 //All: [H][He][C][N][O][Ne][Mg][Si][S][Ca][Fe]
-struct elements_str
-{
-    float H;
-    float He;
-    float C;
-    float N;
-    float O;
-    float Ne;
-    float Mg;
-    float Si;
-    float S;
-    float Ca;
-    float Fe;
-};
-#else
-#define NUM_ELEMENTS 5 //Only [H][He][O][Mg][Fe]
-struct elements_str
+/*struct elements_str
 {
     float H;
     float He;
@@ -47,6 +20,18 @@ union elements
 {
     struct elements_str str;
     float arr[NUM_ELEMENTS];
-};
+};*/
+#define NUM_METAL_CHANNELS 3
+
+#ifdef INDIVIDUAL_ELEMENTS
+//Number of chemical elements tracked:
+#ifndef MAINELEMENTS
+#define NUM_ELEMENTS 11 //All: [H][He][C][N][O][Ne][Mg][Si][S][Ca][Fe]
+#else
+#define NUM_ELEMENTS 5 //Only [H][He][O][Mg][Fe]
+#endif
 #endif //INDIVIDUAL_ELEMENTS
+
+#else
+#define NUM_METAL_CHANNELS 1
 #endif //DETAILED_METALS_AND_MASS_RETURN

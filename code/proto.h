@@ -129,7 +129,11 @@ void update_h2fraction(int p);
 void gas_inflow(int p, double time);
 //only used if H2FractionRecipe=1
 void init_H2fraction_KMT08(void);
+void init_H2fraction_KMT09(void);
 double update_H2fraction_KMT08(double logsigmah, double metallicity);
+double update_H2fraction_KMT09(double logsigmah, double metallicity);
+void init_jump_index_H2Fraction(void);
+int get_jump_index_H2Fraction(double sigmaH);
 #endif
 
 void add_galaxies_together(int t, int p, double deltaT);
@@ -337,13 +341,11 @@ void create_sfh_bins();
 void write_sfh_bins();
 #endif //STAR_FORMATION_HISTORY
 
-#ifdef DETAILED_METALS_AND_MASS_RETURN
-struct metals metals_add(struct metals m1, 
-	       struct metals m2,
-	       double fraction);
-struct metals metals_init();
-void metals_print(char s[],struct metals m);
-double metals_total(struct metals m);
+/*#ifdef DETAILED_METALS_AND_MASS_RETURN
+union metals_arr metals_add(union metals_arr m1, union metals_arr m2, double fraction);
+union metals_arr metals_init();
+void metals_print(char s[],union metals_arr m);
+double metals_total(union metals_arr m);
 #else
 double metals_add(double m1,
 		 double m2,
@@ -351,7 +353,7 @@ double metals_add(double m1,
 double metals_init();
 void metals_print(char s[], double m);
 double metals_total(double m);
-#endif
+#endif*/
 
 #ifdef DETAILED_METALS_AND_MASS_RETURN
 //in read_yield_tables.c:

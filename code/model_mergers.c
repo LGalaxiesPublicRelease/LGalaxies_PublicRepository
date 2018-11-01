@@ -254,7 +254,7 @@ void deal_with_galaxy_merger(int p, double time, double deltaT, int nstep)
    * All star formation happens in the disk, but in a major merger this will then
    * be destroyed with everything moved to the bulge. */
   if (StarBurstModel == 0)
-  {
+    {
       frac=collisional_starburst_recipe(mass_ratio, merger_centralgal, FOF_centralgal, time, deltaT);
       bulgesize_from_merger(mass_ratio,merger_centralgal,p, MstarCentral, MbulgeCentral, MgasCentral,
       			    MstarSat, MbulgeSat, MgasSat, frac, RgasCentral, RStellarDiskCentral, RgasSat, RStellarDiskSat);
@@ -272,7 +272,7 @@ void deal_with_galaxy_merger(int p, double time, double deltaT, int nstep)
   //according to a Jaffe profile and after the new bulge size has been calculated
 
   double rb=Gal[merger_centralgal].BulgeSize, TotMassInsideRings=0.,fractionRings[RNUM];
-  int jj;
+  int jj, ii;
 
   if(rb>0.)
     TotMassInsideRings=(RingRadius[RNUM-1]/rb)/(1+RingRadius[RNUM-1]/rb);
@@ -291,14 +291,15 @@ void deal_with_galaxy_merger(int p, double time, double deltaT, int nstep)
   for(jj=0;jj<RNUM;jj++)
     {
       Gal[merger_centralgal].BulgeMassRings[jj] = fractionRings[jj]*Gal[merger_centralgal].BulgeMass;
-      Gal[merger_centralgal].MetalsBulgeMassRings[jj]=metals_add(metals_init(),Gal[merger_centralgal].MetalsBulgeMass,fractionRings[jj]);
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	Gal[merger_centralgal].MetalsBulgeMassRings[jj][ii] = (Gal[merger_centralgal].MetalsBulgeMass[ii] * fractionRings[jj]);
+
 #ifdef INDIVIDUAL_ELEMENTS
       int kk;
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[merger_centralgal].BulgeMassRings_elements[jj][kk] = fractionRings[jj]*Gal[merger_centralgal].BulgeMass_elements[kk];
 #endif
 #ifdef STAR_FORMATION_HISTORY
-      int ii;
       for (ii=0; ii<=Gal[p].sfh_ibin; ii++)
 	Gal[merger_centralgal].sfh_BulgeMassRings[jj][ii] = fractionRings[jj]*Gal[merger_centralgal].sfh_BulgeMass[ii];
 #endif
@@ -330,7 +331,7 @@ void deal_with_galaxy_merger(int p, double time, double deltaT, int nstep)
  if ((Gal[merger_centralgal].BulgeMass > 1.e-6 && Gal[merger_centralgal].BulgeSize == 0.0) ||
       (Gal[merger_centralgal].BulgeMass == 0.0 && Gal[merger_centralgal].BulgeSize >1.e-6)) {
   	char sbuf[1000];
-  	sprintf(sbuf, "2 central: stellarmass %f, bulgemass %f, bulgesize %f, stellardisksize %f \n",
+  	sprintf(sbuf, "2 central: stellarmass %0.10f, bulgemass %0.10f, bulgesize %0.10f, stellardisksize %0.10f \n",
   			(Gal[merger_centralgal].DiskMass+Gal[merger_centralgal].BulgeMass),Gal[merger_centralgal].BulgeMass,
   			Gal[merger_centralgal].BulgeSize, Gal[merger_centralgal].DiskRadius);
   	terminate(sbuf);
@@ -498,7 +499,9 @@ void add_galaxies_together(int t, int p, double deltaT)
   for(j=0; j<RNUM; j++)
     {
       Gal[p].ColdGasRings[j]=Gal[p].ColdGas*fractionRings[j];
-      Gal[p].MetalsColdGasRings[j]=metals_add(metals_init(),Gal[p].MetalsColdGas,fractionRings[j]);
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+     	Gal[p].MetalsColdGasRings[j][ii] = (Gal[p].MetalsColdGas[ii] * fractionRings[j]);
+
 #ifdef DETAILED_METALS_AND_MASS_RETURN
 #ifdef INDIVIDUAL_ELEMENTS //All: [H][He][Cb][N][O][Ne][Mg][Si][S][Ca][Fe] or //Only [H][He][O][Mg][Fe]
       int kk;
@@ -664,7 +667,7 @@ double collisional_starburst_recipe(double mass_ratio, int merger_centralgal, in
   double mstars, eburst, Ggas;
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
 #ifndef POST_PROCESS_MAGS
-  double metallicitySF;
+  double metallicitySF=0.;
 #endif
 #endif
 #ifdef H2_AND_RINGS
@@ -711,7 +714,10 @@ double collisional_starburst_recipe(double mass_ratio, int merger_centralgal, in
    * Used to update luminosities below */
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
 #ifndef POST_PROCESS_MAGS
-  metallicitySF = metals_total(Gal[merger_centralgal].MetalsColdGas)/Gal[merger_centralgal].ColdGas;
+  int ii;
+  for(ii=0,ii<NUM_METAL_CHANNELS;ii++)
+    metallicitySF += Gal[merger_centralgal].MetalsColdGas[ii]
+  metallicitySF /= Gal[merger_centralgal].ColdGas;
 #endif
 #endif
 
@@ -727,8 +733,8 @@ double collisional_starburst_recipe(double mass_ratio, int merger_centralgal, in
 #endif //FEEDBACK_COUPLED_WITH_MASS_RETURN
   /*double halospinpar=sqrt(Halo[GaRStellarDiskSatl[t].HaloNr].Spin[0] * Halo[Gal[t].HaloNr].Spin[0] +
 			   Halo[Gal[t].HaloNr].Spin[1] * Halo[Gal[t].HaloNr].Spin[1] +
-			   Halo[Gal[t].HaloNr].Spin[2] * Halo[Gal[t].HaloNr].Spin[2] );
-
+			   Halo[Gal[t].HaloNr].Spin[2] * Halo[Gal[t].HaloNr].Spin[2] );*/
+ 
   /*  update the star formation rate */
   Gal[merger_centralgal].Sfr += mstars / deltaT;
 #ifdef H2_AND_RINGS

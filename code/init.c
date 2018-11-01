@@ -151,17 +151,22 @@ void init(void)
 #ifdef H2_AND_RINGS
   //for(i=0; i<RNUM; i++) RingRadius[i]= pow(1.2,i-3)/1000;
   int i;
-  for(i=0; i<RNUM; i++)
-   // {
-   // RingRadius[i]= 0.0001*pow(3.0,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
+  for(i=0; i<RNUM; i++)  
     RingRadius[i]= 0.01*pow(2.0,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
-    //RingRadius[i]= 0.44*pow(1.5,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
-   // RingRadius[i]= 0.1*pow(1.7,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
-    //RingRadius[i]= 0.2*pow(1.6,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
-    //RingRadius[i]= 0.34*pow(1.52,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
-  // printf("%0.3f\n,",RingRadius[i]*1000.);
-   // }
-//exit(0);
+  //RingRadius[i]= 0.44*pow(1.5,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
+    // RingRadius[i]= 0.1*pow(1.7,i+1)/1000.; //The radii of the rings. (in unit of Mpc/h)
+
+
+  for(i=0; i<RNUM; i++)
+    {
+      if(i==0)
+	RingArea[i] = M_PI*RingRadius[i]*RingRadius[i];
+      else
+	RingArea[i] = M_PI*(RingRadius[i]*RingRadius[i]-RingRadius[i-1]*RingRadius[i-1]);
+      /* with conversion factor from 10^10 M_sun/h / (Mpc/h)^2 to (M_sun/pc^2) -> *(1.e10/h)/(1.e6/h*1.e6/h)*/
+      InverseRingArea[i] = 0.01 * Hubble_h / (RingArea[i]*WARM_PHASE_FACTOR);
+    }
+
 #endif
 
   read_cooling_functions();
@@ -200,8 +205,15 @@ void init(void)
 #endif
 
 #ifdef H2_AND_RINGS
-  init_H2fraction_KMT08();
+  if(H2FractionRecipe==0)
+    init_H2fraction_KMT09();
+  else
+    if(H2FractionRecipe==1)
+      init_H2fraction_KMT08();
+
+  init_jump_index_H2Fraction();
 #endif
+
 
 #ifdef ALL_SKY_LIGHTCONE
   int nstep, nr, i;
@@ -559,36 +571,6 @@ void read_file_nrs(void)
 #endif
 
 
-#ifdef H2_AND_RINGS
-void init_H2fraction_KMT08()
-{
-  FILE *fd;
-  char buf[200], sbuf[1000];
-  int i=LENSIGMAH,j=LENZ;
-
-  sprintf ( buf, "%s/%s","./H2frac","mh2frac.dat" );
-  if ( ! ( fd = fopen ( buf, "r" ) ) )
-    {
-      sprintf(sbuf, "can't open file `%s'\n", buf);
-      terminate(sbuf);
-    }
-
-  for ( i = 0; i < LENSIGMAH; i++ )
-    {
-      for ( j=0;j<LENZ;j++ )
-	{
-	  fscanf ( fd,"%lf",&h2frac[i][j] );
-	}
-
-    }
-
-  fclose ( fd );
-#ifdef PARALLEL
-  if ( ThisTask == 0 )
-#endif
-    printf ( "molecular fractions read.\n\n" );
-}
-#endif
 
 
 void read_reionization(void)

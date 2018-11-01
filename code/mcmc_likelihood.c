@@ -81,7 +81,6 @@ double get_likelihood()
   //variables for the bulge-blackhole mass test using binomial
   double binblackholeup[2]={0.0,0.0}, binblackholedown[2]={0.0,0.0};
   double final_probability, redshift_probability, current_probability;
-  double prob_SMF_z0;
   int ObsNr, kk, snap, ii;
   double color_UV, color_VJ;
   //OBSERVATIONAL CUT
@@ -158,10 +157,12 @@ double get_likelihood()
 
 
 		      if(strcmp(MCMC_Obs[ObsNr].Name,"ColdGasMassFunction")==0)
-			if(MCMC_GAL[kk].HI[snap]>0.)
-			  PropertyToBin[kk] = log10(MCMC_GAL[kk].HI[snap]);
-			else
-			  PropertyToBin[kk] = -99.0;
+			{
+			  if(MCMC_GAL[kk].HI[snap]>0.)
+			    PropertyToBin[kk] = log10(MCMC_GAL[kk].HI[snap]);
+			  else
+			    PropertyToBin[kk] = -99.0;
+			}
 
 		      if(strcmp(MCMC_Obs[ObsNr].Name,"SFRF")==0)
 			PropertyToBin[kk] = log10(MCMC_GAL[kk].Sfr[snap]);
@@ -259,7 +260,6 @@ double get_likelihood()
 
 		  int kk;
 		  double xarray[TotMCMCGals[snap]];
-
 		  for(kk=0;kk<TotMCMCGals[snap];kk++)
 		    {
 		      PropertyToBin[kk] = 0.;
@@ -327,10 +327,11 @@ double get_likelihood()
 			    PropertyToBin[kk] = MCMC_GAL[kk].ColdGas[snap]/MCMC_GAL[kk].StellarMass[snap];
 
 			    if(strcmp(MCMC_Obs[ObsNr].Name,"StellarMetallicityvsStellarMass")==0)
-			      PropertyToBin[kk] = MCMC_GAL[kk].MetalsStellarMass[snap]/MCMC_GAL[kk].StellarMass[snap]/0.02;
+			      PropertyToBin[kk] = MCMC_GAL[kk].MetalsStellarMass[snap]/MCMC_GAL[kk].StellarMass[snap]/0.0134;
 
 			    if(strcmp(MCMC_Obs[ObsNr].Name,"ColdGasMetallicityvsStellarMass")==0)
-			      if(MCMC_GAL[kk].Type[snap]<2)
+			      //if(MCMC_GAL[kk].GasMetallicity[snap]>0. && (MCMC_GAL[kk].Sfr[snap]*1.e9 / MCMC_GAL[kk].StellarMass[snap] > 0.01) && MCMC_GAL[kk].Type[snap]<2 )
+				if(MCMC_GAL[kk].GasMetallicity[snap]>0. && MCMC_GAL[kk].Type[snap]<2 )
 				PropertyToBin[kk] = MCMC_GAL[kk].GasMetallicity[snap];
 
 			    if(strcmp(MCMC_Obs[ObsNr].Name,"SizevsStellarMass_Discs")==0)
@@ -594,7 +595,7 @@ void bin_property_vs_xarray_discrete(int ObsNr, double *BinnedProperty, int snap
  * the median is calculated*/
 void bin_property_vs_xarray_continuous(int ObsNr, double *BinnedProperty, int snap, double *PropertyToBin, double *xarray)
 {
-  int ii, jj, kk, Nsamples=1, Ngals;
+  int ii, jj, kk, Nsamples=1000, Ngals;
   double SumWeight, aux_SumWeight, aux_xarray;
   double WeightThisBin_long[TotMCMCGals[snap]], PropertyToBinThisBin_long[TotMCMCGals[snap]];
   double Aux_BinnedProperty[Nbins[snap][ObsNr]];
@@ -611,7 +612,6 @@ void bin_property_vs_xarray_continuous(int ObsNr, double *BinnedProperty, int sn
       //the mass function is computed for Nsamples convolved with random errors
       for(jj = 0; jj < Nsamples; jj++)
 	{
-
 	  Ngals=0;
 	  SumWeight=0.;
 	  for(kk=0;kk<TotMCMCGals[snap];kk++)

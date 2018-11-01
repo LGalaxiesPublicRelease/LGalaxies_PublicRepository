@@ -450,7 +450,7 @@ double stellar_half_light_radius(struct GALAXY_OUTPUT *o)
  *         elements to zero. */
 void init_galaxy(int p, int halonr)
 {
-  int j, outputbin;
+  int j, ii, outputbin;
 
   /* make explicitly sure that the whole galaxy structure has defined 0 values */
   memset(&Gal[p], 0, sizeof(struct GALAXY));
@@ -535,32 +535,41 @@ void init_galaxy(int p, int halonr)
   Gal[p].DisruptOn = 0;
 #endif
 
-  Gal[p].MetalsColdGas = metals_init();
-  Gal[p].MetalsDiskMass = metals_init();
-  Gal[p].MetalsBulgeMass = metals_init();
-  Gal[p].MetalsHotGas = metals_init();
-  //Gal[p].MetalsReheatedGas = metals_init();
-  Gal[p].MetalsEjectedMass = metals_init();
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+    {
+      Gal[p].MetalsColdGas[ii] = 0.;
+      Gal[p].MetalsDiskMass[ii] = 0.;
+      Gal[p].MetalsBulgeMass[ii] = 0.;
+      Gal[p].MetalsHotGas[ii]  =0.;
+      //Gal[p].MetalsReheatedGas[ii] = 0.;
+      Gal[p].MetalsEjectedMass[ii] = 0.;
 #ifdef EXCESS_MASS
-  Gal[p].MetalsExcessMass = metals_init();
+      Gal[p].MetalsExcessMass[ii] = 0.;
 #endif
-  Gal[p].MetalsICM = metals_init();
+      Gal[p].MetalsICM[ii] = 0.;
 #ifdef METALS_SELF
-  Gal[p].MetalsHotGasSelf = metals_init();
+      Gal[p].MetalsHotGasSelf[ii] = 0.;
 #endif
-
+    }
 
 #ifdef H2_AND_RINGS
   for(j=0;j<RNUM;j++)
     {
       Gal[p].ColdGasRings[j]=0.0;
-      Gal[p].MetalsColdGasRings[j]=metals_init();
       Gal[p].DiskMassRings[j]=0.0;
-      Gal[p].MetalsDiskMassRings[j]=metals_init();
 #ifdef RINGS_IN_BULGES
       Gal[p].BulgeMassRings[j]=0.0;
-      Gal[p].MetalsBulgeMassRings[j]=metals_init();
 #endif
+
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	{
+	  Gal[p].MetalsColdGasRings[j][ii] = 0.;
+	  Gal[p].MetalsDiskMassRings[j][ii] = 0.;
+#ifdef RINGS_IN_BULGES
+	  Gal[p].MetalsBulgeMassRings[j][ii] = 0.;
+#endif
+	}
+
     }
 #endif
   //inclination defined as the angle between galaxy spin and the z-axis
@@ -1144,7 +1153,7 @@ void update_type_1(int ngal, int halonr, int prog)
  *  dark matter halo and its position cannot be tracked. */
 void update_type_2(int ngal,int halonr, int prog,int mostmassive)
 {
-
+  int ii;
   mass_checks(ngal,"model_misc.c",__LINE__);
 
  if(Gal[ngal].Type != 2)
@@ -1167,7 +1176,8 @@ void update_type_2(int ngal,int halonr, int prog,int mostmassive)
   if(HotGasOnType2Galaxies==0)
     {
       Gal[ngal].HotGas = 0.0;
-      Gal[ngal].MetalsHotGas=metals_init();
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	Gal[ngal].MetalsHotGas[ii] = 0.;
 #ifdef DETAILED_METALS_AND_MASS_RETURN
 #ifdef INDIVIDUAL_ELEMENTS
       int kk;
@@ -1211,26 +1221,23 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
    *
    */
   float Mass;
+  float Metals[NUM_METAL_CHANNELS];
+  int mm;
 #ifdef DETAILED_METALS_AND_MASS_RETURN
-  struct metals Metals;
 #ifdef INDIVIDUAL_ELEMENTS
   int kk;
   float Yield[NUM_ELEMENTS];
 #endif
-#else
-  float Metals;
 #endif //DETAILED_METALS_AND_MASS_RETURN
 
 #ifdef STAR_FORMATION_HISTORY
   int ii;
   float sfh_Mass[SFH_NBIN];
+  float sfh_Metals[SFH_NBIN][NUM_METAL_CHANNELS];
 #ifdef DETAILED_METALS_AND_MASS_RETURN
-  struct metals sfh_Metals[SFH_NBIN];
  #ifdef INDIVIDUAL_ELEMENTS
   float sfh_Elements[SFH_NBIN][NUM_ELEMENTS];
  #endif
-#else
-   float sfh_Metals[SFH_NBIN];
 #endif
 #endif
 
@@ -1253,7 +1260,7 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
 #endif //COMPUTE_SPECPHOT_PROPERTIES
 
   /* Sanity checks */
-  if (fraction > 1.000001) {//1.000001
+  if (fraction > 1.0001) {//1.000001
       char sbuf[1000];
       sprintf(sbuf, "\nparent call from: %s, line %d \ntransfer_material: fraction>1\nfraction = %.11f\nFrom '%s' to '%s\n",
 	      call_function, call_line, fraction,cq, cp);
@@ -1297,7 +1304,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
 
   //Initialize arrays to contain mass to transfer
   Mass = 0.;
-  Metals=metals_add(metals_init(),metals_init(),1.);
+  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+    Metals[mm]=0.;
 #ifdef INDIVIDUAL_ELEMENTS
   for(kk=0;kk<NUM_ELEMENTS;kk++)
     Yield[kk] = 0.;
@@ -1307,7 +1315,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   for (ii=0; ii<=Gal[q].sfh_ibin; ii++)
     {
       sfh_Mass[ii]=0.;
-      sfh_Metals[ii]=metals_add(metals_init(),metals_init(),1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	sfh_Metals[ii][mm]=0.;
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	sfh_Elements[ii][kk]=0.;
@@ -1346,7 +1355,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   if (strcmp(cq,"ColdGas")==0)
     {
       Mass = fraction*Gal[q].ColdGas;
-      Metals = metals_add(metals_init(),Gal[q].MetalsColdGas,fraction);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Metals[mm] = (Gal[q].MetalsColdGas[mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Yield[kk] = Gal[q].ColdGas_elements[kk]*fraction;
@@ -1356,14 +1366,16 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
       for (ii=0; ii<Gal[q].sfh_ibin; ii++)
 	{
 	  sfh_Mass[ii]=0.;
-	  sfh_Metals[ii]=metals_add(metals_init(),Gal[q].sfh_MetalsDiskMass[ii],0);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    sfh_Metals[ii][mm]=0.;
 #ifdef INDIVIDUAL_ELEMENTS
 	  for(kk=0;kk<NUM_ELEMENTS;kk++)
 	    sfh_Elements[ii][kk]=Gal[q].sfh_DiskMass_elements[ii][kk]*0.;
 #endif
 	}
       sfh_Mass[Gal[q].sfh_ibin]=fraction*Gal[q].ColdGas;
-      sfh_Metals[Gal[q].sfh_ibin]=metals_add(metals_init(),Gal[q].MetalsColdGas,fraction);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	sfh_Metals[Gal[q].sfh_ibin][mm]=(Gal[q].MetalsColdGas[mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	sfh_Elements[Gal[q].sfh_ibin][kk]=Gal[q].ColdGas_elements[kk]*fraction;
@@ -1374,7 +1386,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cq,"HotGas")==0)
     {
       Mass=fraction*Gal[q].HotGas;
-      Metals = metals_add(metals_init(),Gal[q].MetalsHotGas,fraction);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Metals[mm] = (Gal[q].MetalsHotGas[mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Yield[kk] = Gal[q].HotGas_elements[kk]*fraction;
@@ -1384,7 +1397,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   /*else if (strcmp(cq,"ReheatedGas")==0)
       {
         Mass=fraction*Gal[q].ReheatedGas;
-        Metals = metals_add(metals_init(),Gal[q].MetalsReheatedGas,fraction);
+        for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Metals[mm] = (Gal[q].MetalsReheatedGas[mm] * fraction);
   #ifdef INDIVIDUAL_ELEMENTS
         for(kk=0;kk<NUM_ELEMENTS;kk++)
   	Yield[kk] = Gal[q].ReheatedGas_elements[kk]*fraction;
@@ -1394,7 +1408,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cq,"EjectedMass")==0)
     {
       Mass=fraction*Gal[q].EjectedMass;
-      Metals = metals_add(metals_init(),Gal[q].MetalsEjectedMass,fraction);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Metals[mm] = (Gal[q].MetalsEjectedMass[mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Yield[kk] = Gal[q].EjectedMass_elements[kk]*fraction;
@@ -1405,7 +1420,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cq,"ExcessMass")==0)
     {
       Mass=fraction*Gal[q].ExcessMass;
-      Metals = metals_add(metals_init(),Gal[q].MetalsExcessMass,fraction);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Metals[mm] = (Gal[q].MetalsExcessMass[mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Yield[kk] = Gal[q].ExcessMass_elements[kk]*fraction;
@@ -1416,7 +1432,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cq,"DiskMass")==0)
     {
       Mass = fraction*Gal[q].DiskMass;
-      Metals=metals_add(metals_init(),Gal[q].MetalsDiskMass,fraction);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Metals[mm]=(Gal[q].MetalsDiskMass[mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Yield[kk] = Gal[q].DiskMass_elements[kk]*fraction;
@@ -1426,7 +1443,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
       for (ii=0; ii<=Gal[q].sfh_ibin; ii++)
 	{
 	  sfh_Mass[ii]=fraction*Gal[q].sfh_DiskMass[ii];
-	  sfh_Metals[ii]=metals_add(metals_init(),Gal[q].sfh_MetalsDiskMass[ii],fraction);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    sfh_Metals[ii][mm]=(Gal[q].sfh_MetalsDiskMass[ii][mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
 	  for(kk=0;kk<NUM_ELEMENTS;kk++)
 	    sfh_Elements[ii][kk]=Gal[q].sfh_DiskMass_elements[ii][kk]*fraction;
@@ -1460,8 +1478,9 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
 
   else if (strcmp(cq,"BulgeMass")==0)
     {
-      Mass=fraction*Gal[q].BulgeMass;
-      Metals=metals_add(metals_init(),Gal[q].MetalsBulgeMass,fraction);
+      Mass = fraction*Gal[q].BulgeMass;
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Metals[mm] = (Gal[q].MetalsBulgeMass[mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Yield[kk] = Gal[q].BulgeMass_elements[kk]*fraction;
@@ -1471,7 +1490,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
       for (ii=0; ii<=Gal[q].sfh_ibin; ii++)
 	{
 	  sfh_Mass[ii]=fraction*Gal[q].sfh_BulgeMass[ii];
-	  sfh_Metals[ii]=metals_add(metals_init(),Gal[q].sfh_MetalsBulgeMass[ii],fraction);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    sfh_Metals[ii][mm] = (Gal[q].sfh_MetalsBulgeMass[ii][mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
 	  for(kk=0;kk<NUM_ELEMENTS;kk++)
 	    sfh_Elements[ii][kk]=Gal[q].sfh_BulgeMass_elements[ii][kk]*fraction;
@@ -1506,7 +1526,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cq,"ICM")==0)
     {
       Mass=fraction*Gal[q].ICM;
-      Metals=metals_add(metals_init(),Gal[q].MetalsICM,fraction);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Metals[mm]=(Gal[q].MetalsICM[mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Yield[kk] = Gal[q].ICM_elements[kk]*fraction;
@@ -1516,7 +1537,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
       for (ii=0; ii<=Gal[q].sfh_ibin; ii++)
 	{
 	  sfh_Mass[ii]=fraction*Gal[q].sfh_ICM[ii];
-	  sfh_Metals[ii]=metals_add(metals_init(),Gal[q].sfh_MetalsICM[ii],fraction);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    sfh_Metals[ii][mm]=(Gal[q].sfh_MetalsICM[ii][mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
 	  for(kk=0;kk<NUM_ELEMENTS;kk++)
 	    sfh_Elements[ii][kk]=Gal[q].sfh_ICM_elements[ii][kk]*fraction;
@@ -1570,7 +1592,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   if (strcmp(cp,"ColdGas")==0)
     {
       Gal[p].ColdGas += Mass;
-      Gal[p].MetalsColdGas = metals_add(Gal[p].MetalsColdGas,Metals,1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[p].MetalsColdGas[mm] += Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[p].ColdGas_elements[kk] += Yield[kk];
@@ -1580,20 +1603,27 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cp,"HotGas")==0)
     {
       Gal[p].HotGas += Mass;
-      Gal[p].MetalsHotGas = metals_add(Gal[p].MetalsHotGas,Metals,1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[p].MetalsHotGas[mm] += Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[p].HotGas_elements[kk] += Yield[kk];
 #endif
 #ifdef METALS_SELF
-      if (p==q) Gal[p].MetalsHotGasSelf = metals_add(Gal[p].MetalsHotGasSelf,Metals,1.);
+
+      if (p==q)
+	{
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    Gal[p].MetalsHotGasSelf[mm] += Metals[mm];
+	}
 #endif
     }
 
   /*else if (strcmp(cp,"ReheatedGas")==0)
       {
         Gal[p].ReheatedGas += Mass;
-        Gal[p].MetalsReheatedGas = metals_add(Gal[p].MetalsReheatedGas,Metals,1.);
+        for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+        Gal[p].MetalsReheatedGas[mm] += Metals[mm];
   #ifdef INDIVIDUAL_ELEMENTS
         for(kk=0;kk<NUM_ELEMENTS;kk++)
   	Gal[p].ReheatedGas_elements[kk] += Yield[kk];
@@ -1604,7 +1634,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cp,"EjectedMass")==0)
     {
       Gal[p].EjectedMass += Mass;
-      Gal[p].MetalsEjectedMass = metals_add(Gal[p].MetalsEjectedMass,Metals,1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[p].MetalsEjectedMass[mm] += Metals[mm];
   #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[p].EjectedMass_elements[kk] += Yield[kk];
@@ -1615,7 +1646,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cp,"ExcessMass")==0)
     {
       Gal[p].ExcessMass += Mass;
-      Gal[p].MetalsExcessMass = metals_add(Gal[p].MetalsExcessMass,Metals,1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[p].MetalsExcessMass[mm] += Metals[mm];
   #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[p].ExcessMass_elements[kk] += Yield[kk];
@@ -1626,7 +1658,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cp,"BlackHoleMass")==0)
     {
       Gal[p].BlackHoleMass += Mass;
-  /*    Gal[p].MetalsBlackHoleMass = metals_add(Gal[p].MetalsBlackHoleMass,Metals,1.);
+   /*    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+    *  Gal[p].MetalsBlackHoleMass[mm] += Metals[mm];
   #ifdef INDIVIDUAL_ELEMENTS
   for(kk=0;kk<NUM_ELEMENTS;kk++)
       Gal[p].BlackHoleMass_elements[kk] += Yield[kk];
@@ -1636,7 +1669,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cp,"BlackHoleGas")==0)
     {
       Gal[p].BlackHoleGas += Mass;
-   /*   Gal[p].MetalsBlackHoleGas = metals_add(Gal[p].MetalsBlackHoleGas,Metals,1.);
+   /*   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+    * Gal[p].MetalsBlackHoleGas[mm] += Metals[mm];
   #ifdef INDIVIDUAL_ELEMENTS
   for(kk=0;kk<NUM_ELEMENTS;kk++)
         Gal[p].BlackHoleMass_elements[kk] += Yield[kk];
@@ -1646,7 +1680,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cp,"DiskMass")==0)
     {
       Gal[p].DiskMass += Mass;
-      Gal[p].MetalsDiskMass=metals_add(Gal[p].MetalsDiskMass,Metals,1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[p].MetalsDiskMass[mm] += Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[p].DiskMass_elements[kk] += Yield[kk];
@@ -1656,7 +1691,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
       for (ii=0; ii<=Gal[p].sfh_ibin; ii++)
 	{
 	  Gal[p].sfh_DiskMass[ii] += sfh_Mass[ii];
-	  Gal[p].sfh_MetalsDiskMass[ii]=metals_add(Gal[p].sfh_MetalsDiskMass[ii],sfh_Metals[ii],1.);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    Gal[p].sfh_MetalsDiskMass[ii][mm] += sfh_Metals[ii][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	  for(kk=0;kk<NUM_ELEMENTS;kk++)
 	    Gal[p].sfh_DiskMass_elements[ii][kk] += sfh_Elements[ii][kk];
@@ -1691,7 +1727,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cp,"BulgeMass")==0)
     {
       Gal[p].BulgeMass += Mass;
-      Gal[p].MetalsBulgeMass=metals_add(Gal[p].MetalsBulgeMass,Metals,1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[p].MetalsBulgeMass[mm] += Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[p].BulgeMass_elements[kk] += Yield[kk];
@@ -1701,7 +1738,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
       for (ii=0; ii<=Gal[p].sfh_ibin; ii++)
 	{
 	  Gal[p].sfh_BulgeMass[ii] += sfh_Mass[ii];
-	  Gal[p].sfh_MetalsBulgeMass[ii]=metals_add(Gal[p].sfh_MetalsBulgeMass[ii],sfh_Metals[ii],1.);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    Gal[p].sfh_MetalsBulgeMass[ii][mm] += sfh_Metals[ii][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	  for(kk=0;kk<NUM_ELEMENTS;kk++)
 	    Gal[p].sfh_BulgeMass_elements[ii][kk] += sfh_Elements[ii][kk];
@@ -1742,7 +1780,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cp,"ICM")==0)
     {
       Gal[p].ICM += Mass;
-      Gal[p].MetalsICM=metals_add(Gal[p].MetalsICM,Metals,1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[p].MetalsICM[mm] += Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[p].ICM_elements[kk] += Yield[kk];
@@ -1752,7 +1791,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
       for (ii=0; ii<=Gal[p].sfh_ibin; ii++)
 	{
 	  Gal[p].sfh_ICM[ii] += sfh_Mass[ii];
-	  Gal[p].sfh_MetalsICM[ii]=metals_add(Gal[p].sfh_MetalsICM[ii],sfh_Metals[ii],1.);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    Gal[p].sfh_MetalsICM[ii][mm] += sfh_Metals[ii][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	  for(kk=0;kk<NUM_ELEMENTS;kk++)
 	    Gal[p].sfh_ICM_elements[ii][kk] += sfh_Elements[ii][kk];
@@ -1806,7 +1846,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   if (strcmp(cq,"ColdGas")==0)
     {
       Gal[q].ColdGas -= Mass;
-      Gal[q].MetalsColdGas = metals_add(Gal[q].MetalsColdGas,Metals,-1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[q].MetalsColdGas[mm] -= Metals[mm];
  #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[q].ColdGas_elements[kk] -= Yield[kk];
@@ -1816,20 +1857,23 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cq,"HotGas")==0)
     {
       Gal[q].HotGas -= Mass;
-      Gal[q].MetalsHotGas = metals_add(Gal[q].MetalsHotGas,Metals,-1.);
+	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+      Gal[q].MetalsHotGas[mm] -= Metals[mm];
  #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[q].HotGas_elements[kk] -= Yield[kk];
  #endif
  #ifdef METALS_SELF
-      Gal[q].MetalsHotGasSelf = metals_add(Gal[q].MetalsHotGasSelf,Metals,-1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[q].MetalsHotGasSelf[mm] -= Metals[mm];
  #endif
     }
 
   /*else if (strcmp(cq,"ReheatedGas")==0)
       {
         Gal[q].ReheatedGas -= Mass;
-        Gal[q].MetalsReheatedGas = metals_add(Gal[q].MetalsReheatedGas,Metals,-1.);
+        for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	  Gal[q].MetalsReheatedGas[mm] -= Metals[mm];
    #ifdef INDIVIDUAL_ELEMENTS
         for(kk=0;kk<NUM_ELEMENTS;kk++)
   	Gal[q].ReheatedGas_elements[kk] -= Yield[kk];
@@ -1839,7 +1883,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cq,"EjectedMass")==0)
     {
       Gal[q].EjectedMass -= Mass;
-      Gal[q].MetalsEjectedMass = metals_add(Gal[q].MetalsEjectedMass,Metals,-1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[q].MetalsEjectedMass[mm] -= Metals[mm];
  #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[q].EjectedMass_elements[kk] -= Yield[kk];
@@ -1850,7 +1895,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cq,"ExcessMass")==0)
     {
       Gal[q].ExcessMass -= Mass;
-      Gal[q].MetalsExcessMass = metals_add(Gal[q].MetalsExcessMass,Metals,-1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[q].MetalsExcessMass[mm] -= Metals[mm];
  #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[q].ExcessMass_elements[kk] -= Yield[kk];
@@ -1861,7 +1907,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cq,"DiskMass")==0)
     {
       Gal[q].DiskMass -= Mass;
-      Gal[q].MetalsDiskMass=metals_add(Gal[q].MetalsDiskMass,Metals,-1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[q].MetalsDiskMass[mm] -= Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[q].DiskMass_elements[kk] -= Yield[kk];
@@ -1871,7 +1918,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
       for (ii=0; ii<=Gal[q].sfh_ibin; ii++)
 	{
 	  Gal[q].sfh_DiskMass[ii] -= sfh_Mass[ii];
-	  Gal[q].sfh_MetalsDiskMass[ii]=metals_add(Gal[q].sfh_MetalsDiskMass[ii],sfh_Metals[ii],-1.);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    Gal[q].sfh_MetalsDiskMass[ii][mm] -= sfh_Metals[ii][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	  for(kk=0;kk<NUM_ELEMENTS;kk++)
 	    Gal[q].sfh_DiskMass_elements[ii][kk] -= sfh_Elements[ii][kk];
@@ -1906,7 +1954,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cq,"BulgeMass")==0)
     {
       Gal[q].BulgeMass -= Mass;
-      Gal[q].MetalsBulgeMass=metals_add(Gal[q].MetalsBulgeMass,Metals,-1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[q].MetalsBulgeMass[mm] -= Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[q].BulgeMass_elements[kk] -= Yield[kk];
@@ -1916,7 +1965,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
       for (ii=0; ii<=Gal[q].sfh_ibin; ii++)
 	{
 	  Gal[q].sfh_BulgeMass[ii] -= sfh_Mass[ii];
-	  Gal[q].sfh_MetalsBulgeMass[ii]=metals_add(Gal[q].sfh_MetalsBulgeMass[ii],sfh_Metals[ii],-1.);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    Gal[q].sfh_MetalsBulgeMass[ii][mm] -= sfh_Metals[ii][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	  for(kk=0;kk<NUM_ELEMENTS;kk++)
 	    Gal[q].sfh_BulgeMass_elements[ii][kk] -= sfh_Elements[ii][kk];
@@ -1957,7 +2007,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   else if (strcmp(cq,"ICM")==0)
     {
       Gal[q].ICM -= Mass;
-      Gal[q].MetalsICM=metals_add(Gal[q].MetalsICM,Metals,-1.);
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[q].MetalsICM[mm] -= Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[q].ICM_elements[kk] -= Yield[kk];
@@ -1967,7 +2018,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
       for (ii=0; ii<=Gal[q].sfh_ibin; ii++)
 	{
 	  Gal[q].sfh_ICM[ii] -= sfh_Mass[ii];
-	  Gal[q].sfh_MetalsICM[ii]=metals_add(Gal[q].sfh_MetalsICM[ii],sfh_Metals[ii],-1.);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    Gal[q].sfh_MetalsICM[ii][mm] -= sfh_Metals[ii][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	  for(kk=0;kk<NUM_ELEMENTS;kk++)
 	    Gal[q].sfh_ICM_elements[ii][kk] -= sfh_Elements[ii][kk];
@@ -2027,7 +2079,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   //galaxy p cold gas
  /* if(Gal[p].ColdGas == 0.)
     {
-      Gal[p].MetalsColdGas = metals_init();
+     for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+      Gal[p].MetalsColdGas[mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[p].ColdGas_elements[kk] = 0.;
@@ -2036,7 +2089,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   //galaxy q cold gas
   if(Gal[q].ColdGas == 0.)
     {
-      Gal[q].MetalsColdGas = metals_init();
+     for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+      Gal[q].MetalsColdGas[mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[q].ColdGas_elements[kk] = 0.;
@@ -2046,7 +2100,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   //galaxy p disk mass
   if(Gal[p].DiskMass == 0.)
     {
-      Gal[p].MetalsDiskMass = metals_init();
+     for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+      Gal[p].MetalsDiskMass[mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[p].DiskMass_elements[kk] = 0.;
@@ -2055,7 +2110,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   //galaxy q disk mass
   if(Gal[q].DiskMass == 0.)
     {
-      Gal[q].MetalsDiskMass = metals_init();
+     for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+      Gal[q].MetalsDiskMass[mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[q].DiskMass_elements[kk] = 0.;
@@ -2065,7 +2121,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   //galaxy p bulge mass
   if(Gal[p].BulgeMass == 0.)
     {
-      Gal[p].MetalsBulgeMass = metals_init();
+     for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+      Gal[p].MetalsBulgeMass[mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[p].BulgeMass_elements[kk] = 0.;
@@ -2074,7 +2131,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   //galaxy p bulge mass
   if(Gal[q].BulgeMass == 0.)
     {
-      Gal[q].MetalsBulgeMass = metals_init();
+     for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+      Gal[q].MetalsBulgeMass[mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[q].BulgeMass_elements[kk] = 0.;
@@ -2093,7 +2151,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
 	if(Gal[p].DiskMass == 0.)
 	  {
 	    Gal[p].sfh_DiskMass[ii] = 0.;
-	    Gal[p].sfh_MetalsDiskMass[ii]=metals_init();
+	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	      Gal[p].sfh_MetalsDiskMass[ii][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
 	    for(kk=0;kk<NUM_ELEMENTS;kk++)
 	      Gal[p].sfh_DiskMass_elements[ii][kk]=0.;
@@ -2103,7 +2162,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
 	if(Gal[q].DiskMass == 0.)
 	  {
 	    Gal[q].sfh_DiskMass[ii] = 0.;
-	    Gal[q].sfh_MetalsDiskMass[ii]=metals_init();
+	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	      Gal[q].sfh_MetalsDiskMass[ii][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
 	    for(kk=0;kk<NUM_ELEMENTS;kk++)
 	      Gal[q].sfh_DiskMass_elements[ii][kk]=0.;
@@ -2114,7 +2174,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
 	if(Gal[p].BulgeMass == 0.)
 	  {
 	    Gal[p].sfh_BulgeMass[ii] = 0.;
-	    Gal[p].sfh_MetalsBulgeMass[ii]=metals_init();
+	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	      Gal[p].sfh_MetalsBulgeMass[ii][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
 	    for(kk=0;kk<NUM_ELEMENTS;kk++)
 	      Gal[p].sfh_BulgeMass_elements[ii][kk]=0.;
@@ -2124,7 +2185,8 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
 	if(Gal[q].BulgeMass == 0.)
 	  {
 	    Gal[q].sfh_BulgeMass[ii] = 0.;
-	    Gal[q].sfh_MetalsBulgeMass[ii]=metals_init();
+	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	      Gal[q].sfh_MetalsBulgeMass[ii][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
 	    for(kk=0;kk<NUM_ELEMENTS;kk++)
 	      Gal[q].sfh_BulgeMass_elements[ii][kk]=0.;
@@ -2153,14 +2215,13 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 
   //Variables for TOTAL quantities
   double Mass, fraction;
+  double Metals[NUM_METAL_CHANNELS];
+  int mm;
 #ifdef DETAILED_METALS_AND_MASS_RETURN
-  struct metals Metals;
 #ifdef INDIVIDUAL_ELEMENTS
   int kk;
   double Yield[NUM_ELEMENTS];
 #endif
-#else
-  double Metals;
 #endif //DETAILED_METALS_AND_MASS_RETURN
 
 
@@ -2169,13 +2230,11 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
   int ii;
   double sfh_Mass[SFH_NBIN];
   double sfh_MassRings[RNUM][SFH_NBIN];
+  double sfh_Metals[SFH_NBIN][NUM_METAL_CHANNELS];
 #ifdef DETAILED_METALS_AND_MASS_RETURN
-  struct metals sfh_Metals[SFH_NBIN];
 #ifdef INDIVIDUAL_ELEMENTS
   double sfh_Elements[SFH_NBIN][NUM_ELEMENTS];
 #endif
-#else
-  double sfh_Metals[SFH_NBIN];
 #endif
 #endif
 
@@ -2202,13 +2261,11 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
   //Variables for RINGS
   int jj;
   double MassRings[RNUM];
+  double MetalsRings[RNUM][NUM_METAL_CHANNELS];
 #ifdef DETAILED_METALS_AND_MASS_RETURN
-  struct metals MetalsRings[RNUM];
 #ifdef INDIVIDUAL_ELEMENTS
   double YieldRings[RNUM][NUM_ELEMENTS];
 #endif
-#else
-  double MetalsRings[RNUM];
 #endif //DETAILED_METALS_AND_MASS_RETURN
 
 
@@ -2216,7 +2273,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 
   //Initialize arrays to contain mass to transfer
    Mass = 0.;
-   Metals=metals_add(metals_init(),metals_init(),1.);
+   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+     Metals[mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
    for(kk=0;kk<NUM_ELEMENTS;kk++)
      Yield[kk] = 0.;
@@ -2228,7 +2286,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
        sfh_Mass[ii]=0.;
        for (jj=0;jj<RNUM;jj++)
 	 sfh_MassRings[jj][ii]=0.;
-       sfh_Metals[ii]=metals_add(metals_init(),metals_init(),1.);
+       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	 sfh_Metals[ii][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
        for(kk=0;kk<NUM_ELEMENTS;kk++)
 	 sfh_Elements[ii][kk]=0.;
@@ -2269,8 +2328,11 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	 {
 	   Mass += fractionRings[jj]*Gal[q].ColdGasRings[jj];
 	   MassRings[jj] = fractionRings[jj]*Gal[q].ColdGasRings[jj];
-	   Metals = metals_add(Metals,Gal[q].MetalsColdGasRings[jj],fractionRings[jj]);
-	   MetalsRings[jj] = metals_add(metals_init(),Gal[q].MetalsColdGasRings[jj],fractionRings[jj]);
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     {
+	       Metals[mm] += (Gal[q].MetalsColdGasRings[jj][mm] * fractionRings[jj]);
+	       MetalsRings[jj][mm] = (Gal[q].MetalsColdGasRings[jj][mm] * fractionRings[jj]);
+	     }
 #ifdef INDIVIDUAL_ELEMENTS
 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
 	     {
@@ -2286,7 +2348,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	   sfh_Mass[ii]=0.;
 	   for (jj=0;jj<RNUM;jj++)
 	     sfh_MassRings[jj][ii]=0.;
-	   sfh_Metals[ii]=metals_add(metals_init(),Gal[q].sfh_MetalsDiskMass[ii],0.);
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     sfh_Metals[ii][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
 	     sfh_Elements[ii][kk]=0.;
@@ -2296,7 +2359,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	 {
 	   sfh_Mass[Gal[q].sfh_ibin]+=fractionRings[jj]*Gal[q].ColdGasRings[jj];
 	   sfh_MassRings[jj][Gal[q].sfh_ibin]=fractionRings[jj]*Gal[q].ColdGasRings[jj];
-	   sfh_Metals[Gal[q].sfh_ibin]=metals_add(sfh_Metals[Gal[q].sfh_ibin],Gal[q].MetalsColdGasRings[jj],fractionRings[jj]);
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     sfh_Metals[Gal[q].sfh_ibin][mm] += (Gal[q].MetalsColdGasRings[jj][mm] * fractionRings[jj]);
 #ifdef INDIVIDUAL_ELEMENTS
 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
 	     sfh_Elements[Gal[q].sfh_ibin][kk]+=Gal[q].ColdGasRings_elements[jj][kk]*fractionRings[jj];
@@ -2311,8 +2375,11 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	 {   	 	   
 	   Mass += fractionRings[jj]*Gal[q].HotGas;
    	   MassRings[jj] = fractionRings[jj]*Gal[q].HotGas;
-   	   Metals = metals_add(Metals,Gal[q].MetalsHotGas,fractionRings[jj]);
-   	   MetalsRings[jj] = metals_add(metals_init(),Gal[q].MetalsHotGas,fractionRings[jj]);
+   	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+   	     {
+   	       Metals[mm] += (Gal[q].MetalsHotGas[mm] * fractionRings[jj]);
+   	       MetalsRings[jj][mm] = (Gal[q].MetalsHotGas[mm] * fractionRings[jj]);
+   	     }
    #ifdef INDIVIDUAL_ELEMENTS
    	   for(kk=0;kk<NUM_ELEMENTS;kk++)
    	     {
@@ -2329,8 +2396,11 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
    	 {   	 
    	   Mass += fractionRings[jj]*Gal[q].ReheatedGas;
       	   MassRings[jj] = fractionRings[jj]*Gal[q].ReheatedGas;
-      	   Metals = metals_add(Metals,Gal[q].MetalsReheatedGas,fractionRings[jj]);
-      	   MetalsRings[jj] = metals_add(metals_init(),Gal[q].MetalsReheatedGas,fractionRings[jj]);
+      	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+      	   {
+      	     Metals[mm] += (Gal[q].MetalsReheatedGas[mm]*fractionRings[jj]);
+      	     MetalsRings[jj][mm] = (Gal[q].MetalsReheatedGas[mm]*fractionRings[jj]);
+      	   }
 #ifdef INDIVIDUAL_ELEMENTS
       	   for(kk=0;kk<NUM_ELEMENTS;kk++)
       	     {
@@ -2347,8 +2417,11 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
      	 {
 	   Mass += fractionRings[jj]*Gal[q].DiskMassRings[jj];
 	   MassRings[jj]=fractionRings[jj]*Gal[q].DiskMassRings[jj];
-	   Metals=metals_add(Metals,Gal[q].MetalsDiskMassRings[jj],fractionRings[jj]);
-	   MetalsRings[jj]=metals_add(metals_init(),Gal[q].MetalsDiskMassRings[jj],fractionRings[jj]);
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     {
+	       Metals[mm] += (Gal[q].MetalsDiskMassRings[jj][mm] * fractionRings[jj]);
+	       MetalsRings[jj][mm] = (Gal[q].MetalsDiskMassRings[jj][mm] * fractionRings[jj]);
+	     }
 #ifdef INDIVIDUAL_ELEMENTS
 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
 	     {
@@ -2369,7 +2442,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	   if(Gal[q].sfh_DiskMass[ii]>0.)
 	     {
 	       fraction=sfh_Mass[ii]/Gal[q].sfh_DiskMass[ii];
-	       sfh_Metals[ii]=metals_add(metals_init(),Gal[q].sfh_MetalsDiskMass[ii],fraction);
+	       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+		 sfh_Metals[ii][mm] = (Gal[q].sfh_MetalsDiskMass[ii][mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
 	       for(kk=0;kk<NUM_ELEMENTS;kk++)
 		 sfh_Elements[ii][kk]=Gal[q].sfh_DiskMass_elements[ii][kk]*fraction;
@@ -2412,8 +2486,11 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	 {
 	   Mass += fractionRings[jj]*Gal[q].BulgeMassRings[jj];
 	   MassRings[jj]=fractionRings[jj]*Gal[q].BulgeMassRings[jj];
-	   Metals=metals_add(Metals,Gal[q].MetalsBulgeMassRings[jj],fractionRings[jj]);
-	   MetalsRings[jj]=metals_add(metals_init(),Gal[q].MetalsBulgeMassRings[jj],fractionRings[jj]);
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     {
+	       Metals[mm] += (Gal[q].MetalsBulgeMassRings[jj][mm] * fractionRings[jj]);
+	       MetalsRings[jj][mm] = (Gal[q].MetalsBulgeMassRings[jj][mm] * fractionRings[jj]);
+	     }
 #ifdef INDIVIDUAL_ELEMENTS
 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
 	     {
@@ -2433,8 +2510,9 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	 {
 	   if(Gal[q].sfh_BulgeMass[ii]>0.)
 	     {
-	       fraction=sfh_Mass[ii]/Gal[q].sfh_BulgeMass[ii];
-	       sfh_Metals[ii]=metals_add(metals_init(),Gal[q].sfh_MetalsBulgeMass[ii],fraction);
+	       fraction = sfh_Mass[ii]/Gal[q].sfh_BulgeMass[ii];
+	       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+		 sfh_Metals[ii][mm] = (Gal[q].sfh_MetalsBulgeMass[ii][mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
 	       for(kk=0;kk<NUM_ELEMENTS;kk++)
 		 sfh_Elements[ii][kk]=Gal[q].sfh_BulgeMass_elements[ii][kk]*fraction;
@@ -2483,7 +2561,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
    if (strcmp(cp,"ColdGas")==0)
      {
        Gal[p].ColdGas += Mass;
-       Gal[p].MetalsColdGas = metals_add(Gal[p].MetalsColdGas,Metals,1.);
+       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	 Gal[p].MetalsColdGas[mm] += Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
        for(kk=0;kk<NUM_ELEMENTS;kk++)
 	 Gal[p].ColdGas_elements[kk] += Yield[kk];
@@ -2492,7 +2571,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
        for (jj=0;jj<RNUM;jj++)
 	 {
 	   Gal[p].ColdGasRings[jj] += MassRings[jj];
-	   Gal[p].MetalsColdGasRings[jj] = metals_add(Gal[p].MetalsColdGasRings[jj],MetalsRings[jj],1.);
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     Gal[p].MetalsColdGasRings[jj][mm] += MetalsRings[jj][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
 	     Gal[p].ColdGasRings_elements[jj][kk] += YieldRings[jj][kk];
@@ -2503,20 +2583,24 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
    else if (strcmp(cp,"HotGas")==0)
      {
        Gal[p].HotGas += Mass;
-       Gal[p].MetalsHotGas = metals_add(Gal[p].MetalsHotGas,Metals,1.);
+       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+       Gal[p].MetalsHotGas[mm] += Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
        for(kk=0;kk<NUM_ELEMENTS;kk++)
 	 Gal[p].HotGas_elements[kk] += Yield[kk];
 #endif
 #ifdef METALS_SELF
-       if (p==q) Gal[p].MetalsHotGasSelf = metals_add(Gal[p].MetalsHotGasSelf,Metals,1.);
+       if (p==q)
+	 for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	 Gal[p].MetalsHotGasSelf[mm] += Metals[mm];
 #endif
      }
 
    /*else if (strcmp(cp,"ReheatedGas")==0)
        {
          Gal[p].ReheatedGas += Mass;
-         Gal[p].MetalsReheatedGas = metals_add(Gal[p].MetalsReheatedGas,Metals,1.);
+         for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+         Gal[p].MetalsReheatedGas[mm] += Metals[mm];
   #ifdef INDIVIDUAL_ELEMENTS
          for(kk=0;kk<NUM_ELEMENTS;kk++)
            Gal[p].ReheatedGas_elements[kk] += Yield[kk];
@@ -2526,7 +2610,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
    else if (strcmp(cp,"BlackHoleMass")==0)
      {
        Gal[p].BlackHoleMass += Mass;
-       /*    Gal[p].MetalsBlackHoleMass = metals_add(Gal[p].MetalsBlackHoleMass,Metals,1.);
+       /* for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+        *  Gal[p].MetalsBlackHoleMass[mm] += Metals[mm];
     #ifdef INDIVIDUAL_ELEMENTS
       for(kk=0;kk<NUM_ELEMENTS;kk++)
         Gal[p].BlackHoleMass_elements[kk] += Yield[kk];
@@ -2536,7 +2621,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
    else if (strcmp(cp,"BlackHoleGas")==0)
      {
        Gal[p].BlackHoleGas += Mass;
-       /*   Gal[p].MetalsBlackHoleGas = metals_add(Gal[p].MetalsBlackHoleGas,Metals,1.);
+       /*  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+        *  Gal[p].MetalsBlackHoleGas[mm] += Metals[mm];
     #ifdef INDIVIDUAL_ELEMENTS
     for(kk=0;kk<NUM_ELEMENTS;kk++)
           Gal[p].BlackHoleMass_elements[kk] += Yield[kk];
@@ -2546,7 +2632,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
    else if (strcmp(cp,"DiskMass")==0)
      {
        Gal[p].DiskMass += Mass;
-       Gal[p].MetalsDiskMass=metals_add(Gal[p].MetalsDiskMass,Metals,1.);
+       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+       Gal[p].MetalsDiskMass[mm] += Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
        for(kk=0;kk<NUM_ELEMENTS;kk++)
 	 Gal[p].DiskMass_elements[kk] += Yield[kk];
@@ -2555,7 +2642,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
        for(jj=0;jj<RNUM;jj++)
 	 {
 	   Gal[p].DiskMassRings[jj] += MassRings[jj];
-	   Gal[p].MetalsDiskMassRings[jj]=metals_add(Gal[p].MetalsDiskMassRings[jj],MetalsRings[jj],1.);
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	   Gal[p].MetalsDiskMassRings[jj][mm] += MetalsRings[jj][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
 	     Gal[p].DiskMassRings_elements[jj][kk] += YieldRings[jj][kk];
@@ -2568,7 +2656,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	   Gal[p].sfh_DiskMass[ii] += sfh_Mass[ii];
 	   for(jj=0;jj<RNUM;jj++)
 	     Gal[p].sfh_DiskMassRings[jj][ii] += sfh_MassRings[jj][ii];
-	   Gal[p].sfh_MetalsDiskMass[ii]=metals_add(Gal[p].sfh_MetalsDiskMass[ii],sfh_Metals[ii],1.);
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	   Gal[p].sfh_MetalsDiskMass[ii][mm] += sfh_Metals[ii][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
 	     Gal[p].sfh_DiskMass_elements[ii][kk] += sfh_Elements[ii][kk];
@@ -2603,7 +2692,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
    else if (strcmp(cp,"BulgeMass")==0)
      {
        Gal[p].BulgeMass += Mass;
-       Gal[p].MetalsBulgeMass=metals_add(Gal[p].MetalsBulgeMass,Metals,1.);
+       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+       Gal[p].MetalsBulgeMass[mm] += Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
        for(kk=0;kk<NUM_ELEMENTS;kk++)
 	 Gal[p].BulgeMass_elements[kk] += Yield[kk];
@@ -2614,7 +2704,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
        for(jj=0;jj<RNUM;jj++)
       	 {
       	   Gal[p].BulgeMassRings[jj] += MassRings[jj];
-      	   Gal[p].MetalsBulgeMassRings[jj]=metals_add(Gal[p].MetalsBulgeMassRings[jj],MetalsRings[jj],1.);
+      	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+      	   Gal[p].MetalsBulgeMassRings[jj][mm] += MetalsRings[jj][mm];
 #ifdef INDIVIDUAL_ELEMENTS
       	   for(kk=0;kk<NUM_ELEMENTS;kk++)
       	     Gal[p].BulgeMassRings_elements[jj][kk] += YieldRings[jj][kk];
@@ -2630,7 +2721,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	   for(jj=0;jj<RNUM;jj++)
 	     Gal[p].sfh_BulgeMassRings[jj][ii] += sfh_MassRings[jj][ii];
 #endif
-	   Gal[p].sfh_MetalsBulgeMass[ii]=metals_add(Gal[p].sfh_MetalsBulgeMass[ii],sfh_Metals[ii],1.);
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	   Gal[p].sfh_MetalsBulgeMass[ii][mm] += sfh_Metals[ii][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
 	     Gal[p].sfh_BulgeMass_elements[ii][kk] += sfh_Elements[ii][kk];
@@ -2671,7 +2763,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
    else if (strcmp(cp,"ICM")==0)
      {
        Gal[p].ICM += Mass;
-       Gal[p].MetalsICM=metals_add(Gal[p].MetalsICM,Metals,1.);
+       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	 Gal[p].MetalsICM[mm] += Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
        for(kk=0;kk<NUM_ELEMENTS;kk++)
 	 Gal[p].ICM_elements[kk] += Yield[kk];
@@ -2681,7 +2774,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
        for (ii=0; ii<=Gal[p].sfh_ibin; ii++)
 	 {
 	   Gal[p].sfh_ICM[ii] += sfh_Mass[ii];
-	   Gal[p].sfh_MetalsICM[ii]=metals_add(Gal[p].sfh_MetalsICM[ii],sfh_Metals[ii],1.);
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     Gal[p].sfh_MetalsICM[ii][mm] += sfh_Metals[ii][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
 	     Gal[p].sfh_ICM_elements[ii][kk] += sfh_Elements[ii][kk];
@@ -2719,7 +2813,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
    if (strcmp(cq,"ColdGas")==0)
      {
        Gal[q].ColdGas -= Mass;
-       Gal[q].MetalsColdGas = metals_add(Gal[q].MetalsColdGas,Metals,-1.);
+       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	 Gal[q].MetalsColdGas[mm] -= Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
        for(kk=0;kk<NUM_ELEMENTS;kk++)
 	 Gal[q].ColdGas_elements[kk] -= Yield[kk];
@@ -2727,7 +2822,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
        for (jj=0;jj<RNUM;jj++)
 	 {
 	   Gal[q].ColdGasRings[jj] -= MassRings[jj];
-	   Gal[q].MetalsColdGasRings[jj] = metals_add(Gal[q].MetalsColdGasRings[jj],MetalsRings[jj],-1.);
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     Gal[q].MetalsColdGasRings[jj][mm] -= MetalsRings[jj][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
 	     Gal[q].ColdGasRings_elements[jj][kk] -= YieldRings[jj][kk];
@@ -2738,20 +2834,23 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
    else if (strcmp(cq,"HotGas")==0)
      {
         Gal[q].HotGas -= Mass;
-        Gal[q].MetalsHotGas = metals_add(Gal[q].MetalsHotGas,Metals,-1.);
+        for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+          Gal[q].MetalsHotGas[mm] -= Metals[mm];
    #ifdef INDIVIDUAL_ELEMENTS
         for(kk=0;kk<NUM_ELEMENTS;kk++)
           Gal[q].HotGas_elements[kk] -= Yield[kk];
    #endif
    #ifdef METALS_SELF
-        Gal[q].MetalsHotGasSelf = metals_add(Gal[q].MetalsHotGasSelf,Metals,-1.);
+        for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+          Gal[q].MetalsHotGasSelf[mm] -= Metals[mm];
    #endif
      }
 
    /*else if (strcmp(cq,"ReheatedGas")==0)
        {
           Gal[q].ReheatedGas -= Mass;
-          Gal[q].MetalsReheatedGas = metals_add(Gal[q].MetalsReheatedGas,Metals,-1.);
+          for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+          Gal[q].MetalsReheatedGas[mm] -= Metals[mm];
      #ifdef INDIVIDUAL_ELEMENTS
           for(kk=0;kk<NUM_ELEMENTS;kk++)
             Gal[q].ReheatedGas_elements[kk] -= Yield[kk];
@@ -2761,7 +2860,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
    else if (strcmp(cq,"DiskMass")==0)
      {
        Gal[q].DiskMass -= Mass;
-       Gal[q].MetalsDiskMass=metals_add(Gal[q].MetalsDiskMass,Metals,-1.);
+       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+       Gal[q].MetalsDiskMass[mm] -= Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
        for(kk=0;kk<NUM_ELEMENTS;kk++)
 	 Gal[q].DiskMass_elements[kk] -= Yield[kk];
@@ -2770,7 +2870,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
        for(jj=0;jj<RNUM;jj++)
 	 {
 	   Gal[q].DiskMassRings[jj] -= MassRings[jj];
-	   Gal[q].MetalsDiskMassRings[jj]=metals_add(Gal[q].MetalsDiskMassRings[jj],MetalsRings[jj],-1.);
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	   Gal[q].MetalsDiskMassRings[jj][mm] -= MetalsRings[jj][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
 	     Gal[q].DiskMassRings_elements[jj][kk] -= YieldRings[jj][kk];
@@ -2783,7 +2884,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	   Gal[q].sfh_DiskMass[ii] -= sfh_Mass[ii];
 	   for(jj=0;jj<RNUM;jj++)
 	     Gal[q].sfh_DiskMassRings[jj][ii] -= sfh_MassRings[jj][ii];
-	   Gal[q].sfh_MetalsDiskMass[ii]=metals_add(Gal[q].sfh_MetalsDiskMass[ii],sfh_Metals[ii],-1.);
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	   Gal[q].sfh_MetalsDiskMass[ii][mm] -= sfh_Metals[ii][mm];
 #ifdef INDIVIDUAL_ELEMENTS
 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
 	     Gal[q].sfh_DiskMass_elements[ii][kk] -= sfh_Elements[ii][kk];
@@ -2818,7 +2920,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
    else if (strcmp(cq,"BulgeMass")==0)
      {
        Gal[q].BulgeMass -= Mass;
-       Gal[q].MetalsBulgeMass=metals_add(Gal[q].MetalsBulgeMass,Metals,-1.);
+       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+       Gal[q].MetalsBulgeMass[mm] -= Metals[mm];
 #ifdef INDIVIDUAL_ELEMENTS
        for(kk=0;kk<NUM_ELEMENTS;kk++) // Mass += fractionRings[jj]/RNUM*Gal[q].HotGas;
 	 Gal[q].BulgeMass_elements[kk] -= Yield[kk];
@@ -2829,7 +2932,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
        for(jj=0;jj<RNUM;jj++)
 	 {
    	   Gal[q].BulgeMassRings[jj] -= MassRings[jj];
-   	   Gal[q].MetalsBulgeMassRings[jj]=metals_add(Gal[q].MetalsBulgeMassRings[jj],MetalsRings[jj],-1.);
+   	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+   	   Gal[q].MetalsBulgeMassRings[jj][mm] -= MetalsRings[jj][mm];
 #ifdef INDIVIDUAL_ELEMENTS
    	   for(kk=0;kk<NUM_ELEMENTS;kk++)
    	     Gal[q].BulgeMassRings_elements[jj][kk] -= YieldRings[jj][kk];
@@ -2845,7 +2949,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
    	   for(jj=0;jj<RNUM;jj++)
    	     Gal[q].sfh_BulgeMassRings[jj][ii] -= sfh_MassRings[jj][ii];
 #endif
-   	   Gal[q].sfh_MetalsBulgeMass[ii]=metals_add(Gal[q].sfh_MetalsBulgeMass[ii],sfh_Metals[ii],-1.);
+   	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+   	   Gal[q].sfh_MetalsBulgeMass[ii][mm] -= sfh_Metals[ii][mm];
 #ifdef INDIVIDUAL_ELEMENTS
    	   for(kk=0;kk<NUM_ELEMENTS;kk++)
    	     Gal[q].sfh_BulgeMass_elements[ii][kk] -= sfh_Elements[ii][kk];
@@ -2907,7 +3012,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
     if(Gal[p].ColdGas > -1e-6)
       {
 	Gal[p].ColdGas = 0.;
-	Gal[p].MetalsColdGas = metals_init();
+	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	  Gal[p].MetalsColdGas[mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
 	for(kk=0;kk<NUM_ELEMENTS;kk++)
 	  Gal[q].ColdGas_elements[kk] = 0.;
@@ -2916,7 +3022,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	for (jj=0; jj<RNUM; jj++)
    	  {
    	    Gal[p].ColdGasRings[jj]=0.;
-   	    Gal[p].MetalsColdGasRings[jj] = metals_init();;
+   	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+   	      Gal[p].MetalsColdGasRings[jj][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
    	 for(kk=0;kk<NUM_ELEMENTS;kk++)
    	    Gal[p].ColdGasRings_elements[jj][kk] = 0.;
@@ -2930,7 +3037,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
     if(Gal[q].ColdGas > -1e-6)
       {
 	Gal[q].ColdGas = 0.;
-	Gal[q].MetalsColdGas = metals_init();
+	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	  Gal[q].MetalsColdGas[mm] = 0.;
  #ifdef INDIVIDUAL_ELEMENTS
 	for(kk=0;kk<NUM_ELEMENTS;kk++)
 	  Gal[q].ColdGas_elements[kk] = 0.;
@@ -2939,7 +3047,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	for (jj=0; jj<RNUM; jj++)
  	  {
  	    Gal[q].ColdGasRings[jj]=0.;
- 	    Gal[q].MetalsColdGasRings[jj] = metals_init();;
+ 	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 	      Gal[q].MetalsColdGasRings[jj][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
  	   for(kk=0;kk<NUM_ELEMENTS;kk++)
  	     Gal[q].ColdGasRings_elements[jj][kk] = 0.;
@@ -2953,7 +3062,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
     if(Gal[p].DiskMass > -1e-6)
       {
   	Gal[p].DiskMass = 0.;
-  	Gal[p].MetalsDiskMass = metals_init();
+  	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+  	  Gal[p].MetalsDiskMass[mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
   	for(kk=0;kk<NUM_ELEMENTS;kk++)
   	Gal[q].DiskMass_elements[kk] = 0.;
@@ -2962,7 +3072,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
   	for (jj=0; jj<RNUM; jj++)
   	  {
   	    Gal[p].DiskMassRings[jj]=0.;
-  	    Gal[p].MetalsDiskMassRings[jj] = metals_init();;
+  	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+  	      Gal[p].MetalsDiskMassRings[jj][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
   	  for(kk=0;kk<NUM_ELEMENTS;kk++)
   	    Gal[p].DiskMassRings_elements[jj][kk] = 0.;
@@ -2976,7 +3087,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
     if(Gal[q].DiskMass > -1e-6)
       {
 	Gal[q].DiskMass = 0.;
-	Gal[q].MetalsDiskMass = metals_init();
+	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	  Gal[q].MetalsDiskMass[mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
 	for(kk=0;kk<NUM_ELEMENTS;kk++)
 	  Gal[q].DiskMass_elements[kk] = 0.;
@@ -2985,7 +3097,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	for (jj=0; jj<RNUM; jj++)
 	  {
 	    Gal[q].DiskMassRings[jj]=0.; // Mass += fractionRings[jj]/RNUM*Gal[q].HotGas;
-	    Gal[q].MetalsDiskMassRings[jj] = metals_init();;
+	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	      Gal[q].MetalsDiskMassRings[jj][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
 	    for(kk=0;kk<NUM_ELEMENTS;kk++)
 	    Gal[q].DiskMassRings_elements[jj][kk] = 0.;
@@ -3001,7 +3114,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
     if(Gal[p].BulgeMass > -1e-6)
       {
 	Gal[p].BulgeMass = 0.;
-	Gal[p].MetalsBulgeMass = metals_init();
+	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	  Gal[p].MetalsBulgeMass[mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
     	for(kk=0;kk<NUM_ELEMENTS;kk++)
     	  Gal[q].BulgeMass_elements[kk] = 0.;
@@ -3011,7 +3125,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
     	for (jj=0; jj<RNUM; jj++)
     	  {
     	    Gal[p].BulgeMassRings[jj]=0.;
-    	    Gal[p].MetalsBulgeMassRings[jj] = metals_init();;
+    	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+    	      Gal[p].MetalsBulgeMassRings[jj][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
     	    for(kk=0;kk<NUM_ELEMENTS;kk++)
     	      Gal[p].BulgeMassRings_elements[jj][kk] = 0.;
@@ -3026,7 +3141,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
     if(Gal[q].BulgeMass > -1e-6)
       {
   	Gal[q].BulgeMass = 0.;
-  	Gal[q].MetalsBulgeMass = metals_init();
+  	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+  	  Gal[q].MetalsBulgeMass[mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
   	for(kk=0;kk<NUM_ELEMENTS;kk++)
   	  Gal[q].BulgeMass_elements[kk] = 0.;
@@ -3036,7 +3152,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
   	for (jj=0; jj<RNUM; jj++)
   	  {
   	    Gal[q].BulgeMassRings[jj]=0.;
-  	    Gal[q].MetalsBulgeMassRings[jj] = metals_init();;
+  	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+  	      Gal[q].MetalsBulgeMassRings[jj][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
   	    for(kk=0;kk<NUM_ELEMENTS;kk++)
   	      Gal[q].BulgeMassRings_elements[jj][kk] = 0.;
@@ -3070,7 +3187,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
  	if(Gal[p].ColdGas == 0.)
  	  {
  	    Gal[p].ColdGasRings[jj]=0.;
- 	    Gal[p].MetalsColdGasRings[jj] = metals_init();;
+ 	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 	      Gal[p].MetalsColdGasRings[jj][mm] = 0.;
  #ifdef INDIVIDUAL_ELEMENTS
  	   for(kk=0;kk<NUM_ELEMENTS;kk++)
  	    Gal[p].ColdGasRings_elements[jj][kk] = 0.;
@@ -3080,7 +3198,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
  	if(Gal[q].ColdGas == 0.)
  	  {
  	    Gal[q].ColdGasRings[jj]=0.;
- 	    Gal[q].MetalsColdGasRings[jj] = metals_init();;
+ 	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 	      Gal[q].MetalsColdGasRings[jj][mm] = 0.;
  #ifdef INDIVIDUAL_ELEMENTS
  	   for(kk=0;kk<NUM_ELEMENTS;kk++)
  	    Gal[q].ColdGasRings_elements[jj][kk] = 0.;
@@ -3090,7 +3209,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
  	if(Gal[p].DiskMass == 0.)
  	  {
  	    Gal[p].DiskMassRings[jj]=0.;
- 	    Gal[p].MetalsDiskMassRings[jj] = metals_init();;
+ 	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 	      Gal[p].MetalsDiskMassRings[jj][mm] = 0.;
  #ifdef INDIVIDUAL_ELEMENTS
  	   for(kk=0;kk<NUM_ELEMENTS;kk++)
  	    Gal[p].DiskMassRings_elements[jj][kk] = 0.;
@@ -3100,7 +3220,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
  	if(Gal[q].DiskMass == 0.)
  	  {
  	    Gal[q].DiskMassRings[jj]=0.;
- 	    Gal[q].MetalsDiskMassRings[jj] = metals_init();;
+ 	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 	      Gal[q].MetalsDiskMassRings[jj][mm] = 0.;
  #ifdef INDIVIDUAL_ELEMENTS
  	   for(kk=0;kk<NUM_ELEMENTS;kk++)
  	    Gal[q].DiskMassRings_elements[jj][kk] = 0.;
@@ -3112,7 +3233,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
  	if(Gal[p].BulgeMass == 0.)
  	  {
  	    Gal[p].BulgeMassRings[jj]=0.;
- 	    Gal[p].MetalsBulgeMassRings[jj] = metals_init();;
+ 	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 	      Gal[p].MetalsBulgeMassRings[jj][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
  	    for(kk=0;kk<NUM_ELEMENTS;kk++)
  	      Gal[p].BulgeMassRings_elements[jj][kk] = 0.;
@@ -3122,7 +3244,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
  	if(Gal[q].BulgeMass == 0.)
  	  {
  	    Gal[q].BulgeMassRings[jj]=0.;
- 	    Gal[q].MetalsBulgeMassRings[jj] = metals_init();;
+ 	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 	      Gal[q].MetalsBulgeMassRings[jj][mm] = 0.;
 #ifdef INDIVIDUAL_ELEMENTS
  	    for(kk=0;kk<NUM_ELEMENTS;kk++)
  	      Gal[q].BulgeMassRings_elements[jj][kk] = 0.;
@@ -3151,18 +3274,19 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
  * total and rings sum.
  */
 
-  float sum_rings, sum_rings_metals, ring_sum_minus_tot;
+  float sum_rings, sum_rings_metals, ring_sum_minus_tot=0.;
   float fract, fract_metals;
 
   //galaxy p cold gas
   if(Gal[p].ColdGas>0.)
     {
       sum_rings=0.;
-      sum_rings_metals=0;
+      sum_rings_metals=0.;
       for (jj=0; jj<RNUM; jj++)
 	{
 	  sum_rings+=Gal[p].ColdGasRings[jj];
-	  sum_rings_metals+= metals_total(Gal[p].MetalsColdGasRings[jj]);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    sum_rings_metals+= Gal[p].MetalsColdGasRings[jj][mm];
 	} // Mass += fractionRings[jj]/RNUM*Gal[q].HotGas;
 
       if(sum_rings>0.)
@@ -3170,34 +3294,24 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
       else
 	fract=0.;
 
-      /*if(fract>0. && Gal[p].ColdGas>1e-6 && sum_rings>1e-6 && (fract>1.3 || fract<0.7))
-      	{
-      	  printf("fract=%0.5f %s %d\n",fract,call_function, call_line);
-      	  terminate("Total and Ring Sum for Metals too different ColdGas");
-      	}*/
-
       if(sum_rings_metals>0.)
-      	fract_metals=metals_total(Gal[p].MetalsColdGas)/sum_rings_metals;
+	{
+	  fract_metals=0.;
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    fract_metals+= Gal[p].MetalsColdGas[mm];
+	  fract_metals /= sum_rings_metals;
+	}
       else
 	fract_metals=0.;
-
-     /* if(fract_metals>0. && metals_total(Gal[p].MetalsColdGas)>1e-5 && sum_rings_metals>1e-5 && (fract_metals>1.3 || fract_metals<0.7))
-      	{ // Mass += fractionRings[jj]/RNUM*Gal[q].HotGas;
-      	  printf("ColdGasTotal=%e ColdGasRings=%e\n MetalsTotal=%e MetalsSum=%e fract=%0.5f %s %d\n",
-		 Gal[p].ColdGas, sum_rings, metals_total(Gal[p].MetalsColdGas), sum_rings_metals, fract_metals,call_function, call_line);
-      	  terminate("Total and Ring Sum for Metals too different ColdGas");
-      	}*/
 
       if(sum_rings/Gal[p].ColdGas !=1.)
 	{
 	  for (jj=0;jj<RNUM;jj++)
 	    {
 	      Gal[p].ColdGasRings[jj] *= fract;
-	      Gal[p].MetalsColdGasRings[jj] = metals_add(metals_init(),Gal[p].MetalsColdGasRings[jj],fract_metals);
-/*#ifdef INDIVIDUAL_ELEMENTS
-	      for(kk=0;kk<NUM_ELEMENTS;kk++)
-		Gal[p].ColdGasRings_elements[jj][kk] = Gal[p].ColdGasRings_elements[jj][kk]*fract_metals;
-#endif*/
+	      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+		Gal[p].MetalsColdGasRings[jj][mm] = (Gal[p].MetalsColdGasRings[jj][mm]*fract_metals);
+
 	    }
 
 	  ring_sum_minus_tot=-Gal[p].ColdGas;
@@ -3220,10 +3334,12 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
       for (jj=0; jj<RNUM; jj++)
 	{
 	  sum_rings+=Gal[q].ColdGasRings[jj];
-	  sum_rings_metals+= metals_total(Gal[q].MetalsColdGasRings[jj]);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    sum_rings_metals+= Gal[q].MetalsColdGasRings[jj][mm];
      	}
 
       if(sum_rings>0.)
+
     	fract=Gal[q].ColdGas/sum_rings;
       else
     	fract=0.;
@@ -3232,28 +3348,24 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
       	  printf("fract=%0.5f %s %d\n",fract,call_function, call_line);
       	  terminate("Total and Ring Sum for Metals too different ColdGas");
       	}*/
-
       if(sum_rings_metals>0.)
-	fract_metals=metals_total(Gal[q].MetalsColdGas)/sum_rings_metals;
+      	{
+      	  fract_metals=0.;
+      	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+      	    fract_metals+= Gal[q].MetalsColdGas[mm];
+      	  fract_metals /= sum_rings_metals;
+      	}
       else
 	fract_metals=0.;
-     /* if(fract_metals>0. && metals_total(Gal[q].MetalsColdGas)>1e-5 && sum_rings_metals>1e-5 && (fract_metals>1.3 || fract_metals<0.7))
-	{
-	  printf("ColdGasTotal=%e ColdGasRings=%e\n MetalsTotal=%e MetalsSum=%e fract=%0.5f %s %d\n",
-	 		 Gal[q].ColdGas, sum_rings, metals_total(Gal[q].MetalsColdGas), sum_rings_metals, fract_metals,call_function, call_line);
-	  terminate("Total and Ring Sum for Metals too different ColdGas");
-	}*/
- // Mass += fractionRings[jj]/RNUM*Gal[q].HotGas;
+
       if(sum_rings/Gal[q].ColdGas !=1.)
 	{
 	  for (jj=0;jj<RNUM;jj++)
 	    {
 	      Gal[q].ColdGasRings[jj] *= fract;
-	      Gal[q].MetalsColdGasRings[jj] = metals_add(metals_init(),Gal[q].MetalsColdGasRings[jj],fract_metals);
- /*#ifdef INDIVIDUAL_ELEMENTS
-	      for(kk=0;kk<NUM_ELEMENTS;kk++)
-		Gal[q].ColdGas_elementsRings[jj][kk] = Gal[q].ColdGas_elementsRings[jj][kk]*fract_metals;
- #endif*/
+	      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+		Gal[q].MetalsColdGasRings[jj][mm] = (Gal[q].MetalsColdGasRings[jj][mm]*fract_metals);
+
 	    }
 
 	  ring_sum_minus_tot=-Gal[q].ColdGas;
@@ -3276,9 +3388,9 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
       for (jj=0; jj<RNUM; jj++)
 	{
 	  sum_rings+=Gal[p].DiskMassRings[jj];
-	  sum_rings_metals+= metals_total(Gal[p].MetalsDiskMassRings[jj]);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    sum_rings_metals+= Gal[p].MetalsDiskMassRings[jj][mm];
      	}
-
       if(sum_rings>0.)
 	fract=Gal[p].DiskMass/sum_rings;
       else
@@ -3288,31 +3400,25 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
       	  printf("fract=%0.5f %s %d\n",fract,call_function, call_line);
       	  terminate("Total and Ring Sum for Metals too different Disk Mass");
       	}*/
-
       if(sum_rings_metals>0.)
-      	fract_metals=metals_total(Gal[p].MetalsDiskMass)/sum_rings_metals;
-            else
-      	fract_metals=0.;
-     /* if(fract_metals>0. && metals_total(Gal[p].MetalsDiskMass)>1e-5 && sum_rings_metals>1e-5 && (fract_metals>1.3 || fract_metals<0.7))
       	{
-	  for(jj=0;jj<RNUM;jj++)
-	  	 printf("[%d] DiskMass=%e MetalsDisk=%e\n",jj,Gal[p].DiskMassRings[jj],Gal[p].MetalsDiskMassRings[jj]);
+       	 fract_metals=0.;
+         for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+           fract_metals+= Gal[p].MetalsDiskMass[mm];
+	 fract_metals /= sum_rings_metals;
+        }
+      else
+      	fract_metals=0.;
 
-	  printf("ColdGasToal=%e ColdGasRings=%e\n MetalsTotal=%e MetalsSum=%e fract=%0.5f %s %d\n",
-	 		 Gal[p].DiskMass, sum_rings, metals_total(Gal[p].MetalsDiskMass), sum_rings_metals, fract_metals,call_function, call_line);
-      	  terminate("Total and Ring Sum for Metals too different DiskMass");
-      	}*/
 
       if(sum_rings/Gal[p].DiskMass !=1.)
 	{
 	  for (jj=0;jj<RNUM;jj++)
 	    {
 	      Gal[p].DiskMassRings[jj] *= fract;
-	      Gal[p].MetalsDiskMassRings[jj] = metals_add(metals_init(),Gal[p].MetalsDiskMassRings[jj],fract_metals);
-/*#ifdef INDIVIDUAL_ELEMENTS
-	      for(kk=0;kk<NUM_ELEMENTS;kk++)
-		Gal[p].DiskMassRings_elements[jj][kk] = Gal[p].DiskMassRings_elements[jj][kk]*fract_metals;
-#endif*/
+	      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+		Gal[p].MetalsDiskMassRings[jj][mm] = (Gal[p].MetalsDiskMassRings[jj][mm]*fract_metals);
+
 	    }
 
 	  ring_sum_minus_tot=-Gal[p].DiskMass;
@@ -3337,29 +3443,24 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
       for (jj=0; jj<RNUM; jj++)
 	{
 	  sum_rings+=Gal[q].DiskMassRings[jj];
-	  sum_rings_metals+= metals_total(Gal[q].MetalsDiskMassRings[jj]);
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    sum_rings_metals+= Gal[q].MetalsDiskMassRings[jj][mm];
      	}
 
       if(sum_rings>0.)
      	fract=Gal[q].DiskMass/sum_rings;
       else
      	fract=0.;
-      /*if(fract>0. && Gal[q].DiskMass>1e-6 && sum_rings>1e-6   && (fract>1.3 || fract<0.7))
-      	{
-      	  printf("fract=%0.5f %s %d\n",fract,call_function, call_line);
-      	  terminate("Total and Ring Sum for Metals too different DiskMass");
-      	}*/
 
       if(sum_rings_metals>0.)
-	fract_metals=metals_total(Gal[q].MetalsDiskMass)/sum_rings_metals;
+	{
+	  fract_metals=0.;
+	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	      fract_metals+= Gal[q].MetalsDiskMass[mm];
+	    fract_metals /= sum_rings_metals;
+	}
       else
 	fract_metals=0.;
-    /*  if(fract_metals>0. && metals_total(Gal[q].MetalsDiskMass)>1e-5 && sum_rings_metals>1e-5 && (fract_metals>1.3 || fract_metals<0.7))
-	{
-	  printf("ColdGasToal=%e ColdGasRings=%e\n MetalsTotal=%e MetalsSum=%e fract=%0.5f %s %d\n",
-	  	 		 Gal[q].DiskMass, sum_rings, metals_total(Gal[q].MetalsDiskMass), sum_rings_metals, fract_metals,call_function, call_line);
-	  terminate("Total and Ring Sum for Metals too different DiskMass");
-	}*/
 
 
       if(sum_rings/Gal[q].DiskMass !=1.)
@@ -3367,11 +3468,9 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	  for (jj=0;jj<RNUM;jj++)
 	    {
 	      Gal[q].DiskMassRings[jj] *= fract;
-	      Gal[q].MetalsDiskMassRings[jj] = metals_add(metals_init(),Gal[q].MetalsDiskMassRings[jj],fract_metals);
-/*#ifdef INDIVIDUAL_ELEMENTS
-	      for(kk=0;kk<NUM_ELEMENTS;kk++)
-		Gal[q].DiskMassRings_elements[jj][kk] = Gal[q].DiskMassRings_elements[jj][kk]*fract_metals;
-#endif*/
+	      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+		Gal[q].MetalsDiskMassRings[jj][mm] = (Gal[q].MetalsDiskMassRings[jj][mm]*fract_metals);
+
 	    }
 
 	  ring_sum_minus_tot=-Gal[q].DiskMass;
@@ -3399,43 +3498,34 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
        for (jj=0; jj<RNUM; jj++)
  	{
  	  sum_rings+=Gal[p].BulgeMassRings[jj];
- 	  sum_rings_metals+= metals_total(Gal[p].MetalsBulgeMassRings[jj]);
+ 	 for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 	   sum_rings_metals+= Gal[p].MetalsBulgeMassRings[jj][mm];
       	}
 
        if(sum_rings>0.)
  	fract=Gal[p].BulgeMass/sum_rings;
        else
  	fract=0.;
-       /*if(fract>0. && Gal[p].BulgeMass>1e-6 && sum_rings>1e-6  && (fract>1.3 || fract<0.7))
-       	{
-       	  printf("fract=%0.5f %s %d\n",fract,call_function, call_line);
-       	  terminate("Total and Ring Sum for Metals too different Bulge Mass");
-       	}*/
 
        if(sum_rings_metals>0.)
-       	fract_metals=metals_total(Gal[p].MetalsBulgeMass)/sum_rings_metals;
-             else
-       	fract_metals=0.;
-      /* if(fract_metals>0. && metals_total(Gal[p].MetalsBulgeMass)>1e-5 && sum_rings_metals>1e-5 && (fract_metals>1.3 || fract_metals<0.7))
        	{
- 	  for(jj=0;jj<RNUM;jj++)
- 	  	 printf("[%d] BulgeMass=%e MetalsBulge=%e\n",jj,Gal[p].BulgeMassRings[jj],Gal[p].MetalsBulgeMassRings[jj]);
+       	  fract_metals=0.;
+       	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+       	      fract_metals+= Gal[p].MetalsBulgeMass[mm];
+       	    fract_metals /= sum_rings_metals;
+       	}
+       else
+       	fract_metals=0.;
 
- 	  printf("ColdGasToal=%e ColdGasRings=%e\n MetalsTotal=%e MetalsSum=%e fract=%0.5f %s %d\n",
- 	 		 Gal[p].BulgeMass, sum_rings, metals_total(Gal[p].MetalsBulgeMass), sum_rings_metals, fract_metals,call_function, call_line);
-       	  terminate("Total and Ring Sum for Metals too different BulgeMass");
-       	}*/
 
        if(sum_rings/Gal[p].BulgeMass !=1.)
  	{
  	  for (jj=0;jj<RNUM;jj++)
  	    {
  	      Gal[p].BulgeMassRings[jj] *= fract;
- 	      Gal[p].MetalsBulgeMassRings[jj] = metals_add(metals_init(),Gal[p].MetalsBulgeMassRings[jj],fract_metals);
- /*#ifdef INDIVIDUAL_ELEMENTS
- 	      for(kk=0;kk<NUM_ELEMENTS;kk++)
- 		Gal[p].BulgeMassRings_elements[jj][kk] = Gal[p].BulgeMassRings_elements[jj][kk]*fract_metals;
- #endif*/
+ 	      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 		Gal[p].MetalsBulgeMassRings[jj][mm] = (Gal[p].MetalsBulgeMassRings[jj][mm] * fract_metals);
+
  	    }
 
  	  ring_sum_minus_tot=-Gal[p].BulgeMass;
@@ -3460,41 +3550,33 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
        for (jj=0; jj<RNUM; jj++)
  	{
  	  sum_rings+=Gal[q].BulgeMassRings[jj];
- 	  sum_rings_metals+= metals_total(Gal[q].MetalsBulgeMassRings[jj]);
+ 	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 	    sum_rings_metals+= Gal[q].MetalsBulgeMassRings[jj][mm];
       	}
 
        if(sum_rings>0.)
       	fract=Gal[q].BulgeMass/sum_rings;
        else
       	fract=0.;
-       /*if(fract>0. && Gal[q].BulgeMass>1e-6 && sum_rings>1e-6   && (fract>1.3 || fract<0.7))
-       	{
-       	  printf("fract=%0.5f %s %d\n",fract,call_function, call_line);
-       	  terminate("Total and Ring Sum for Metals too different BulgeMass");
-       	}*/
 
        if(sum_rings_metals>0.)
- 	fract_metals=metals_total(Gal[q].MetalsBulgeMass)/sum_rings_metals;
+	 {
+	   fract_metals=0.;
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     fract_metals+= Gal[q].MetalsBulgeMass[mm];
+	   fract_metals /= sum_rings_metals;
+	 }
        else
  	fract_metals=0.;
-     /*  if(fract_metals>0. && metals_total(Gal[q].MetalsBulgeMass)>1e-5 && sum_rings_metals>1e-5 && (fract_metals>1.3 || fract_metals<0.7))
- 	{
- 	  printf("ColdGasToal=%e ColdGasRings=%e\n MetalsTotal=%e MetalsSum=%e fract=%0.5f %s %d\n",
- 	  	 		 Gal[q].BulgeMass, sum_rings, metals_total(Gal[q].MetalsBulgeMass), sum_rings_metals, fract_metals,call_function, call_line);
- 	  terminate("Total and Ring Sum for Metals too different BulgeMass");
- 	}*/
-
 
        if(sum_rings/Gal[q].BulgeMass !=1.)
  	{
  	  for (jj=0;jj<RNUM;jj++)
  	    {
  	      Gal[q].BulgeMassRings[jj] *= fract;
- 	      Gal[q].MetalsBulgeMassRings[jj] = metals_add(metals_init(),Gal[q].MetalsBulgeMassRings[jj],fract_metals);
- /*#ifdef INDIVIDUAL_ELEMENTS
- 	      for(kk=0;kk<NUM_ELEMENTS;kk++)
- 		Gal[q].BulgeMassRings_elements[jj][kk] = Gal[q].BulgeMassRings_elements[jj][kk]*fract_metals;
- #endif*/
+ 	      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 		Gal[q].MetalsBulgeMassRings[jj][mm] = (Gal[q].MetalsBulgeMassRings[jj][mm] * fract_metals);
+
  	    }
 
  	  ring_sum_minus_tot=-Gal[q].BulgeMass;
@@ -3530,7 +3612,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
    */
 	//ROB: Should probably make some of these for the elements
 
-  int i;
+  int i, mm;
 
 #ifndef MASS_CHECKS
   return;
@@ -3553,7 +3635,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 
   //check if the gas mass is less than 0
   if(Gal[igal].ColdGas < 0.0) {
-    if (Gal[igal].ColdGas > -1e-6)
+    if (Gal[igal].ColdGas > -1e-5)
       Gal[igal].ColdGas = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, ColdGas < 0. ***\n",call_function, call_line);
@@ -3563,12 +3645,19 @@ void mass_checks(int igal, char call_function[], int call_line) {
   }
 
   //check if the mass in metals is less than 0
-  if(metals_total(Gal[igal].MetalsColdGas) < 0.0) {
-    if (metals_total(Gal[igal].MetalsColdGas) > -1e-6)
-      Gal[igal].MetalsColdGas = metals_init();
+  double totmetals;
+  int ii;
+
+  totmetals=0.;
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+    totmetals+= Gal[igal].MetalsColdGas[ii];
+  if(totmetals < 0.0) {
+    if (totmetals > -1e-6)
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	Gal[igal].MetalsColdGas[ii] = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, MetalsColdGas < 0. ***\n",call_function, call_line);
-      printf("                Gal[%d].MetalsColdGas = %g\n",igal,metals_total(Gal[igal].MetalsColdGas));
+      printf("                Gal[%d].MetalsColdGas = %g\n",igal,totmetals);
 #ifdef INDIVIDUAL_ELEMENTS
       elements_total=0.;
       for(kk=0;kk<NUM_ELEMENTS;kk++)
@@ -3580,20 +3669,20 @@ void mass_checks(int igal, char call_function[], int call_line) {
   }
 
   //check if the mass in metals is greater than the gas mass
-  if(metals_total(Gal[igal].MetalsColdGas) > Gal[igal].ColdGas) {
-    if (metals_total(Gal[igal].MetalsColdGas) < 1e-6)
-      Gal[igal].MetalsColdGas = metals_add(metals_init(),Gal[igal].MetalsColdGas,
-					   Gal[igal].ColdGas/metals_total(Gal[igal].MetalsColdGas));
+  if(totmetals > Gal[igal].ColdGas) {
+    if (totmetals < 1e-6)
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[igal].MetalsColdGas[mm] = (Gal[igal].MetalsColdGas[mm] * Gal[igal].ColdGas/totmetals);
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, MetalsColdGas > ColdGas ***\n",call_function, call_line);
-      printf("          Gal[%d].MetalsColdGas = %g\n",igal,metals_total(Gal[igal].MetalsColdGas));
+      printf("          Gal[%d].MetalsColdGas = %g\n",igal,totmetals);
       printf("                Gal[%d].ColdGas = %g\n",igal,Gal[igal].ColdGas);
       terminate("");
     }
   }
 
   if(Gal[igal].HotGas < 0.0) {
-    if (Gal[igal].HotGas > -1e-6)
+    if (Gal[igal].HotGas > -1e-5)
       Gal[igal].HotGas = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, HotGas < 0. ***\n",call_function, call_line);
@@ -3610,12 +3699,17 @@ void mass_checks(int igal, char call_function[], int call_line) {
       terminate("");
     }
 
-  if(metals_total(Gal[igal].MetalsHotGas) < 0.0) {
-    if (metals_total(Gal[igal].MetalsHotGas) > -1e-6)
-      Gal[igal].MetalsHotGas = metals_init();
+  totmetals=0.;
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+     totmetals+= Gal[igal].MetalsHotGas[ii];
+
+  if(totmetals < 0.0) {
+    if (totmetals > -1e-6)
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	Gal[igal].MetalsHotGas[ii] = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, MetalsHotGas < 0. ***\n",call_function, call_line);
-      printf("                Gal[%d].MetalsHotGas = %g\n",igal,metals_total(Gal[igal].MetalsHotGas));
+      printf("                Gal[%d].MetalsHotGas = %g\n",igal,totmetals);
 #ifdef INDIVIDUAL_ELEMENTS
       elements_total=0.;
       for(kk=0;kk<NUM_ELEMENTS;kk++)
@@ -3626,15 +3720,15 @@ void mass_checks(int igal, char call_function[], int call_line) {
     }
   }
 
-  if(metals_total(Gal[igal].MetalsHotGas) > Gal[igal].HotGas) {
-    if (metals_total(Gal[igal].MetalsHotGas) < 1e-5)
-      Gal[igal].MetalsHotGas = metals_add(metals_init(),Gal[igal].MetalsHotGas,
-					   Gal[igal].HotGas/metals_total(Gal[igal].MetalsHotGas));
+  if(totmetals > Gal[igal].HotGas) {
+    if (totmetals < 1e-5)
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[igal].MetalsHotGas[mm] = (Gal[igal].MetalsHotGas[mm] * Gal[igal].HotGas/totmetals);
    else {
       printf("\n***  Mass check error, called from: %s, line: %d, MetalsHotGas > HotGas ***\n",call_function, call_line);
-      printf("          Gal[%d].MetalsHotGas = %g\n",igal,metals_total(Gal[igal].MetalsHotGas));
+      printf("          Gal[%d].MetalsHotGas = %g\n",igal,totmetals);
       printf("                Gal[%d].HotGas = %g\n",igal,Gal[igal].HotGas);
-      printf("          Gal[%d].MetalsHotGas = %.11f\n",igal,metals_total(Gal[igal].MetalsHotGas));
+      printf("          Gal[%d].MetalsHotGas = %.11f\n",igal,totmetals);
       printf("                Gal[%d].HotGas = %.11f\n",igal,Gal[igal].HotGas);
       printf("             Gal[%d].BulgeMass = %g\n",igal,Gal[igal].BulgeMass);
       printf("           Gal[%d].EjectedMass = %g\n",igal,Gal[igal].EjectedMass);
@@ -3647,7 +3741,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
   }
 
   if(Gal[igal].EjectedMass < 0.0) {
-    if (Gal[igal].EjectedMass > -1e-6)
+    if (Gal[igal].EjectedMass > -1e-5)
       Gal[igal].EjectedMass = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, EjectedMass < 0. ***\n",call_function, call_line);
@@ -3656,23 +3750,28 @@ void mass_checks(int igal, char call_function[], int call_line) {
     }
   }
 
-  if(metals_total(Gal[igal].MetalsEjectedMass) < 0.0) {
-    if (metals_total(Gal[igal].MetalsEjectedMass) > -1e-6)
-      Gal[igal].MetalsEjectedMass = metals_init();
+  totmetals=0.;
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+    totmetals+= Gal[igal].MetalsEjectedMass[ii];
+
+  if(totmetals < 0.0) {
+    if (totmetals > -1e-6)
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	Gal[igal].MetalsEjectedMass[ii] = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, MetalsEjectedMass < 0. ***\n",call_function, call_line);
-      printf("                Gal[%d].MetalsEjectedMass = %g\n",igal,metals_total(Gal[igal].MetalsEjectedMass));
+      printf("                Gal[%d].MetalsEjectedMass = %g\n",igal,totmetals);
       terminate("");
     }
   }
 
-  if(metals_total(Gal[igal].MetalsEjectedMass) > Gal[igal].EjectedMass) {
-    if (metals_total(Gal[igal].MetalsEjectedMass) < 1e-6)
-      Gal[igal].MetalsEjectedMass = metals_add(metals_init(),Gal[igal].MetalsEjectedMass,
-					   Gal[igal].EjectedMass/metals_total(Gal[igal].MetalsEjectedMass));
+  if(totmetals > Gal[igal].EjectedMass) {
+    if (totmetals < 1e-6)
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[igal].MetalsEjectedMass[mm] = (Gal[igal].MetalsEjectedMass[mm] * Gal[igal].EjectedMass/totmetals);
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, MetalsEjectedMass > EjectedMass ***\n",call_function, call_line);
-      printf("          Gal[%d].MetalsEjectedMass = %g\n",igal,metals_total(Gal[igal].MetalsEjectedMass));
+      printf("          Gal[%d].MetalsEjectedMass = %g\n",igal,totmetals);
       printf("                Gal[%d].EjectedMass = %g\n",igal,Gal[igal].EjectedMass);
       terminate("");
     }
@@ -3689,23 +3788,28 @@ void mass_checks(int igal, char call_function[], int call_line) {
     }
   }
 
-  if(metals_total(Gal[igal].MetalsExcessMass) < 0.0) {
-    if (metals_total(Gal[igal].MetalsExcessMass) > -1e-6)
-      Gal[igal].MetalsExcessMass = metals_init();
+  totmetals=0.;
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+    totmetals+= Gal[igal].MetalsExcessMass[ii];
+
+  if(totmetals < 0.0) {
+    if (totmetals > -1e-6)
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	Gal[igal].MetalsExcessMass[ii] = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, MetalsExcessMass < 0. ***\n",call_function, call_line);
-      printf("                Gal[%d].MetalsExcessMass = %g\n",igal,metals_total(Gal[igal].MetalsExcessMass));
+      printf("                Gal[%d].MetalsExcessMass = %g\n",igal,totmetals);
       terminate("");
     }
   }
 
-  if(metals_total(Gal[igal].MetalsExcessMass) > Gal[igal].ExcessMass) {
-    if (metals_total(Gal[igal].MetalsExcessMass) < 1e-6)
-      Gal[igal].MetalsExcessMass = metals_add(metals_init(),Gal[igal].MetalsExcessMass,
-					   Gal[igal].ExcessMass/metals_total(Gal[igal].MetalsExcessMass));
+  if(totmetals > Gal[igal].ExcessMass) {
+    if (totmetals < 1e-6)
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	Gal[igal].MetalsExcessMass[mm] = (Gal[igal].MetalsExcessMass[mm] * Gal[igal].ExcessMass/totmetals);
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, MetalsExcessMass > ExcessMass ***\n",call_function, call_line);
-      printf("          Gal[%d].MetalsExcessMass = %g\n",igal,metals_total(Gal[igal].MetalsExcessMass));
+      printf("          Gal[%d].MetalsExcessMass = %g\n",igal,totmetals);
       printf("                Gal[%d].ExcessMass = %g\n",igal,Gal[igal].ExcessMass);
       terminate("");
     }
@@ -3713,7 +3817,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 #endif
 
   if(Gal[igal].DiskMass < 0.0) {
-    if (Gal[igal].DiskMass > -1e-6)
+    if (Gal[igal].DiskMass > -1e-5)
       Gal[igal].DiskMass = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, DiskMass < 0. ***\n",call_function, call_line);
@@ -3723,7 +3827,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
   }
 
   if(Gal[igal].BulgeMass < 0.0) {
-    if (Gal[igal].BulgeMass > -1e-6)
+    if (Gal[igal].BulgeMass > -1e-5)
       Gal[igal].BulgeMass = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, BulgeMass < 0. ***\n",call_function, call_line);
@@ -3733,7 +3837,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
   }
 
   if(Gal[igal].ICM < 0.0) {
-    if (Gal[igal].ICM > -1e-6)
+    if (Gal[igal].ICM > -1e-5)
       Gal[igal].ICM = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, ICM < 0. ***\n",call_function, call_line);
@@ -3790,7 +3894,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 
 #ifdef TRACK_BURST
   if(Gal[igal].BurstMass < 0.0) {
-    if (Gal[igal].BurstMass > -1e-6)
+    if (Gal[igal].BurstMass > -1e-5)
       Gal[igal].BurstMass = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, BurstMass < 0. ***\n",call_function, call_line);
@@ -3873,7 +3977,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
       ring_sum_minus_tot+=Gal[igal].DiskMassRings[i];
       if(Gal[igal].DiskMassRings[i]<0.0)
 	{
-	  if(Gal[igal].DiskMassRings[i]> -1e-6)
+	  if(Gal[igal].DiskMassRings[i]> -1e-5)
 	    Gal[igal].DiskMassRings[i]=0.0;
 	  else
 	    {
@@ -3903,7 +4007,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
       ring_sum_minus_tot+=Gal[igal].ColdGasRings[i];
       if(Gal[igal].ColdGasRings[i]<0.0)
 	{
-	  if(Gal[igal].ColdGasRings[i]> -1e-6)
+	  if(Gal[igal].ColdGasRings[i]> -1e-5)
 	    Gal[igal].ColdGasRings[i]=0.0;
 	  else
 	    {
@@ -3913,8 +4017,8 @@ void mass_checks(int igal, char call_function[], int call_line) {
 	    }
 	}
     }
-  if((ring_sum_minus_tot < -1e-6 && ring_sum_minus_tot < -1e-6*Gal[igal].ColdGas) ||
-      (ring_sum_minus_tot >  1e-6 && ring_sum_minus_tot >  1e-6*Gal[igal].ColdGas))
+  if((ring_sum_minus_tot < -1e-5 && ring_sum_minus_tot < -1e-5*Gal[igal].ColdGas) ||
+      (ring_sum_minus_tot >  1e-5 && ring_sum_minus_tot >  1e-5*Gal[igal].ColdGas))
     {
       printf("            ring_sum_minus_tot = %g\n",ring_sum_minus_tot);
       printf("            Gal[%d].ColdGas = %g\n",igal,Gal[igal].ColdGas);

@@ -191,6 +191,8 @@ extern double EtaSNcode, EtaSN;
 
 #ifdef H2_AND_RINGS
 extern double RingRadius[RNUM];
+extern double RingArea[RNUM];
+extern double InverseRingArea[RNUM];
 #endif
 
 extern double
@@ -429,9 +431,6 @@ extern long mu_seed;
 
 #endif //COMPUTE_SPECPHOT_PROPERTIES
 
-/*For H2 formation recipe - Not Supported*/
-#define RHO_LEN 101
-#define Z_LEN 13
 
 extern size_t HighMark;
 
@@ -455,8 +454,6 @@ extern size_t offset_galaxydata, maxstorage_galaxydata, filled_galaxydata;
 extern size_t offset_galsnapdata[NOUT], maxstorage_galsnapdata[NOUT], filled_galsnapdata[NOUT];
 #endif
 
-extern float Rho[RHO_LEN];
-extern float H2[RHO_LEN][Z_LEN];
 
 extern float Reion_z[46],Reion_Mc[46];
 
@@ -469,7 +466,13 @@ extern FILE *FdGalDumps[NOUT];
 
 /*H2 fraction table*/
 #ifdef H2_AND_RINGS
-extern double h2frac[LENSIGMAH][LENZ];
+//#define RHO_LEN 101
+//#define Z_LEN 13
+#define RHO_LEN 420
+#define Z_LEN 6
+extern double H2Fraction[LENZ][LENSIGMAH];
+extern double H2Fraction_Zgrid[LENZ];
+extern double H2Fraction_SigmaHgrid[LENSIGMAH];
 #endif
 
 #ifdef HDF5_OUTPUT

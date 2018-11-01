@@ -51,7 +51,7 @@
 /** @brief main routine where the extinction is calculated */
 void dust_model(int p, int snap, int halonr)
 {
-  double nh, tau, alam, sec, Lum_disk, cosinc, Zg;
+  double nh, tau, alam, sec, Lum_disk, cosinc, Zg=0.;
   double tauv, taubc, tauvbc, mu, dly, VBand_WaveLength=0.55;
   int k;
   float gasdev(long *idum);
@@ -90,8 +90,10 @@ void dust_model(int p, int snap, int halonr)
     		mu = -1.;
         }
 
-      Zg = metals_total(Gal[p].MetalsColdGas)/Gal[p].ColdGas/0.02;
-
+      int ii;
+      for(ii=0,ii<NUM_METAL_CHANNELS;ii++)
+         Zg += Gal[p].MetalsColdGas[ii]
+      Zg/=Gal[p].ColdGas/0.02;
 
 
 #ifdef OUTPUT_REST_MAGS

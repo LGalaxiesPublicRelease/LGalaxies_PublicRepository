@@ -1087,6 +1087,12 @@ void read_observations (void)
 		  //Binomial TESTS
 		  else if(strcmp(MCMC_Obs[i].TestType,"binomial")==0)
 		    fscanf(fa, "%f %lg %lg", &BinValueColector, &MCMC_Obs[i].ObsUp[snap][j], &MCMC_Obs[i].ObsDown[snap][j]);
+
+		  /*if(strcmp(MCMC_Obs[i].Name,"StellarMassFunction")==0 && snap>0)
+		    {
+		      MCMC_Obs[i].Bin_low[snap][j]+=0.4;
+		      MCMC_Obs[i].Bin_high[snap][j]+=0.4;
+		    }*/
 		}
 	      fclose(fa);
 

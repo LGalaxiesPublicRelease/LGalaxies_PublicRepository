@@ -37,48 +37,44 @@
 
 #ifdef DETAILED_METALS_AND_MASS_RETURN
 
-/* Defined in allvars.h
+/* Defined in h_metals.h
  * struct metals
  * {
- *  float type1a;
  *  float type2;
+ *  float type1a;
  *  float agb;
  * };
  */
 
-struct metals metals_add(struct metals m1,
-			 struct metals m2,
-			 double fraction)
+union metals_arr metals_add(union metals_arr m1, union metals_arr m2, double fraction)
 {
-  struct metals m;
-  m.type1a=m1.type1a+fraction*m2.type1a;
-  m.type2=m1.type2+fraction*m2.type2;
-  m.agb=m1.agb+fraction*m2.agb;
+  union metals_arr m;
+  int ii;
+  for(ii==0;ii<3;ii++)
+    m.arr[ii]=m1.arr[ii]+fraction*m2.arr[ii];
+  return(m1);
+}
 
+union metals_arr metals_init()
+{
+  union metals_arr m;
+  int ii;
+  for(ii=0;ii<3;ii++)
+     m.arr[ii]=0.;
   return(m);
 }
 
-struct metals metals_init()
+void metals_print(char s[],union metals_arr m)
 {
-  struct metals m;
-  m.type1a=0.;
-  m.type2=0.;
-  m.agb=0.;
-  return(m);
-}
-
-
-void metals_print(char s[],struct metals m)
-{
-  printf("%s.type1a [Msun] = %.2f\n",s,m.type1a*1.0e10/Hubble_h);
-  printf("%s.type2 [Msun]  = %.2f\n",s,m.type2*1.0e10/Hubble_h);
-  printf("%s.agb  [Msun]   = %.2f\n",s,m.agb*1.0e10/Hubble_h);
+  printf("%s.type1a [Msun] = %.2f\n",s,m.str.type1a*1.0e10/Hubble_h);
+  printf("%s.type2 [Msun]  = %.2f\n",s,m.str.type2*1.0e10/Hubble_h);
+  printf("%s.agb  [Msun]   = %.2f\n",s,m.str.agb*1.0e10/Hubble_h);
   return;
 }
 
-double metals_total(struct metals m)
+double metals_total(union metals_arr m)
 {
-  return(m.type1a+m.type2+m.agb);
+  return(m.str.type1a+m.str.type2+m.str.agb);
 }
 
 #else

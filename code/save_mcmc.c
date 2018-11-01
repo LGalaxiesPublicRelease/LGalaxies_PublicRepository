@@ -17,9 +17,9 @@ void save_galaxy_for_mcmc(int gal_index)
 {
   //printf("ID=%lld snap=%d sampleID=%d\n", HaloIDs[HaloGal[gal_index].HaloNr].FirstHaloInFOFgroup,
   //		HaloGal[gal_index].SnapNum, SampleIDs[treenr]);
-  int snap, fof, j, aa;
+  int snap, fof, ii;
   float low_mass_limit, high_mass_limit, log10_StellarMass;
-  double log10_Hubble_h, PMass;
+  double log10_Hubble_h, totmetals;
 
 #ifdef MR_PLUS_MRII
   if(Switch_MR_MRII==1)
@@ -90,24 +90,75 @@ void save_galaxy_for_mcmc(int gal_index)
 	    MCMC_GAL[TotMCMCGals[snap]].DiskMass[snap] = 1E10 * HaloGal[gal_index].DiskMass * Hubble_h;
 	    MCMC_GAL[TotMCMCGals[snap]].BulgeMass[snap] = 1E10 * HaloGal[gal_index].BulgeMass * Hubble_h;
 	    MCMC_GAL[TotMCMCGals[snap]].BlackHoleMass[snap] = 1E10 * HaloGal[gal_index].BlackHoleMass; //black hole in units of h^-1
-	    MCMC_GAL[TotMCMCGals[snap]].MetalsStellarMass[snap] =
-		  1E10 * (metals_total(HaloGal[gal_index].MetalsDiskMass)+metals_total(HaloGal[gal_index].MetalsBulgeMass))*Hubble_h; //MassinMetals in units of h^-2
-	    MCMC_GAL[TotMCMCGals[snap]].MetalsColdGas[snap] =1E10 * metals_total(HaloGal[gal_index].MetalsColdGas)*Hubble_h; //MassinMetals in units of h^-2
+	    totmetals=0.;
+	    for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	      totmetals += HaloGal[gal_index].MetalsDiskMass[ii]+HaloGal[gal_index].MetalsBulgeMass[ii];
+	    MCMC_GAL[TotMCMCGals[snap]].MetalsStellarMass[snap] = 1E10 * (totmetals)*Hubble_h; //MassinMetals in units of h^-2
+	    totmetals=0.;
+	    for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	      totmetals += HaloGal[gal_index].MetalsColdGas[ii];
+	    MCMC_GAL[TotMCMCGals[snap]].MetalsColdGas[snap] =1E10 * totmetals*Hubble_h; //MassinMetals in units of h^-2
 #ifdef INDIVIDUAL_ELEMENTS
-	    double N_H, N_O;
+	    double N_H=0., N_O=0.;
+#ifdef H2_AND_RINGS
+            //ELEMENTS and RINGS
+	    int ii;
+	    double SDSS_aperture=30.;
+	    for (ii=0;ii<RNUM;ii++)
+	      {
+		if(RingRadius[ii]/Hubble_h*1000.<SDSS_aperture && HaloGal[gal_index].H2fractionRings[ii]>0.)
+		  {
+		    N_H+=HaloGal[gal_index].ColdGasRings_elements[ii][0]/1.;
+#ifndef MAINELEMENTS
+		    N_O+=HaloGal[gal_index].ColdGasRings_elements[ii][4]/16.;
+#else
+		    N_O+=HaloGal[gal_index].ColdGasRings_elements[ii][2]/16.;
+#endif
+		  }
+	      }
+
+#else
+           //ELEMENTS and NO RINGS
 	    N_H=HaloGal[gal_index].ColdGas_elements[0]/1.;
 #ifndef MAINELEMENTS
 	    N_O=HaloGal[gal_index].ColdGas_elements[4]/16.;
 #else
 	    N_O=HaloGal[gal_index].ColdGas_elements[2]/16.;
 #endif
+
+#endif
+            //calculate metallicity
 	    if((N_O>0.) && (N_H>0.))
 	      MCMC_GAL[TotMCMCGals[snap]].GasMetallicity[snap]=1.e12*(N_O/N_H);
 	    else
 	      MCMC_GAL[TotMCMCGals[snap]].GasMetallicity[snap]=0.;
+
+
+#else // INDIVIDUAL_ELEMENTS
+
+
+	    double Metals=0., Mass=0.;
+#ifdef H2_AND_RINGS
+//NO ELEMENTS and RINGS
+	    int jj;
+	    double SDSS_aperture=30.;
+	    for (jj=0;jj<RNUM;jj++)
+		if(RingRadius[jj]/Hubble_h*1000.<SDSS_aperture && HaloGal[gal_index].H2fractionRings[jj]>0.)
+		  {
+		    for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+		      Metals += HaloGal[gal_index].MetalsColdGasRings[jj][ii];
+		    Mass += HaloGal[gal_index].ColdGasRings[jj];
+		    //printf("metallicity=%0.5f\n",Metals/Mass/0.0134*pow(10.,8.69));
+		  }
 #else
-	    MCMC_GAL[TotMCMCGals[snap]].GasMetallicity[snap]=metals_total(HaloGal[gal_index].MetalsColdGas)/HaloGal[gal_index].ColdGas/0.0134*pow(10.,8.69);
+//NO ELEMENTS and No RINGS
+	    for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	      Metals += HaloGal[gal_index].MetalsColdGas[ii];
+	    Mass += HaloGal[gal_index].ColdGas;
 #endif
+	    //calculate metallicity
+	    MCMC_GAL[TotMCMCGals[snap]].GasMetallicity[snap]=Metals/Mass/0.0114*pow(10.,8.69);
+#endif //INDIVIDUAL_ELEMENTS
 
 	    //in units of Solar Masses yr^-1 h-2
 	    MCMC_GAL[TotMCMCGals[snap]].Sfr[snap] = HaloGal[gal_index].Sfr * UnitMass_in_g/UnitTime_in_s*SEC_PER_YEAR/SOLAR_MASS*Hubble_h*Hubble_h;

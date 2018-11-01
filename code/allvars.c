@@ -199,6 +199,12 @@ double EtaSNcode, EtaSN;
 double Clumpingfactor;
 double GasInflowVel;
 double RingRadius[RNUM];
+double RingArea[RNUM];
+double InverseRingArea[RNUM];
+/*H2fraction tables */
+double H2Fraction[LENZ][LENSIGMAH];
+double H2Fraction_Zgrid[LENZ];
+double H2Fraction_SigmaHgrid[LENSIGMAH];
 #endif
 
 double UnitLength_in_cm,
@@ -286,12 +292,7 @@ size_t offset_galsnapdata[NOUT], maxstorage_galsnapdata[NOUT], filled_galsnapdat
 #endif
 
 
-/*H2 formation table */
-#ifdef H2_AND_RINGS
-double h2frac[LENSIGMAH][LENZ];
-float Rho[RHO_LEN];
-float H2[RHO_LEN][Z_LEN];
-#endif
+
 /* reionization Okamoto et al. 2008*/
 float Reion_z[46],Reion_Mc[46];
 

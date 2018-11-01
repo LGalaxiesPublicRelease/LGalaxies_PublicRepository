@@ -48,6 +48,7 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
 {
 	/*! Variables: reff-Rdisk, tdyn=Rdisk/Vmax, strdot=Mstar_dot, stars=strdot*dt*/
   double tdyn, strdot=0., stars, cold_crit;
+  int ii;
 #ifdef H2_AND_RINGS
   double strdotr[RNUM], starsRings[RNUM];
   double sfe, cold_crit_rate, SigmaGas, SigmaGasratio;
@@ -71,7 +72,6 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
   tdyn = gas_radius / Vmax;
   cold_crit = SfrColdCrit * Vmax/200. * gas_radius*100.;
 
-
   //standard star formation law (Croton2006, Delucia2007, Guo2010, Henriques2015)
   if(StarFormationModel == 0)
     {
@@ -81,7 +81,6 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
 	strdot = 0.0;
     }
 
-
 #ifdef H2_AND_RINGS
   update_h2fraction(p);
 
@@ -89,7 +88,7 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
   //sfe=SfrEfficiency*UnitTime_in_years/Hubble_h/pow((1+ZZ[Gal[p].SnapNum]),1.0); //convert from yr-1 into code units of time
 
   if(SFRtdyn==1)
-    sfe= (sfe/tdyn)/UnitTime_in_years*Hubble_h*1e7; // for star formation rate proportional to 1/t_dyn
+    sfe= (sfe/tdyn)/UnitTime_in_years*Hubble_h; // for star formation rate proportional to 1/t_dyn
     //sfe= sfe/1.8/tdyn; // for star formation rate proportional to 1/t_dyn
 
   for(j=0;j<RNUM;j++)
@@ -140,16 +139,51 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
 	    area = (RingRadius[j]*RingRadius[j]-RingRadius[j-1]*RingRadius[j-1])*1e12/Hubble_h;
 	  sigma_H2 = Gal[p].ColdGasRings[j]*1e10/Hubble_h*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR/area;
 
+	  //Gal[p].H2fractionRings[j]+=Gal[p].BulgeMass*0.05;
 	  if(Gal[p].H2fractionRings[j]>=0.0)
 	    {
-	     strdotr[j] = sfe * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR ; //Only cold H2 component is proportional to star formation rate.
+	      //strdotr[j] = sfe * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR*10000.;
+	      strdotr[j] = sfe * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j] / WARM_PHASE_FACTOR;
+
+
+
+	     /* if(j==0)
+	     	    area = RingRadius[j];
+	     	  else
+	     	    area = RingRadius[j]-RingRadius[j-1];
+	     	  sigma_H2 = Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR/area;
+
+	      if(Gal[p].Type == 0)
+		{
+		  cold_crit_rate = SfrColdCrit * Gal[p].Vmax/200.  * Gal[p].ColdGasRadius/Gal[p].ColdGas*500.;
+		  //cold_crit_rate = SfrColdCrit * Gal[p].Vmax/200. / sigma_H2 * 5.e0;  //between 2 and 3
+		}
+	      else
+		{
+		  cold_crit_rate = SfrColdCrit * Gal[p].InfallVmax/200.  * Gal[p].ColdGasRadius/Gal[p].ColdGas*500.;
+		  //cold_crit_rate = SfrColdCrit * Gal[p].InfallVmax/200. / sigma_H2 * 5.e0;
+		}
+
+	      if (cold_crit_rate>1.)
+		cold_crit_rate = 1.;
+
+	         if(cold_crit_rate < 0)
+	           cold_crit_rate=0.;
+
+
+	     	    strdotr[j] = sfe * 2. * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR * (1 - cold_crit_rate);*/
+
+
+	      //strdotr[j] = sfe * Gal[p].ColdGasRings[j]* (1 - cold_crit);
+	      //strdotr[j] = sfe * Gal[p].ColdGasRings[j]/WARM_PHASE_FACTOR;
+	     //strdotr[j] = sfe * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR* (1 - cold_crit) ; //Only cold H2 component is proportional to star formation rate.
 
 	     //strdotr[j] = (12e7/tdyn)/UnitTime_in_years*Hubble_h * sigma_H2/10. * pow(1+sigma_H2/(sigma2_crit), N_sf)/pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),5.);
 	    
-	      //Somerville
-	      //strdotr[j] = (sfe*pow(10.,6.0))/UnitTime_in_years*Hubble_h * sigma_H2/10. * pow(1+sigma_H2/(sigma2_crit), N_sf);
-	      //area is in pc^2, *1e6 makes it in Kpc^2 as needed
-	      //strdotr[j] = strdotr[j] * (area * 1e6) /1e10*Hubble_h;
+	     //Somerville
+	     //strdotr[j] = (sfe*pow(10.,6.0))/UnitTime_in_years*Hubble_h * sigma_H2/10. * pow(1+sigma_H2/(sigma2_crit), N_sf);
+	     //area is in pc^2, *1e6 makes it in Kpc^2 as needed
+	     //strdotr[j] = strdotr[j] * (area * 1e6) /1e10*Hubble_h;
 	    }
 	  else strdotr[j]=0.0;
 	}
@@ -201,10 +235,14 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
 
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
 #ifndef POST_PROCESS_MAGS
+  metallicitySF=0.;
   if (Gal[p].ColdGas > 0.)
-    metallicitySF= metals_total(Gal[p].MetalsColdGas)/Gal[p].ColdGas;
-  else
-    metallicitySF=0.;
+    {
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	metallicitySF+= Gal[p].MetalsColdGas[ii];
+      metallicitySF/=Gal[p].ColdGas;
+
+    }
 #endif
 #endif
 
@@ -300,9 +338,14 @@ void update_stars_due_to_reheat(int p, int centralgal, double *stars)
 void update_stars_due_to_reheat(int p, int centralgal, double *stars, double starsRings[])
 #endif
 {
-  double reheated_mass, frac, Radius_low=0.;
+  double reheated_mass, frac, Radius_low=0.,totmetals;
+  int ii;
+
 #ifndef H2_AND_RINGS
-  reheated_mass=compute_SN_reheat(p, centralgal, *stars, Gal[p].ColdGas, metals_total(Gal[p].MetalsColdGas), Radius_low, Gal[p].ColdGasRadius);
+  totmetals=0.;
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+    totmetals+= Gal[p].MetalsColdGas[ii];
+  reheated_mass=compute_SN_reheat(p, centralgal, *stars, Gal[p].ColdGas, totmetals, Radius_low, Gal[p].ColdGasRadius);
   if((*stars + reheated_mass) > Gal[p].ColdGas)
     {
       frac = Gal[p].ColdGas / (*stars + reheated_mass);
@@ -314,7 +357,12 @@ void update_stars_due_to_reheat(int p, int centralgal, double *stars, double sta
     {
       if(jj>0)
     	Radius_low=RingRadius[jj-1];
-      reheated_mass=compute_SN_reheat(p, centralgal, starsRings[jj], Gal[p].ColdGasRings[jj], metals_total(Gal[p].MetalsColdGasRings[jj]), Radius_low, RingRadius[jj]);
+
+      totmetals=0.;
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	totmetals+= Gal[p].MetalsColdGasRings[jj][ii];
+
+      reheated_mass=compute_SN_reheat(p, centralgal, starsRings[jj], Gal[p].ColdGasRings[jj], totmetals, Radius_low, RingRadius[jj]);
       if((starsRings[jj] + reheated_mass) > Gal[p].ColdGasRings[jj])
 	{
 	  frac = Gal[p].ColdGasRings[jj] / (starsRings[jj] + reheated_mass);
@@ -442,7 +490,7 @@ void update_from_star_formation(int p, double stars, double starsRings[], char t
   * fraction of all stars formed, not just long lived */
 #ifdef DETAILED_METALS_AND_MASS_RETURN
 #ifdef METALS_SELF
-      Gal[p].MetalsHotGasSelf.type2 += Yield * FracZtoHot * stars;
+      Gal[p].MetalsHotGasSelf.str.type2 += Yield * FracZtoHot * stars;
 #endif
 #else //DETAILED_METALS_AND_MASS_RETURN
       //This part is not used if OPT+=DELAYED_ENRICHMENT_AND MASS_RETURN as yield
@@ -493,8 +541,9 @@ void SN_feedback(int p, int centralgal, double stars, double starsRings[], char 
 #endif
 {
   double EjectVmax, EjectVvir, SN_Energy, Reheat_Energy, ReScaled_EnergySNcode;
-  double reheated_mass=0., ejected_mass=0.;
+  double reheated_mass=0., ejected_mass=0., totmetals;
   double Radius_low;
+  int ii;
   /* SN FEEDBACK RECIPES */
 #ifdef H2_AND_RINGS
   int jj;
@@ -508,7 +557,12 @@ void SN_feedback(int p, int centralgal, double stars, double starsRings[], char 
   if (strcmp(feedback_location,"HotGas")==0)
     reheated_mass=0;
   else
-    reheated_mass=compute_SN_reheat(p, centralgal, stars, Gal[p].ColdGas, metals_total(Gal[p].MetalsColdGas), Radius_low, Gal[p].ColdGasRadius);
+    {
+      totmetals=0.;
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+     	totmetals+= Gal[p].MetalsColdGas[ii];
+      reheated_mass=compute_SN_reheat(p, centralgal, stars, Gal[p].ColdGas, totmetals, Radius_low, Gal[p].ColdGasRadius);
+    }
 #else
   reheated_mass=0.0;
   //stars=0;
@@ -521,7 +575,12 @@ void SN_feedback(int p, int centralgal, double stars, double starsRings[], char 
       if (strcmp(feedback_location,"HotGas")==0)
 	  reheated_massr[jj]=0.;
       else
-	  reheated_massr[jj]=compute_SN_reheat(p, centralgal, starsRings[jj], Gal[p].ColdGasRings[jj], metals_total(Gal[p].MetalsColdGasRings[jj]), Radius_low, RingRadius[jj]);
+	{
+	  totmetals=0.;
+	  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	    totmetals+= Gal[p].MetalsColdGasRings[jj][ii];
+	  reheated_massr[jj]=compute_SN_reheat(p, centralgal, starsRings[jj], Gal[p].ColdGasRings[jj], totmetals, Radius_low, RingRadius[jj]);
+	}
 
       reheated_mass+=reheated_massr[jj];
       //stars+=starsRings[jj];
@@ -904,7 +963,7 @@ void update_from_feedback(int p, int centralgal, double reheated_mass, double ej
 
   }//if(Gal[p].ColdGas > 0.)
 
-  
+  mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 
    //DO EJECTION OF GAS
   if ( (Gal[Gal[p].CentralGal].HotGas > 0. && HotGasOnType2Galaxies==0) ||
@@ -913,18 +972,18 @@ void update_from_feedback(int p, int centralgal, double reheated_mass, double ej
     if(HotGasOnType2Galaxies==0) {
       if (ejected_mass > Gal[Gal[p].CentralGal].HotGas)
 	//either eject own gas or merger_centre gas for ttype 2's
-	ejected_mass = Gal[Gal[p].CentralGal].HotGas;  
+	ejected_mass = Gal[Gal[p].CentralGal].HotGas;
+      fraction=ejected_mass/Gal[Gal[p].CentralGal].HotGas;
       
-      fraction=((float)ejected_mass)/Gal[Gal[p].CentralGal].HotGas;
     }
     else if(HotGasOnType2Galaxies==1) {
       if (ejected_mass > Gal[p].HotGas && HotGasOnType2Galaxies==1)
 	ejected_mass = Gal[p].HotGas;  //always eject own gas
-      fraction=((float)ejected_mass)/Gal[p].HotGas;
+      fraction=ejected_mass/Gal[p].HotGas;
     }
 
-    if (Gal[Gal[p].CentralGal].Type == 1) {
-      /* If type 1, or type 2 orbiting type 1 near type 0 */
+    if (Gal[Gal[p].CentralGal].Type == 1) {      /* If type 1, or type 2 orbiting type 1 near type 0 */
+
       if (FateOfSatellitesGas == 0) {
 	if(HotGasOnType2Galaxies==0)
 	  transfer_material(Gal[p].CentralGal,"EjectedMass",Gal[p].CentralGal,"HotGas",fraction,"model_starformation_and_feedback.c", __LINE__);
@@ -1105,7 +1164,7 @@ void check_disk_instability(int p, double dt)
        }
 #endif
 
-	mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
+	/*mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
        if ((Gal[p].BulgeMass > 1e-9 && Gal[p].BulgeSize == 0.0)||
        (Gal[p].BulgeMass == 0.0 && Gal[p].BulgeSize >1e-9))
 	 {
@@ -1113,7 +1172,7 @@ void check_disk_instability(int p, double dt)
 	   sprintf(sbuf, "bulgesize wrong in disk instablility.c \n");
 	   printf("BulgeMass=%g BulgeSize=%g\n",Gal[p].BulgeMass,Gal[p].BulgeSize);
 	   terminate(sbuf);
-	 }
+	 }*/
 
      }// if(stars > 0.0)
   
@@ -1285,124 +1344,4 @@ double func_size(double x, double a)
 {
   return  exp(-x)*(1+x)-(1-a);
 }  
-
-#ifdef H2_AND_RINGS
-void update_h2fraction(int p)
-{
-  int j;
-  //the central stellar surface density converted from (10^10M_sun/h)/(Mpc/h)^2 to (M_sun/pc^2)
-  double SigmaHRings;
-
-  Gal[p].H2fraction=0.;
-
-  for(j=0;j<RNUM;j++)
-    {
-      //KMT09 or Krumholz et al. 2008
-      if(H2FractionRecipe==0 || H2FractionRecipe==1)
-  	{
-	  double metallicityr;
-
-	  if(Gal[p].ColdGasRings[j]<1.0e-8) metallicityr=0.0;
-	  else metallicityr = metals_total(Gal[p].MetalsColdGasRings[j])/(Gal[p].ColdGasRings[j]*0.0134);
-	  //if(metallicityr*Clumpingfactor<0.5) metallicityr=0.5/Clumpingfactor;
-
-	  if(metallicityr<0.01)
-	    metallicityr=0.01;
-	  if(j==0)
-	    SigmaHRings = Gal[p].ColdGasRings[j] / ((M_PI* RingRadius[j]*RingRadius[j])*WARM_PHASE_FACTOR);
-	  else
-	    SigmaHRings = Gal[p].ColdGasRings[j] / ((M_PI*(RingRadius[j]*RingRadius[j]-RingRadius[j-1]*RingRadius[j-1]))*WARM_PHASE_FACTOR);
-
-	  /* now convert from 10^10 M_sun/h / (Mpc/h)^2 to (M_sun/pc^2) -> *(1.e10/h)/(1.e6/h*1.e6/h)*/
-	  SigmaHRings=SigmaHRings*0.01*Hubble_h;
-
-	  //update to clumping factor, as in Fu2013, to solve problems with low-z galaxies
-	  if(metallicityr<1.0)
-	    SigmaHRings=SigmaHRings*Clumpingfactor*pow((1.0/metallicityr),0.7);
-	    //SigmaHRings=SigmaHRings*Clumpingfactor;
-
-	  //KMT09 - updated in Fu2013 (eq 11 and 12)
-	  if(H2FractionRecipe==0)
-	    {
-	      double tau, khi, s;
-	      khi=3.1*(1.+3.1*pow(metallicityr,0.365))/4.1;
-	      tau=0.066*SigmaHRings*metallicityr;
-	      s=log(1.+0.6*khi+0.01*khi*khi)/(0.6*tau);
-
-	      if(s<2.0)
-		Gal[p].H2fractionRings[j]=(1-0.75*s/(1+0.25*s));///pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),0.75);	    
-	      else
-		Gal[p].H2fractionRings[j]=0.0;
-	      //if(Gal[p].H2fractionRings[j]<0.01) Gal[p].H2fractionRings[j]=0.01;
-	    }
-	  //Krumholz et al. 2008
-	  else if(H2FractionRecipe==1)
-	    {
-	      /*convert to log10*/
-	      metallicityr = log10(metallicityr);
-	      SigmaHRings=log10(SigmaHRings);
-	      Gal[p].H2fractionRings[j]=update_H2fraction_KMT08(SigmaHRings,metallicityr);
-	    }
-  	  }
-      //Blitz & Rosolowsky 2006, pressure recipe
-      else if(H2FractionRecipe==2)
-	{
-	  double SigmaStarRings, alpha_p=0.92;
-	  double SigmaStar0 = (Gal[p].DiskMassRings[0]/(RingRadius[0]*RingRadius[0]*M_PI))*0.01*Hubble_h;
-	  if(j==0)
-	    {
-	      SigmaHRings = Gal[p].ColdGasRings[j] / (M_PI* RingRadius[j]*RingRadius[j])/WARM_PHASE_FACTOR;
-	      SigmaStarRings=Gal[p].DiskMassRings[j] / (M_PI* RingRadius[j]*RingRadius[j]);
-	    }
-	  else
-	    {
-	      SigmaHRings = Gal[p].ColdGasRings[j] / (M_PI*(RingRadius[j]*RingRadius[j]-RingRadius[j-1]*RingRadius[j-1]))/WARM_PHASE_FACTOR;
-	      SigmaStarRings = Gal[p].DiskMassRings[j] / (M_PI*(RingRadius[j]*RingRadius[j]-RingRadius[j-1]*RingRadius[j-1]));
-	    }
-	  SigmaHRings*=(0.01*Hubble_h);
-	  SigmaStarRings*=(0.01*Hubble_h);	//from 10^10 M_sun/h / (Mpc/h)^2 to (M_sun/pc^2) */
-	  Gal[p].H2fractionRings[j]=1.38e-3*pow(SigmaHRings*(SigmaHRings+0.1*sqrt(SigmaStar0*SigmaStarRings)),alpha_p);
-	  //Gal[p].H2fractionRings[j]=6.81e-3*pow(SigmaHRings*(SigmaHRings+0.1*sqrt(SigmaStar0*SigmaStarRings)),0.80);
-	  if(Gal[p].H2fractionRings[j]<1.0e-8)
-	    Gal[p].H2fractionRings[j]=0.0;
-	  else
-	    Gal[p].H2fractionRings[j]=1/(1+1/Gal[p].H2fractionRings[j]);
-	}
-      else Gal[p].H2fractionRings[j]=0;
-
-      Gal[p].H2fraction += Gal[p].H2fractionRings[j] * Gal[p].ColdGasRings[j]/Gal[p].ColdGas;
-
-    }
-
-  if(Gal[p].ColdGas<1.0e-7) Gal[p].H2fraction=0.0;
-
-
-
-
-}
-
-//only used if H2FractionRecipe=1
-double update_H2fraction_KMT08(double logsigmah, double metallicity )
-{
-	int i,j;
-	double logNHtot[LENSIGMAH],lgZ[LENZ],mf,mf1,mf2;
-	for ( i=0,logNHtot[0]=-1;i<(LENSIGMAH-1);i++ ) logNHtot[i+1]=logNHtot[i]+0.05;
-	for ( j=0,lgZ[0]=-2;j<(LENZ-1);j++ ) lgZ[j+1]=lgZ[j]+0.25;
-
-	if ( logsigmah<logNHtot[0] ) logsigmah=logNHtot[0];
-	if ( logsigmah>logNHtot[i-1] ) logsigmah=logNHtot[i-1];
-	for ( i=0;logsigmah > logNHtot[i + 1];i++ );
-
-	if ( metallicity<lgZ[0] ) metallicity=lgZ[0];
-	if ( metallicity>lgZ[j-1] ) metallicity=lgZ[j-1];
-	for ( j=0;metallicity>lgZ[j+1];j++ );
-
-	mf1=h2frac[i][j]+ ( h2frac[i][j+1]-h2frac[i][j] ) * ( metallicity-lgZ[j] ) / ( lgZ[j+1]-lgZ[j] );
-	mf2=h2frac[i+1][j]+ ( h2frac[i+1][j+1]-h2frac[i+1][j] ) * ( metallicity-lgZ[j] ) / ( lgZ[j+1]-lgZ[j] );
-	mf=mf1+ ( mf2-mf1 ) * ( logsigmah-logNHtot[i] ) / ( logNHtot[i+1]-logNHtot[i] );
-
-	return ( mf );
-}
-#endif
-
 

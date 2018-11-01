@@ -20,7 +20,7 @@
 
 void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
 {
-	int Zi, igal;
+	int Zi, igal, ii;
 	double timestep_width; //Width of current timestep in CODE UNITS
 	int TimeBin; //Bin in Yield arrays corresponding to current timestep
 	double Zi_disp;
@@ -41,9 +41,9 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
 #endif
 	double SNIIEjectaMass, SNIaEjectaMass, AGBEjectaMass;
 	double SNIIUnProcessedMetals, SNIaUnProcessedMetals, AGBUnProcessedMetals, SNIIAllMetals, SNIaAllMetals, AGBAllMetals;
+#ifdef INDIVIDUAL_ELEMENTS
 	double SNIIAllElements[NUM_ELEMENTS], SNIaAllElements[NUM_ELEMENTS], AGBAllElements[NUM_ELEMENTS];
 	double SNIIUnProcessedElements[NUM_ELEMENTS], SNIaUnProcessedElements[NUM_ELEMENTS], AGBUnProcessedElements[NUM_ELEMENTS];
-#ifdef INDIVIDUAL_ELEMENTS
 	int kk;
 	double DiskMetallicityElement_Phys[NUM_ELEMENTS];
 	double BulgeMetallicityElement_Phys[NUM_ELEMENTS];
@@ -119,7 +119,11 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
 	//timestep_width and dt units cancel out
     	DiskSFRxStep = timestep_width * Gal[p].sfh_DiskMass[i]/Gal[p].sfh_dt[i];
     	DiskSFRxStep_Phys = DiskSFRxStep * (1.0e10/Hubble_h);
-    	DiskMetallicity=metals_total(Gal[p].sfh_MetalsDiskMass[i])/(Gal[p].sfh_DiskMass[i]);
+    	DiskMetallicity = 0.;
+    	for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+    	  DiskMetallicity += Gal[p].sfh_MetalsDiskMass[i][ii];
+    	DiskMetallicity /= Gal[p].sfh_DiskMass[i];
+
 #ifdef INDIVIDUAL_ELEMENTS
     	for (kk=0;kk<NUM_ELEMENTS;kk++)
     	  DiskMetallicityElement_Phys[kk] = Gal[p].sfh_DiskMass_elements[i][kk] / (Gal[p].sfh_DiskMass[i]*1.0e10/Hubble_h);
@@ -166,22 +170,22 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
      	//If there was no hotgas left in the galaxy it will probably be stripped next step. Give it a fake HotRadius for now to avoid crash at mass checks
      	//if(Gal[igal].HotGas>0. && Gal[igal].HotRadius==0)
      	//  Gal[igal].HotRadius=1.e-10;
-     	Gal[igal].MetalsHotGas.type2 += fwind * SNIIAllMetals;
+     	Gal[igal].MetalsHotGas[0] += fwind * SNIIAllMetals;
 
      	//Cold Gas
      	//Gal[p].ColdGas += (DiskSFRxStep * NormMassEjecRateAllTypes)-fwind * SNIIEjecta;
      	Gal[p].ColdGas += (1.0-fwind) * SNIIEjectaMass + SNIaEjectaMass + AGBEjectaMass;
-     	Gal[p].MetalsColdGas.type2 += (1.0-fwind) * SNIIAllMetals;
-     	Gal[p].MetalsColdGas.type1a += SNIaAllMetals;
-     	Gal[p].MetalsColdGas.agb += AGBAllMetals;
+     	Gal[p].MetalsColdGas[0] += (1.0-fwind) * SNIIAllMetals;
+     	Gal[p].MetalsColdGas[1] += SNIaAllMetals;
+     	Gal[p].MetalsColdGas[2] += AGBAllMetals;
 #ifdef H2_AND_RINGS
      	for(jj=0;jj<RNUM;jj++)
      	  {
      	    //Gal[p].ColdGasRings[jj] += fractionRings[jj] * ((DiskSFRxStep * NormMassEjecRateAllTypes)-fwind * SNIIEjecta);
      	    Gal[p].ColdGasRings[jj] += fractionRings[jj] * ((1.0-fwind) * SNIIEjectaMass + SNIaEjectaMass + AGBEjectaMass);
-     	    Gal[p].MetalsColdGasRings[jj].type2 += fractionRings[jj] * (1.0-fwind) * SNIIAllMetals;
-     	    Gal[p].MetalsColdGasRings[jj].type1a += fractionRings[jj] * SNIaAllMetals;
-     	    Gal[p].MetalsColdGasRings[jj].agb += fractionRings[jj] * AGBAllMetals;
+     	    Gal[p].MetalsColdGasRings[jj][0] += fractionRings[jj] * (1.0-fwind) * SNIIAllMetals;
+     	    Gal[p].MetalsColdGasRings[jj][1] += fractionRings[jj] * SNIaAllMetals;
+     	    Gal[p].MetalsColdGasRings[jj][2] += fractionRings[jj] * AGBAllMetals;
      	  }
 #endif
 
@@ -202,19 +206,19 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
      	//If there was no hotgas left in the galaxy it will probably be stripped next step. Give it a fake HotRadius for now to avoid crash at mass checks
      	//if(Gal[igal].HotGas>0. && Gal[igal].HotRadius==0)
      	//  Gal[igal].HotRadius=1.e-10;
-     	Gal[igal].MetalsHotGas.type2 += fwind * SNIIAllMetals;
-     	Gal[p].MetalsHotGas.type1a += SNIaAllMetals;
+     	Gal[igal].MetalsHotGas[0] += fwind * SNIIAllMetals;
+     	Gal[igal].MetalsHotGas[1] += SNIaAllMetals;
 
      	//Cold Gas
      	Gal[p].ColdGas += (1.0-fwind) * SNIIEjectaMass + AGBEjectaMass;
-     	Gal[p].MetalsColdGas.type2 += (1.0-fwind) * SNIIAllMetals;
-     	Gal[p].MetalsColdGas.agb += AGBAllMetals;
+     	Gal[p].MetalsColdGas[0] += (1.0-fwind) * SNIIAllMetals;
+     	Gal[p].MetalsColdGas[2] += AGBAllMetals;
 #ifdef H2_AND_RINGS
      	for(jj=0;jj<RNUM;jj++)
      	  {
      	    Gal[p].ColdGasRings[jj] += fractionRings[jj] * ((1.0-fwind) * SNIIEjectaMass + AGBEjectaMass);
-     	    Gal[p].MetalsColdGasRings[jj].type2 += fractionRings[jj] * (1.0-fwind) * SNIIAllMetals;
-     	    Gal[p].MetalsColdGasRings[jj].agb += fractionRings[jj] * AGBAllMetals;
+     	    Gal[p].MetalsColdGasRings[jj][0] += fractionRings[jj] * (1.0-fwind) * SNIIAllMetals;
+     	    Gal[p].MetalsColdGasRings[jj][2] += fractionRings[jj] * AGBAllMetals;
      	  }
 #endif
 
@@ -261,7 +265,7 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
 
 
 
-
+     	mass_checks(p,"model_yields.c",__LINE__);
 
 
      	//*****************************
@@ -271,17 +275,17 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
      	 * i.e. All the mass/metals/elements in the stars at birth are removed...
      	 *...Some goes to the gas (+ newly synthesised component), the rest goes into the 'stellar remnants' which are not tracked and do not contribute to the stellar component's mass/metals/elements budget.*/
      	Gal[p].DiskMass -= SNIIEjectaMass + SNIaEjectaMass + AGBEjectaMass;
-     	Gal[p].MetalsDiskMass.type2 -= SNIIUnProcessedMetals;
-     	Gal[p].MetalsDiskMass.type1a -= SNIaUnProcessedMetals;
-     	Gal[p].MetalsDiskMass.agb -= AGBUnProcessedMetals;
+     	Gal[p].MetalsDiskMass[0] -= SNIIUnProcessedMetals;
+     	Gal[p].MetalsDiskMass[1] -= SNIaUnProcessedMetals;
+     	Gal[p].MetalsDiskMass[2] -= AGBUnProcessedMetals;
 
 #ifdef H2_AND_RINGS
      	for(jj=0;jj<RNUM;jj++)
      	  {
      	    Gal[p].DiskMassRings[jj]-= fractionRings[jj] * (SNIIEjectaMass + SNIaEjectaMass + AGBEjectaMass);
-     	    Gal[p].MetalsDiskMassRings[jj].type2-= fractionRings[jj] * SNIIUnProcessedMetals;
-     	    Gal[p].MetalsDiskMassRings[jj].type1a-= fractionRings[jj] * SNIaUnProcessedMetals;
-     	    Gal[p].MetalsDiskMassRings[jj].agb-= fractionRings[jj] * AGBUnProcessedMetals;
+     	    Gal[p].MetalsDiskMassRings[jj][0]-= fractionRings[jj] * SNIIUnProcessedMetals;
+     	    Gal[p].MetalsDiskMassRings[jj][1]-= fractionRings[jj] * SNIaUnProcessedMetals;
+     	    Gal[p].MetalsDiskMassRings[jj][2]-= fractionRings[jj] * AGBUnProcessedMetals;
      	  }
 #endif
 	//mass_checks(p,"model_yields.c",__LINE__);
@@ -329,7 +333,10 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
     	//Note: This is NOT really a SFR, as no stars are formed in the bulge. Rather, this is a star-transfer rate from the disc (or mergers) to the bulge.
     	BulgeSFRxStep = timestep_width * Gal[p].sfh_BulgeMass[i]/Gal[p].sfh_dt[i];
     	BulgeSFRxStep_Phys = BulgeSFRxStep * (1.0e10/Hubble_h);
-    	BulgeMetallicity=metals_total(Gal[p].sfh_MetalsBulgeMass[i])/Gal[p].sfh_BulgeMass[i];
+    	BulgeMetallicity = 0.;
+    	for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+    	  BulgeMetallicity += Gal[p].sfh_MetalsBulgeMass[i][ii];
+    	BulgeMetallicity /= Gal[p].sfh_BulgeMass[i];
 #ifdef INDIVIDUAL_ELEMENTS
     	for (kk=0;kk<NUM_ELEMENTS;kk++)
     	  BulgeMetallicityElement_Phys[kk] = Gal[p].sfh_BulgeMass_elements[i][kk] / (Gal[p].sfh_BulgeMass[i]*1.0e10/Hubble_h);
@@ -396,9 +403,9 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
     	if(Gal[igal].HotGas>0. && Gal[igal].HotRadius==0)
     	  Gal[igal].HotRadius=1.e-10;
     	TotalMassReturnedToHotGas += SNIIEjectaMass + SNIaEjectaMass + AGBEjectaMass;
-    	Gal[igal].MetalsHotGas.type2 += SNIIAllMetals;
-    	Gal[igal].MetalsHotGas.type1a += SNIaAllMetals;
-    	Gal[igal].MetalsHotGas.agb += AGBAllMetals;
+    	Gal[igal].MetalsHotGas[0] += SNIIAllMetals;
+    	Gal[igal].MetalsHotGas[1] += SNIaAllMetals;
+    	Gal[igal].MetalsHotGas[2] += AGBAllMetals;
 
 #ifdef INDIVIDUAL_ELEMENTS
     	for(kk=0;kk<NUM_ELEMENTS;kk++)
@@ -409,17 +416,17 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
 
 #else //BULGE_TO_COLD
     	Gal[p].ColdGas += SNIIEjectaMass + SNIaEjectaMass + AGBEjectaMass;
-    	Gal[p].MetalsColdGas.type2 += SNIIAllMetals;
-    	Gal[p].MetalsColdGas.type1a += SNIaAllMetals;
-    	Gal[p].MetalsColdGas.agb += AGBAllMetals;
+    	Gal[p].MetalsColdGas[0] += SNIIAllMetals;
+    	Gal[p].MetalsColdGas[1] += SNIaAllMetals;
+    	Gal[p].MetalsColdGas[2] += AGBAllMetals;
 
 #ifdef H2_AND_RINGS
      	for(jj=0;jj<RNUM;jj++)
      	  {
      	    Gal[p].ColdGasRings[jj] += fractionRingsBulge[jj] *  (SNIIEjectaMass + SNIaEjectaMass + AGBEjectaMass);
-     	    Gal[p].MetalsColdGasRings[jj].type2 += fractionRingsBulge[jj] *  SNIIAllMetals;
-     	    Gal[p].MetalsColdGasRings[jj].type1a += fractionRingsBulge[jj] *  SNIaAllMetals;
-     	    Gal[p].MetalsColdGasRings[jj].agb += fractionRingsBulge[jj] *  AGBAllMetals;
+     	    Gal[p].MetalsColdGasRings[jj][0] += fractionRingsBulge[jj] *  SNIIAllMetals;
+     	    Gal[p].MetalsColdGasRings[jj][1] += fractionRingsBulge[jj] *  SNIaAllMetals;
+     	    Gal[p].MetalsColdGasRings[jj][2] += fractionRingsBulge[jj] *  AGBAllMetals;
      	  }
 #endif
 
@@ -450,17 +457,17 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
     	// UPDATE BULGE MASS COMPONENTS:
     	//*****************************
     	Gal[p].BulgeMass -= SNIIEjectaMass + SNIaEjectaMass + AGBEjectaMass;
-    	Gal[p].MetalsBulgeMass.type2 -= SNIIUnProcessedMetals;
-    	Gal[p].MetalsBulgeMass.type1a -= SNIaUnProcessedMetals;
-    	Gal[p].MetalsBulgeMass.agb -= AGBUnProcessedMetals;
+    	Gal[p].MetalsBulgeMass[0] -= SNIIUnProcessedMetals;
+    	Gal[p].MetalsBulgeMass[1] -= SNIaUnProcessedMetals;
+    	Gal[p].MetalsBulgeMass[2] -= AGBUnProcessedMetals;
 
 #ifdef RINGS_IN_BULGES
      	for(jj=0;jj<RNUM;jj++)
      	  {
      	    Gal[p].BulgeMassRings[jj]-= fractionRingsBulge[jj] * (SNIIEjectaMass + SNIaEjectaMass + AGBEjectaMass);
-     	    Gal[p].MetalsBulgeMassRings[jj].type2-= fractionRingsBulge[jj] * SNIIUnProcessedMetals;
-     	    Gal[p].MetalsBulgeMassRings[jj].type1a-= fractionRingsBulge[jj] * SNIaUnProcessedMetals;
-     	    Gal[p].MetalsBulgeMassRings[jj].agb-= fractionRingsBulge[jj] * AGBUnProcessedMetals;
+     	    Gal[p].MetalsBulgeMassRings[jj][0]-= fractionRingsBulge[jj] * SNIIUnProcessedMetals;
+     	    Gal[p].MetalsBulgeMassRings[jj][1]-= fractionRingsBulge[jj] * SNIaUnProcessedMetals;
+     	    Gal[p].MetalsBulgeMassRings[jj][2]-= fractionRingsBulge[jj] * AGBUnProcessedMetals;
      	  }
 #endif
 
@@ -507,7 +514,10 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
     	//Note: This is NOT really an SFR, as no stars are formed in the ICM. Rather, this is a star-transfer rate from satellite disruption to the stellar halo.
     	ICMSFRxStep = timestep_width * Gal[p].sfh_ICM[i]/Gal[p].sfh_dt[i];
     	ICMSFRxStep_Phys = ICMSFRxStep * (1.0e10/Hubble_h) ;
-    	ICMMetallicity=metals_total(Gal[p].sfh_MetalsICM[i])/Gal[p].sfh_ICM[i];
+    	ICMMetallicity=0.;
+    	for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+    	  ICMMetallicity += Gal[p].sfh_MetalsICM[i][ii];
+    	ICMMetallicity /= Gal[p].sfh_ICM[i];
 #ifdef INDIVIDUAL_ELEMENTS
     	for (kk=0;kk<NUM_ELEMENTS;kk++)
     	  ICMMetallicityElement_Phys[kk] = Gal[p].sfh_ICM_elements[i][kk] / (Gal[p].sfh_ICM[i]*1.0e10/Hubble_h);
@@ -545,9 +555,9 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
     	  Gal[igal].HotRadius=1.e-10;
 
     	TotalMassReturnedToHotGas += SNIIEjectaMass + SNIaEjectaMass + AGBEjectaMass;
-    	Gal[igal].MetalsHotGas.type2 += SNIIAllMetals;
-    	Gal[igal].MetalsHotGas.type1a += SNIaAllMetals;
-    	Gal[igal].MetalsHotGas.agb += AGBAllMetals;
+    	Gal[igal].MetalsHotGas[0] += SNIIAllMetals;
+    	Gal[igal].MetalsHotGas[1] += SNIaAllMetals;
+    	Gal[igal].MetalsHotGas[2] += AGBAllMetals;
 
 #ifdef INDIVIDUAL_ELEMENTS
     	for(kk=0;kk<NUM_ELEMENTS;kk++)
@@ -559,9 +569,9 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
     	// UPDATE ICM COMPONENTS:
     	//*****************************
     	Gal[p].ICM -= SNIIEjectaMass + SNIaEjectaMass + AGBEjectaMass;
-    	Gal[p].MetalsICM.type2 -= SNIIUnProcessedMetals;
-    	Gal[p].MetalsICM.type1a -= SNIaUnProcessedMetals;
-    	Gal[p].MetalsICM.agb -= AGBUnProcessedMetals;
+    	Gal[p].MetalsICM[0] -= SNIIUnProcessedMetals;
+    	Gal[p].MetalsICM[1] -= SNIaUnProcessedMetals;
+    	Gal[p].MetalsICM[2] -= AGBUnProcessedMetals;
 
 #ifdef INDIVIDUAL_ELEMENTS
     	for(kk=0;kk<NUM_ELEMENTS;kk++)
@@ -637,7 +647,6 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
         for(ii=0;ii<3;ii++)
           Gal[p].ColdGasSpin[ii]=((Gal[p].ColdGasSpin[ii])*(Gal[p].ColdGas)+1./sqrt(3)*diskspinpar*TotalMassReturnedToColdDiskGas)/(Gal[p].ColdGas+TotalMassReturnedToColdDiskGas);*/
 
-      int ii;
       if (Gal[p].ColdGas+TotalMassReturnedToColdDiskGas > 1.e-8)
 	for (ii = 0; ii < 3; ii++)
 	  Gal[p].ColdGasSpin[ii]=((Gal[p].ColdGasSpin[ii])*(Gal[p].ColdGas)+TotalMassReturnedToColdDiskGas*Gal[p].DiskSpin[ii])/(Gal[p].ColdGas+TotalMassReturnedToColdDiskGas);
@@ -765,12 +774,14 @@ void compute_actual_eject_rates(int TimeBin, int i, int Zi, double Zi_disp, int 
 
 int find_initial_metallicity(int p, int sfh_bin, int table_type, int component_type)
 {
-	if (component_type == 1) //Disk stars
+  int ii;
+  if (component_type == 1) //Disk stars
 	{
 	int i, Zi_bin;
-	double initMetals, Z_disk;
+	double initMetals=0., Z_disk;
 
-	initMetals = metals_total(Gal[p].sfh_MetalsDiskMass[sfh_bin]); //IN [10^10/h Msun]
+	for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	  initMetals += Gal[p].sfh_MetalsDiskMass[sfh_bin][ii];
 	Zi_bin = -1;
 	i = 0;
 	if (initMetals == 0.0 || Gal[p].sfh_DiskMass[sfh_bin] == 0.0)
@@ -823,9 +834,10 @@ int find_initial_metallicity(int p, int sfh_bin, int table_type, int component_t
 	else if (component_type == 2) //Bulge stars
 	{
 		int i, Zi_bin;
-		double initMetals, Z_bulge;
+		double initMetals=0., Z_bulge;
 
-		initMetals = metals_total(Gal[p].sfh_MetalsBulgeMass[sfh_bin]); //IN [10^10/h Msun]
+		for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+			  initMetals += Gal[p].sfh_MetalsBulgeMass[sfh_bin][ii];
 		Zi_bin = -1;
 		i = 0;
 		if (initMetals == 0.0 || Gal[p].sfh_BulgeMass[sfh_bin] == 0.0)
@@ -839,7 +851,7 @@ int find_initial_metallicity(int p, int sfh_bin, int table_type, int component_t
 			case 1: //Lifetime metallicity table
 				while (Zi_bin == -1)
 				{
-					if (lifetimeMetallicities[i] < Z_bulge) //Gal[p].sfh_MetalsDiskMass[sfh_bin].type2/Gal[p].sfh_DiskMass[sfh_bin])
+					if (lifetimeMetallicities[i] < Z_bulge) //Gal[p].sfh_MetalsDiskMass[sfh_bin][0]/Gal[p].sfh_DiskMass[sfh_bin])
 					{
 						i++;
 						if (i == LIFETIME_Z_NUM) Zi_bin = i; //If galaxy's Z is higher than max Z from table, then just take max Z from table
@@ -877,9 +889,10 @@ int find_initial_metallicity(int p, int sfh_bin, int table_type, int component_t
 	else if (component_type == 3) //ICL stars
 		{
 			int i, Zi_bin;
-			double initMetals, Z_ICM;
+			double initMetals=0., Z_ICM;
 
-			initMetals = metals_total(Gal[p].sfh_MetalsICM[sfh_bin]); //IN [10^10/h Msun]
+			for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+				  initMetals += Gal[p].sfh_MetalsICM[sfh_bin][ii];
 			Zi_bin = -1;
 			i = 0;
 			if (initMetals == 0.0 || Gal[p].sfh_ICM[sfh_bin] == 0.0)

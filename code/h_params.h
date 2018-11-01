@@ -58,7 +58,7 @@
 
 
 #ifdef FAST_TESTING_MODE
-#define  STEPS 10
+#define  STEPS 5
 #else
 #define  STEPS 20
 #endif
@@ -67,8 +67,10 @@
 #define RNUM 12          /* radially divide one disk into RNUM */
 //#define RNUM 30          /* radially divide one disk into RNUM */
 #define WARM_PHASE_FACTOR 1.3 // to use when deriving HI and H2 from total cold gas because 1/3 of it is ionized)
-#define LENSIGMAH 101  /*H2 fraction table from Krumholz et al. 2009*/
-#define LENZ 13
+#define LENSIGMAH 40
+#define LENZ 6
+//#define LENSIGMAH 101
+//#define LENZ 13
 #endif
 				
 #define  ALLOCPARAMETER 50.  /* new definition !!! THIS HAS TO BE 50 !!! DONT EVER EVER EVER CHANGE !!! */

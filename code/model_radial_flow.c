@@ -10,16 +10,13 @@
 void gas_inflow(int p, double time)
 {
   double r_in, r_out, gas_old[RNUM], newarea, r1, r2, frac, alpha, inflowfrac, rgas;
-  int j, index;
-	
+  int j, index, ii;
+  double gasmetal_old[RNUM][NUM_METAL_CHANNELS];
 #ifdef DETAILED_METALS_AND_MASS_RETURN
-  struct metals gasmetal_old[RNUM];
 #ifdef INDIVIDUAL_ELEMENTS
   int kk;
   double gasElements_old[RNUM][NUM_ELEMENTS];
 #endif
-#else
-  double gasmetal_old[RNUM];
 #endif
 
   if(Gal[p].ColdGas<1.0e-6)
@@ -38,14 +35,16 @@ void gas_inflow(int p, double time)
     {
       inflowfrac=1.00;
       gas_old[j]=Gal[p].ColdGasRings[j]*inflowfrac;
-      gasmetal_old[j]=metals_add(metals_init(),Gal[p].MetalsColdGasRings[j],inflowfrac);
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	gasmetal_old[j][ii]=(Gal[p].MetalsColdGasRings[j][ii] * inflowfrac);
 #ifdef INDIVIDUAL_ELEMENTS
       for (kk=0;kk<NUM_ELEMENTS;kk++)
 	gasElements_old[j][kk]=Gal[p].ColdGasRings_elements[j][kk]*inflowfrac;
 #endif
 
       Gal[p].ColdGasRings[j]*=(1-inflowfrac);
-      Gal[p].MetalsColdGasRings[j]=metals_add(metals_init(),Gal[p].MetalsColdGasRings[j],(1.-inflowfrac));
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	Gal[p].MetalsColdGasRings[j][ii]=(Gal[p].MetalsColdGasRings[j][ii] * (1.-inflowfrac));
 #ifdef INDIVIDUAL_ELEMENTS
       for (kk=0;kk<NUM_ELEMENTS;kk++)
 	Gal[p].ColdGasRings_elements[j][kk]=Gal[p].ColdGasRings_elements[j][kk]*(1.-inflowfrac);
@@ -71,7 +70,8 @@ void gas_inflow(int p, double time)
 	{
 	  index=0;
 	  Gal[p].ColdGasRings[0]+=gas_old[j];
-	  Gal[p].MetalsColdGasRings[0]=metals_add(Gal[p].MetalsColdGasRings[0],gasmetal_old[j],1.);
+	  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	    Gal[p].MetalsColdGasRings[0][ii] += gasmetal_old[j][ii];
 #ifdef INDIVIDUAL_ELEMENTS
 	  for (kk=0;kk<NUM_ELEMENTS;kk++)
 	    Gal[p].ColdGasRings_elements[0][kk]+=gasElements_old[j][kk];
@@ -88,7 +88,8 @@ void gas_inflow(int p, double time)
 	    {
 	      frac=(r2*r2-r1*r1)/newarea;
 	      Gal[p].ColdGasRings[index+1]+=frac*gas_old[j];
-	      Gal[p].MetalsColdGasRings[index+1]=metals_add(Gal[p].MetalsColdGasRings[index+1],gasmetal_old[j],frac);
+	      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+		Gal[p].MetalsColdGasRings[index+1][ii] += (gasmetal_old[j][ii]*frac);
 #ifdef INDIVIDUAL_ELEMENTS
 	      for (kk=0;kk<NUM_ELEMENTS;kk++)
 		Gal[p].ColdGasRings_elements[index+1][kk]+=(gasElements_old[j][kk]*frac);
@@ -101,7 +102,8 @@ void gas_inflow(int p, double time)
 	  r1=r_in;
 	  frac=(r2*r2-r1*r1)/newarea;
 	  Gal[p].ColdGasRings[index+1]+=frac*gas_old[j];
-	  Gal[p].MetalsColdGasRings[index+1]=metals_add(Gal[p].MetalsColdGasRings[index+1],gasmetal_old[j],frac);
+	  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	    Gal[p].MetalsColdGasRings[index+1][ii] += (gasmetal_old[j][ii] * frac);
 #ifdef INDIVIDUAL_ELEMENTS
 	  for (kk=0;kk<NUM_ELEMENTS;kk++)
 	    Gal[p].ColdGasRings_elements[index+1][kk]+=(gasElements_old[j][kk]*frac);

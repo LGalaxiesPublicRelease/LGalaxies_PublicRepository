@@ -71,51 +71,30 @@ struct GALAXY			/* Galaxy data */
 #endif
   float BlackHoleMass;
   float BlackHoleGas;
-#ifdef DETAILED_METALS_AND_MASS_RETURN
-  struct metals MetalsColdGas;
+  float ICM;
+
+  float MetalsColdGas[NUM_METAL_CHANNELS];
 #ifdef H2_AND_RINGS
-  struct metals MetalsColdGasRings[RNUM];
+  float MetalsColdGasRings[RNUM][NUM_METAL_CHANNELS];
 #endif
-  struct metals MetalsDiskMass;
-  struct metals MetalsBulgeMass;
+  float MetalsDiskMass[NUM_METAL_CHANNELS];
+  float MetalsBulgeMass[NUM_METAL_CHANNELS];
 #ifdef H2_AND_RINGS
-  struct metals MetalsDiskMassRings[RNUM];
+  float MetalsDiskMassRings[RNUM][NUM_METAL_CHANNELS];
 #ifdef RINGS_IN_BULGES
-  struct metals MetalsBulgeMassRings[RNUM];
+  float MetalsBulgeMassRings[RNUM][NUM_METAL_CHANNELS];
 #endif
 #endif
-  struct metals MetalsHotGas;
-  //struct metals MetalsReheatedGas;
-  struct metals MetalsEjectedMass;
+  float MetalsHotGas[NUM_METAL_CHANNELS];
+  //float MetalsReheatedGas;
+  float MetalsEjectedMass[NUM_METAL_CHANNELS];
 #ifdef EXCESS_MASS
-  struct metals MetalsExcessMass;
+  float MetalsExcessMass[NUM_METAL_CHANNELS];
 #endif
 #ifdef METALS_SELF
-  struct metals MetalsHotGasSelf;
+  float MetalsHotGasSelf[NUM_METAL_CHANNELS];
 #endif
-#else
-  double MetalsColdGas;
-#ifdef H2_AND_RINGS
-  double MetalsColdGasRings[RNUM];
-#endif
-  double MetalsDiskMass;
-  double MetalsBulgeMass;
-#ifdef H2_AND_RINGS
-  double MetalsDiskMassRings[RNUM];
-#ifdef RINGS_IN_BULGES
-  double MetalsBulgeMassRings[RNUM];
-#endif
-#endif
-  double MetalsHotGas;
-  //double MetalsReheatedGas;
-  double MetalsEjectedMass;
-#ifdef EXCESS_MASS
-  float MetalsExcessMass;
-#endif
-#ifdef METALS_SELF
-  float MetalsHotGasSelf;
-#endif
-#endif //DETAILED_METALS_AND_MASS_RETURN
+  float MetalsICM[NUM_METAL_CHANNELS];
 
 #ifdef TRACK_MASSGROWTH_CHANNELS
   float MassFromInSitu;
@@ -179,12 +158,6 @@ struct GALAXY			/* Galaxy data */
   float NMajorMergers;
   float NMinorMergers;
 #endif
-  float ICM;
- #ifdef DETAILED_METALS_AND_MASS_RETURN
-   struct metals MetalsICM;
- #else
-   float MetalsICM;
- #endif 
 
   /* luminosities in various bands */
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
@@ -241,15 +214,9 @@ struct GALAXY			/* Galaxy data */
 #endif
 #endif
   float sfh_ICM[SFH_NBIN]; //Stellar mass in ICM, in bin in standard units
-#ifdef DETAILED_METALS_AND_MASS_RETURN
-  struct metals sfh_MetalsDiskMass[SFH_NBIN]; //Metals locked up in stars in disk.
-  struct metals sfh_MetalsBulgeMass[SFH_NBIN]; //Metals locked up in stars in bulge.
-  struct metals sfh_MetalsICM[SFH_NBIN]; //Metals locked up in stars in ICM.
-#else
-  double sfh_MetalsDiskMass[SFH_NBIN]; //Metals locked up in stars in disk.
-  double sfh_MetalsBulgeMass[SFH_NBIN]; //Metals locked up in stars in bulge.
-  double sfh_MetalsICM[SFH_NBIN]; //Metals locked up in stars in ICM.
-#endif
+  float sfh_MetalsDiskMass[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in disk.
+  float sfh_MetalsBulgeMass[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in bulge.
+  float sfh_MetalsICM[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in ICM.
 #ifdef TRACK_SFH_MASSGROWTH_CHANNELS
   double sfh_MassFromInSitu[SFH_NBIN]; //Stellar mass formed in situ, in standard units.
   double sfh_MassFromMergers[SFH_NBIN]; //Stellar mass accreted from mergers, in standard units.
