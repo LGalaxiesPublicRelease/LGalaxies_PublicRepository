@@ -492,22 +492,22 @@ void update_from_star_formation(int p, double stars, double starsRings[], char t
 #ifdef METALS_SELF
       Gal[p].MetalsHotGasSelf.str.type2 += Yield * FracZtoHot * stars;
 #endif
-#else //DETAILED_METALS_AND_MASS_RETURN
+#else //IF NOT DETAILED_METALS_AND_MASS_RETURN
       //This part is not used if OPT+=DELAYED_ENRICHMENT_AND MASS_RETURN as yield
       //and recycling fraction are not fixed:
 #ifndef H2_AND_RINGS
-      Gal[p].MetalsColdGas += Yield * (1.-FracZtoHot) * stars;
+      Gal[p].MetalsColdGas[0] += Yield * (1.-FracZtoHot) * stars;
 #else
       for(jj=0;jj<RNUM;jj++)
 	{
-	  Gal[p].MetalsColdGasRings[jj] += Yield* (1.-FracZtoHot) * starsRings[jj];
-	  Gal[p].MetalsColdGas += Yield* (1.-FracZtoHot) * starsRings[jj];
+	  Gal[p].MetalsColdGasRings[jj][0] += Yield* (1.-FracZtoHot) * starsRings[jj];
+	  Gal[p].MetalsColdGas[0] += Yield* (1.-FracZtoHot) * starsRings[jj];
 	}
 #endif
-      Gal[Gal[p].CentralGal].MetalsHotGas += Yield * FracZtoHot * stars;
+      Gal[Gal[p].CentralGal].MetalsHotGas[0] += Yield * FracZtoHot * stars;
       Gal[Gal[p].CentralGal].HotGas += Yield * FracZtoHot * stars;
 #ifdef METALS_SELF
-      Gal[p].MetalsHotGasSelf += Yield * FracZtoHot * stars;
+      Gal[p].MetalsHotGasSelf[0] += Yield * FracZtoHot * stars;
 #endif
 #endif //DETAILED_METALS_AND_MASS_RETURN
     }

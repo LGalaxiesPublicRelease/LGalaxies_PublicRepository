@@ -221,9 +221,11 @@ void sfh_print(int p) {
   for(i=0;i<SFH_NBIN;i++)
     if (Gal[p].sfh_dt[i]!=0) {
       printf("%5d %5e %5e %12f\n",i,Gal[p].sfh_dt[i],Gal[p].sfh_t[i],(Gal[p].sfh_DiskMass[i]+Gal[p].sfh_BulgeMass[i]));
+#ifdef DETAILED_METALS_AND_MASS_RETURN
       printf(".type2 [Msun] = %.2f\n",(Gal[p].sfh_MetalsDiskMass[i][0]+Gal[p].sfh_MetalsBulgeMass[i][0])*1.0e10/Hubble_h);
       printf(".type1a [Msun]  = %.2f\n",(Gal[p].sfh_MetalsDiskMass[i][1]+Gal[p].sfh_MetalsBulgeMass[i][1])*1.0e10/Hubble_h);
       printf(".agb  [Msun]   = %.2f\n",(Gal[p].sfh_MetalsDiskMass[i][2]+Gal[p].sfh_MetalsBulgeMass[i][2])*1.0e10/Hubble_h);
+#endif
 #ifdef INDIVIDUAL_ELEMENTS
       int kk;
       for(kk=0;kk<NUM_ELEMENTS;kk++)
