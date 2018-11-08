@@ -390,9 +390,10 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
   	o->DiskMassRings[ll] = g->DiskMassRings[ll];
 
 #ifdef RINGS_IN_BULGES
+  	int ii;
   	o->BulgeMassRings[ll] = g->BulgeMassRings[ll];
-  	int NUM_METAL_CHANNELS;
-  	 for(ii=0;ii<3;ii++)
+
+  	 for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
   	    {
   	     o->MetalsColdGasRings[ll][ii] = g->MetalsColdGasRings[ll][ii];
   	     o->MetalsDiskMassRings[ll][ii] = g->MetalsDiskMassRings[ll][ii];
