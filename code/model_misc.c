@@ -2198,7 +2198,7 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
 #endif //CHECK_SFH_AND_RINGS
 
 
-
+  mass_checks(p,"model_misc.c",__LINE__);
 
   return;
 }
@@ -2441,7 +2441,12 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	 {
 	   if(Gal[q].sfh_DiskMass[ii]>0.)
 	     {
-	       fraction=sfh_Mass[ii]/Gal[q].sfh_DiskMass[ii];
+	       for (jj=0;jj<RNUM;jj++)
+		 {
+		   sfh_Mass[ii]+=fractionRings[jj]*Gal[q].sfh_DiskMassRings[jj][ii];
+		   sfh_MassRings[jj][ii]=fractionRings[jj]*Gal[q].sfh_DiskMassRings[jj][ii];
+		 }
+	       fraction = sfh_Mass[ii]/Gal[q].sfh_DiskMass[ii];
 	       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
 		 sfh_Metals[ii][mm] = (Gal[q].sfh_MetalsDiskMass[ii][mm] * fraction);
 #ifdef INDIVIDUAL_ELEMENTS
@@ -2450,7 +2455,7 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 #endif
 	     }
 	 }
-#endif
+#endif //STAR_FORMATION_HISTORY
 
 
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
@@ -2510,6 +2515,11 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	 {
 	   if(Gal[q].sfh_BulgeMass[ii]>0.)
 	     {
+	       for (jj=0;jj<RNUM;jj++)
+		 {
+		   sfh_Mass[ii]+=fractionRings[jj]*Gal[q].sfh_BulgeMassRings[jj][ii];
+		   sfh_MassRings[jj][ii]=fractionRings[jj]*Gal[q].sfh_BulgeMassRings[jj][ii];
+		 }
 	       fraction = sfh_Mass[ii]/Gal[q].sfh_BulgeMass[ii];
 	       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
 		 sfh_Metals[ii][mm] = (Gal[q].sfh_MetalsBulgeMass[ii][mm] * fraction);
@@ -2519,7 +2529,7 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 #endif
 	     }
 	 }
-#endif
+#endif //STAR_FORMATION_HISTORY
 
 
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
@@ -3080,6 +3090,22 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 #endif
   	  }
 #endif
+
+#ifdef STAR_FORMATION_HISTORY
+       for (ii=0; ii<=Gal[p].sfh_ibin; ii++)
+	 {
+	   Gal[p].sfh_DiskMass[ii] = 0.;
+	   for(jj=0;jj<RNUM;jj++)
+	     Gal[p].sfh_DiskMassRings[jj][ii] =0.;
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     Gal[p].sfh_MetalsDiskMass[ii][mm] =0.;
+#ifdef INDIVIDUAL_ELEMENTS
+	   for(kk=0;kk<NUM_ELEMENTS;kk++)
+	     Gal[p].sfh_DiskMass_elements[ii][kk] =0.;
+#endif
+	 }
+#endif
+
         }
 
   //disk mass galaxy q
@@ -3104,6 +3130,21 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	    Gal[q].DiskMassRings_elements[jj][kk] = 0.;
 #endif
 	  }
+#endif
+
+#ifdef STAR_FORMATION_HISTORY
+       for (ii=0; ii<=Gal[q].sfh_ibin; ii++)
+	 {
+	   Gal[q].sfh_DiskMass[ii] = 0.;
+	   for(jj=0;jj<RNUM;jj++)
+	     Gal[q].sfh_DiskMassRings[jj][ii] =0.;
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     Gal[q].sfh_MetalsDiskMass[ii][mm] =0.;
+#ifdef INDIVIDUAL_ELEMENTS
+	   for(kk=0;kk<NUM_ELEMENTS;kk++)
+	     Gal[q].sfh_DiskMass_elements[ii][kk] =0.;
+#endif
+	 }
 #endif
       }
 
@@ -3134,6 +3175,23 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
     	  }
 #endif
 #endif
+
+#ifdef STAR_FORMATION_HISTORY
+       for (ii=0; ii<=Gal[p].sfh_ibin; ii++)
+	 {
+	   Gal[p].sfh_BulgeMass[ii] = 0.;
+#ifdef RINGS_IN_BULGES
+	   for(jj=0;jj<RNUM;jj++)
+	     Gal[p].sfh_BulgeMassRings[jj][ii] =0.;
+#endif
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     Gal[p].sfh_MetalsBulgeMass[ii][mm] =0.;
+#ifdef INDIVIDUAL_ELEMENTS
+	   for(kk=0;kk<NUM_ELEMENTS;kk++)
+	     Gal[p].sfh_BulgeMass_elements[ii][kk] =0.;
+#endif
+	 }
+#endif
       }
 
   //Bulge mass galaxy q
@@ -3161,7 +3219,163 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
   	  }
 #endif
 #endif
+
+#ifdef STAR_FORMATION_HISTORY
+       for (ii=0; ii<=Gal[q].sfh_ibin; ii++)
+	 {
+	   Gal[q].sfh_BulgeMass[ii] = 0.;
+#ifdef RINGS_IN_BULGES
+	   for(jj=0;jj<RNUM;jj++)
+	     Gal[q].sfh_BulgeMassRings[jj][ii] =0.;
+#endif
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     Gal[q].sfh_MetalsBulgeMass[ii][mm] =0.;
+#ifdef INDIVIDUAL_ELEMENTS
+	   for(kk=0;kk<NUM_ELEMENTS;kk++)
+	     Gal[q].sfh_BulgeMass_elements[ii][kk] =0.;
+#endif
+	 }
+#endif
       }
+
+
+  //set all negative rings to zero
+   for (jj=0; jj<RNUM; jj++)
+     {
+       //Gal p
+       //gasmass
+       if(Gal[p].ColdGasRings[jj]<0.)
+      	{
+      	  Gal[p].ColdGasRings[jj]=0.;
+           for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+             Gal[p].MetalsColdGasRings[jj][mm] = 0.;
+      #ifdef INDIVIDUAL_ELEMENTS
+        	  for(kk=0;kk<NUM_ELEMENTS;kk++)
+        	    Gal[p].ColdGasRings_elements[jj][kk] = 0.;
+      #endif
+      	}
+
+       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+      	if(Gal[p].MetalsColdGasRings[jj][mm]<0.)
+                 Gal[p].MetalsColdGasRings[jj][mm] = 0.;
+      #ifdef INDIVIDUAL_ELEMENTS
+       for(kk=0;kk<NUM_ELEMENTS;kk++)
+      	if(Gal[p].ColdGasRings_elements[jj][kk] < 0.)
+      	  Gal[p].ColdGasRings_elements[jj][kk] = 0.;
+      #endif
+
+       //diskmass
+       if(Gal[p].DiskMassRings[jj]<0.)
+ 	{
+ 	  Gal[p].DiskMassRings[jj]=0.;
+        	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+        	      Gal[p].MetalsDiskMassRings[jj][mm] = 0.;
+ #ifdef INDIVIDUAL_ELEMENTS
+   	  for(kk=0;kk<NUM_ELEMENTS;kk++)
+   	    Gal[p].DiskMassRings_elements[jj][kk] = 0.;
+ #endif
+ 	}
+
+       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 	if(Gal[p].MetalsDiskMassRings[jj][mm]<0.)
+            Gal[p].MetalsDiskMassRings[jj][mm] = 0.;
+ #ifdef INDIVIDUAL_ELEMENTS
+       for(kk=0;kk<NUM_ELEMENTS;kk++)
+ 	if(Gal[p].DiskMassRings_elements[jj][kk] < 0.)
+ 	  Gal[p].DiskMassRings_elements[jj][kk] = 0.;
+ #endif
+
+ #ifdef RINGS_IN_BULGES
+       //bulgemass
+       if(Gal[p].BulgeMassRings[jj]<0.)
+       	{
+       	  Gal[p].BulgeMassRings[jj]=0.;
+          for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+            Gal[p].MetalsBulgeMassRings[jj][mm] = 0.;
+       #ifdef INDIVIDUAL_ELEMENTS
+         	  for(kk=0;kk<NUM_ELEMENTS;kk++)
+         	    Gal[p].BulgeMassRings_elements[jj][kk] = 0.;
+       #endif
+       	}
+
+       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+       	if(Gal[p].MetalsBulgeMassRings[jj][mm]<0.)
+                  Gal[p].MetalsBulgeMassRings[jj][mm] = 0.;
+       #ifdef INDIVIDUAL_ELEMENTS
+       for(kk=0;kk<NUM_ELEMENTS;kk++)
+       	if(Gal[p].BulgeMassRings_elements[jj][kk] < 0.)
+       	  Gal[p].BulgeMassRings_elements[jj][kk] = 0.;
+       #endif
+ #endif
+
+       //Gal q
+       //gasmass
+       if(Gal[q].ColdGasRings[jj]<0.)
+	 {
+	    Gal[q].ColdGasRings[jj]=0.;
+	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	       Gal[q].MetalsColdGasRings[jj][mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+	    for(kk=0;kk<NUM_ELEMENTS;kk++)
+	      Gal[q].ColdGasRings_elements[jj][kk] = 0.;
+#endif
+	  }
+
+	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	  if(Gal[q].MetalsColdGasRings[jj][mm]<0.)
+	    Gal[q].MetalsColdGasRings[jj][mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+	for(kk=0;kk<NUM_ELEMENTS;kk++)
+	  if(Gal[q].ColdGasRings_elements[jj][kk] < 0.)
+	    Gal[q].ColdGasRings_elements[jj][kk] = 0.;
+#endif
+
+	//diskmass
+	if(Gal[q].DiskMassRings[jj]<0.)
+	  {
+	    Gal[q].DiskMassRings[jj]=0.;
+	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	      Gal[q].MetalsDiskMassRings[jj][mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+	    for(kk=0;kk<NUM_ELEMENTS;kk++)
+	      Gal[q].DiskMassRings_elements[jj][kk] = 0.;
+#endif
+	  }
+
+        for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+          if(Gal[q].MetalsDiskMassRings[jj][mm]<0.)
+          	Gal[q].MetalsDiskMassRings[jj][mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+        for(kk=0;kk<NUM_ELEMENTS;kk++)
+          if(Gal[q].DiskMassRings_elements[jj][kk] < 0.)
+            Gal[q].DiskMassRings_elements[jj][kk] = 0.;
+#endif
+
+#ifdef RINGS_IN_BULGES
+        //bulgemass
+        if(Gal[q].BulgeMassRings[jj]<0.)
+          {
+            Gal[q].BulgeMassRings[jj]=0.;
+	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	      Gal[q].MetalsBulgeMassRings[jj][mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+	    for(kk=0;kk<NUM_ELEMENTS;kk++)
+	      Gal[q].BulgeMassRings_elements[jj][kk] = 0.;
+#endif
+          }
+
+        for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+          if(Gal[q].MetalsBulgeMassRings[jj][mm]<0.)
+            Gal[q].MetalsBulgeMassRings[jj][mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+        for(kk=0;kk<NUM_ELEMENTS;kk++)
+          if(Gal[q].BulgeMassRings_elements[jj][kk] < 0.)
+            Gal[q].BulgeMassRings_elements[jj][kk] = 0.;
+#endif
+#endif
+
+     }
+
 
 #endif //CHECK_NO_NEGATIVE_VALUES
 
@@ -3274,8 +3488,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
  * total and rings sum.
  */
 
-  float sum_rings, sum_rings_metals, ring_sum_minus_tot=0.;
-  float fract, fract_metals;
+  double sum_rings, sum_rings_metals, ring_sum_minus_tot=0.;
+  double fract, fract_metals;
 
   //galaxy p cold gas
   if(Gal[p].ColdGas>0.)
@@ -3594,6 +3808,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 
 #endif //CHECK_SFH_AND_RINGS
 
+   mass_checks(p,"model_misc.c",__LINE__);
+   mass_checks(q,"model_misc.c",__LINE__);
 
 
 
@@ -3619,9 +3835,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 #endif
 
 #ifdef STAR_FORMATION_HISTORY
-#ifndef DETAILED_METALS_AND_MASS_RETURN
   double sfh_sum=0.;
-#endif
 #endif
 
 #ifdef H2_AND_RINGS
@@ -3904,10 +4118,11 @@ void mass_checks(int igal, char call_function[], int call_line) {
   }
 #endif
 
+
+#ifdef STAR_FORMATION_HISTORY
 /* If DETAILED_METALS_AND_MASS_RETURN, sfh stores accumulation of 'stars', not 'stars-recycFrac'.
  * Therefore, it's sum doesn't equal DiskMass any more.*/
 #ifndef DETAILED_METALS_AND_MASS_RETURN
-#ifdef STAR_FORMATION_HISTORY
   sfh_sum=-Gal[igal].DiskMass;
   //sfh_sum=0.;
   for (i=0; i<=Gal[igal].sfh_ibin; i++)
@@ -3965,30 +4180,133 @@ void mass_checks(int igal, char call_function[], int call_line) {
     terminate(sbuf);
   }
 
-#endif
-#endif //DETAILED_ENRICHEMENT
+#else //DETAILED_ENRICHEMENT
+  //if Gal[igal].sfh_DiskMass on SFH has the mass of stars formed while DiskMass has the mass in stars currently alive (the former must be larger)
 
-
-#ifdef H2_AND_RINGS
-
-  ring_sum_minus_tot=-Gal[igal].DiskMass;
-  for (i=0; i<RNUM; i++)
+  //DISK
+  sfh_sum=0.;
+  for (i=0; i<=Gal[igal].sfh_ibin; i++)
     {
-      ring_sum_minus_tot+=Gal[igal].DiskMassRings[i];
-      if(Gal[igal].DiskMassRings[i]<0.0)
+      sfh_sum+=Gal[igal].sfh_DiskMass[i];
+      if(Gal[igal].sfh_DiskMass[i]<0.0)
 	{
-	  if(Gal[igal].DiskMassRings[i]> -1e-5)
-	    Gal[igal].DiskMassRings[i]=0.0;
+	  if(Gal[igal].sfh_DiskMass[i]> -1e-5)
+	    {
+	      sfh_sum-=Gal[igal].sfh_DiskMass[i];
+	      Gal[igal].sfh_DiskMass[i]=0.0;
+
+	    }
 	  else
 	    {
 	      char sbuf[1000];
-	      sprintf(sbuf, "\n*** Mass check error, called from: %s, line: %d, DiskMassRings<0. (DiskMassRings=%e)*** \n",call_function, call_line,Gal[igal].DiskMassRings[i]);
+	      sprintf(sbuf, "\n*** Mass check error, called from: %s, line: %d, sfh_DiskMass<0. (sfh_Disk=%e)*** \n",call_function, call_line, Gal[igal].sfh_DiskMass[i]);
+	      terminate(sbuf);
+	    }
+	  }
+    }
+
+  if((sfh_sum+1.e-6) < Gal[igal].DiskMass && sfh_sum>1e-6)
+    {
+      printf("                     sfh_sum = %g\n",sfh_sum);
+      printf("                Gal[%d].DiskMass = %g\n",igal,Gal[igal].DiskMass);
+      char sbuf[1000];
+      sprintf(sbuf, "\n*** Mass check error, called from: %s, line: %d, Inconsistent sfh for DiskMass.*** \n",call_function, call_line);
+      terminate(sbuf);
+    }
+
+
+
+  //BULGE
+  sfh_sum=0.;
+  for (i=0; i<=Gal[igal].sfh_ibin; i++)
+      {
+        sfh_sum+=Gal[igal].sfh_BulgeMass[i];
+        if(Gal[igal].sfh_BulgeMass[i]<0.0)
+  	{
+  	  if(Gal[igal].sfh_BulgeMass[i]> -1e-6)
+  	  {
+  	      sfh_sum-=Gal[igal].sfh_BulgeMass[i];
+  	      Gal[igal].sfh_BulgeMass[i]=0.0;
+  	  }
+  	  else
+  	    {
+  	      char sbuf[1000];
+  	      sprintf(sbuf, "\n*** Mass check error, called from: %s, line: %d, sfh_BulgeMass<0. (sfh_Bulge=%e)*** \n",call_function, call_line, Gal[igal].sfh_BulgeMass[i]);
+  	      terminate(sbuf);
+  	    }
+  	  }
+      }
+  if((sfh_sum+1.e-6) < Gal[igal].BulgeMass && sfh_sum>1e-6)
+      {
+        printf("                     sfh_Bulge_sum = %g\n", sfh_sum);
+        printf("                Gal[%d].BulgeMass = %g\n", igal, Gal[igal].BulgeMass);
+        char sbuf[1000];
+        sprintf(sbuf, "\n*** Mass check error, called from: %s, line: %d, Inconsistent sfh for BulgeMass.*** \n",call_function, call_line);
+        terminate(sbuf);
+      }
+
+
+
+  //ICM
+  sfh_sum=0.;
+  for (i=0; i<=Gal[igal].sfh_ibin; i++)
+        {
+          sfh_sum+=Gal[igal].sfh_ICM[i];
+          if(Gal[igal].sfh_ICM[i]<0.0)
+    	{
+    	  if(Gal[igal].sfh_ICM[i]> -1e-6)
+    	    {
+    	      sfh_sum-=Gal[igal].sfh_ICM[i];
+    		Gal[igal].sfh_ICM[i]=0.0;
+    	    }
+    	  else
+    	    {
+    	      char sbuf[1000];
+    	      sprintf(sbuf, "\n*** Mass check error, called from: %s, line: %d, sfh_DiskMass<0. (sfh_Disk=%e)*** \n",call_function, call_line, Gal[igal].sfh_ICM[i]);
+    	      terminate(sbuf);
+    	    }
+    	  }
+        }
+  if((sfh_sum+1.e-6) < Gal[igal].ICM && sfh_sum>1e-6)
+        {
+          printf("                     sfh_sum = %g\n",sfh_sum);
+          printf("                Gal[%d].ICM = %g\n",igal,Gal[igal].ICM);
+          char sbuf[1000];
+          sprintf(sbuf, "\n*** Mass check error, called from: %s, line: %d, Inconsistent sfh for DiskMass.*** \n",call_function, call_line);
+          terminate(sbuf);
+        }
+
+
+#endif  //DETAILED_ENRICHEMENT
+
+#endif //STAR_FORMATION_HISTORY
+
+
+
+#ifdef H2_AND_RINGS
+  int jj;
+
+  ring_sum_minus_tot=-Gal[igal].DiskMass;
+  for (jj=0; jj<RNUM; jj++)
+    {
+      ring_sum_minus_tot+=Gal[igal].DiskMassRings[jj];
+      if(Gal[igal].DiskMassRings[jj]<0.0)
+	{
+	  if(Gal[igal].DiskMassRings[jj]> -1e-6)
+	    {
+	      ring_sum_minus_tot-=Gal[igal].DiskMassRings[jj];
+	      Gal[igal].DiskMassRings[jj]=0.0;
+	    }
+	  else
+	    {
+	      char sbuf[1000];
+	      sprintf(sbuf, "\n*** Mass check error, called from: %s, line: %d, DiskMassRings<0. (DiskMassRings=%e)*** \n",call_function, call_line,Gal[igal].DiskMassRings[jj]);
 	      terminate(sbuf);
 	    }
 	}
     }
-  if((ring_sum_minus_tot < -1e-6 && ring_sum_minus_tot < -1e-6*Gal[igal].DiskMass) ||
-      (ring_sum_minus_tot >  1e-6 && ring_sum_minus_tot >  1e-6*Gal[igal].DiskMass))
+  if((ring_sum_minus_tot < -1e-5 && ring_sum_minus_tot < -1e-5*Gal[igal].DiskMass) ||
+      (ring_sum_minus_tot >  1e-5 && ring_sum_minus_tot >  1e-5*Gal[igal].DiskMass))
   // if((sfh_sum/Gal[igal].DiskMass > 1.0+1.e-3 || sfh_sum/Gal[igal].DiskMass < 1.0-1.e-3) && Gal[igal].DiskMass>1.e-3 )
      {
        printf("            ring_sum_minus_tot = %g\n",ring_sum_minus_tot);
@@ -4002,17 +4320,20 @@ void mass_checks(int igal, char call_function[], int call_line) {
      }
 
   ring_sum_minus_tot=-Gal[igal].ColdGas;
-  for (i=0; i<RNUM; i++)
+  for (jj=0; jj<RNUM; jj++)
     {
-      ring_sum_minus_tot+=Gal[igal].ColdGasRings[i];
-      if(Gal[igal].ColdGasRings[i]<0.0)
+      ring_sum_minus_tot+=Gal[igal].ColdGasRings[jj];
+      if(Gal[igal].ColdGasRings[jj]<0.0)
 	{
-	  if(Gal[igal].ColdGasRings[i]> -1e-5)
-	    Gal[igal].ColdGasRings[i]=0.0;
+	  if(Gal[igal].ColdGasRings[jj]> -1e-6)
+	    {
+	      ring_sum_minus_tot-=Gal[igal].ColdGasRings[jj];
+	      Gal[igal].ColdGasRings[jj]=0.0;
+	    }
 	  else
 	    {
 	      char sbuf[1000];
-	      sprintf(sbuf, "\n*** Mass check error, called from: %s, line: %d, ColdGasRings<0. (ColdGasRings=%e)*** \n",call_function, call_line,Gal[igal].ColdGasRings[i]);
+	      sprintf(sbuf, "\n*** Mass check error, called from: %s, line: %d, ColdGasRings<0. (ColdGasRings=%e)*** \n",call_function, call_line,Gal[igal].ColdGasRings[jj]);
 	      terminate(sbuf);
 	    }
 	}
@@ -4028,15 +4349,60 @@ void mass_checks(int igal, char call_function[], int call_line) {
       terminate(sbuf);
     }
 
-  for (i=0; i<RNUM; i++)
-    if(isnan(Gal[igal].ColdGasRings[i]))
+  for (jj=0; jj<RNUM; jj++)
+    if(isnan(Gal[igal].ColdGasRings[jj]))
       {
 	char sbuf[1000];
 	sprintf(sbuf, "\n*** Mass check error, called from: %s, line: %d, ColdGasRings<0. (ColdGasRings=%e)*** \n",call_function, call_line,Gal[igal].ColdGasRings[i]);
 	terminate(sbuf);
       }
 
+
+#ifdef STAR_FORMATION_HISTORY
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+  //if DETAILED_METALS_AND_MASS_RETURN ON, SFH is total mass while DiskMass is mass of stars alive: the first must always be bigger
+
+  for(jj=0;jj<RNUM;jj++)
+    {
+      sfh_sum = 0.;
+      for (i=0; i<=Gal[igal].sfh_ibin; i++)
+	{
+	  sfh_sum+=Gal[igal].sfh_DiskMassRings[jj][i];
+	  if(Gal[igal].sfh_DiskMassRings[jj][i]<0.0)
+	    {
+	      if(Gal[igal].sfh_DiskMassRings[jj][i]> -1e-6)
+		{
+		  sfh_sum-=Gal[igal].sfh_DiskMassRings[jj][i];
+		  Gal[igal].sfh_DiskMassRings[jj][i]=0.0;
+		}
+	      else
+		{
+		  char sbuf[1000];
+	  	  sprintf(sbuf, "\n*** Mass check error, called from: %s, line: %d, sfh_DiskMassRings<0. (sfh_DiskRings=%e)*** \n",call_function, call_line, Gal[igal].sfh_DiskMassRings[jj][i]);
+	  	  terminate(sbuf);
+		}
+	    }
+	}
+
+      if((sfh_sum+1.e-6) < Gal[igal].DiskMassRings[jj] && sfh_sum>1e-6)
+      /*if((sfh_sum < -1e-6 && sfh_sum < -1e-6*Gal[igal].DiskMassRings[jj]) ||
+	 (sfh_sum >  1e-6 && sfh_sum >  1e-6*Gal[igal].DiskMassRings[jj]))*/
+        {
+          printf("                     sfh_sum_Ring[%d] = %0.10e\n",jj,sfh_sum);
+          printf("              Gal[%d].DiskMassRing[%d] = %0.10e\n",igal,jj,Gal[igal].DiskMassRings[jj]);
+          char sbuf[1000];
+          sprintf(sbuf, "\n*** Mass check error, called from: %s, line: %d, Inconsistent sfh for DiskMass.*** \n",call_function, call_line);
+          terminate(sbuf);
+        }
+
+    }
+
 #endif
+#endif
+#endif //H2_AND_RINGS
+
+
+
 
 #ifdef BULGESIZE_DEBUG
   if ((Gal[igal].BulgeMass > TINY_MASS && Gal[igal].BulgeSize < TINY_LENGTH) ||

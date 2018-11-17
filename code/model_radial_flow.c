@@ -9,7 +9,7 @@
 
 void gas_inflow(int p, double time)
 {
-  double r_in, r_out, gas_old[RNUM], newarea, r1, r2, frac, alpha, inflowfrac, rgas;
+  double r_in, r_out, gas_old[RNUM], newarea, r1, r2, frac, alpha, inflowfrac, rgas, Velocity, SurfaceDensity;
   int j, index, ii;
   double gasmetal_old[RNUM][NUM_METAL_CHANNELS];
 #ifdef DETAILED_METALS_AND_MASS_RETURN
@@ -33,7 +33,7 @@ void gas_inflow(int p, double time)
   //alpha=1-1.34e3*time;
   for (j=0; j<RNUM; j++)
     {
-      inflowfrac=1.00;
+      inflowfrac = 1.00;
       gas_old[j]=Gal[p].ColdGasRings[j]*inflowfrac;
       for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
 	gasmetal_old[j][ii]=(Gal[p].MetalsColdGasRings[j][ii] * inflowfrac);
@@ -51,9 +51,22 @@ void gas_inflow(int p, double time)
 #endif
     }
 
+ /* //Msun/pc^2
+  SurfaceDensity = Gal[p].ColdGas*1e10 / (Gal[p].ColdGasRadius*Gal[p].ColdGasRadius*1e12);
+  if(Gal[p].DiskMass>0.)
+    {
+    //Velocity = pow(1.+SurfaceDensity,0.05);
+    Velocity = GasInflowVel*pow(SurfaceDensity,0.1);
+  //printf("vel=%e vel_before=%e\n",Velocity,GasInflowVel*pow(SurfaceDensity,0.1));
+    }
+  else
+    Velocity = 0.;*/
+  Velocity = GasInflowVel ; 
+
+  //printf("%e %e %e\n",Velocity,Gal[p].ColdGasRadius, Gal[p].ColdGas);
   for (j=0; j<RNUM; j++)
     {
-      alpha=1-GasInflowVel*time/Hubble_h; //time unit: (Mpc/h)/(km/s)
+      alpha=1-Velocity*time/Hubble_h; //time unit: (Mpc/h)/(km/s)
       r_out=RingRadius[j]*alpha;
       if(j==0) r_in=0.0;
       else r_in=RingRadius[j-1]*alpha;

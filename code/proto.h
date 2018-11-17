@@ -243,6 +243,9 @@ double collisional_starburst_recipe(double mass_ratio, int merger_centralgal, in
 void make_bulge_from_burst(int p);
 void grow_black_hole(int merger_centralgal, double mass_ratio, double deltaT);
 void check_disk_instability(int p, double dt);
+#ifdef RINGS_IN_BULGES
+void distribute_bulge_material(int merger_centralgal);
+#endif
 
 double lum_to_mag(double lum);
 double mag_to_lum(double mag);

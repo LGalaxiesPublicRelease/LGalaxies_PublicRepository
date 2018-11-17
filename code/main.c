@@ -846,8 +846,10 @@ void evolve_galaxies(int halonr, int ngal, int treenr)
 	    cool_gas_onto_galaxy(p, deltaT / STEPS);
 	    mass_checks(p,"main.c",__LINE__);
 #ifdef H2_AND_RINGS
-	    gas_inflow(p, deltaT / STEPS);
+	    if(Gal[p].ColdGas>0.)
+	      gas_inflow(p, deltaT / STEPS);
 #endif
+	    mass_checks(p,"main.c",__LINE__);
 	    starformation(p, FOF_centralgal, time, deltaT / STEPS, nstep);
 	    mass_checks(p,"main.c",__LINE__);
 #ifdef DEBUG

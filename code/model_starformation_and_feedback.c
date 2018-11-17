@@ -46,7 +46,7 @@
   *        SN feedback.   */
 void starformation(int p, int centralgal, double time, double dt, int nstep)
 {
-	/*! Variables: reff-Rdisk, tdyn=Rdisk/Vmax, strdot=Mstar_dot, stars=strdot*dt*/
+  /* Variables: reff-Rdisk, tdyn=Rdisk/Vmax, strdot=Mstar_dot, stars=strdot*dt*/
   double tdyn, strdot=0., stars, cold_crit;
   int ii;
 #ifdef H2_AND_RINGS
@@ -662,6 +662,8 @@ void SN_feedback(int p, int centralgal, double stars, double starsRings[], char 
       update_from_feedback(p, centralgal, reheated_mass, ejected_mass,  reheated_massr);
 #endif
     }
+
+  mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 
 }
 

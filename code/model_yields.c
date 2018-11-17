@@ -168,8 +168,8 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
      	//Hot Gas
      	Gal[igal].HotGas += fwind * SNIIEjectaMass; //i.e. *only* SN-II ejecta could make it to the HotGas (if METALRICHWINDS is on). SN-Ia (and AGB) ejecta go to the ColdGas.
      	//If there was no hotgas left in the galaxy it will probably be stripped next step. Give it a fake HotRadius for now to avoid crash at mass checks
-     	//if(Gal[igal].HotGas>0. && Gal[igal].HotRadius==0)
-     	//  Gal[igal].HotRadius=1.e-10;
+     	if(Gal[igal].HotGas>0. && Gal[igal].HotRadius==0)
+     	  Gal[igal].HotRadius=1.e-10;
      	Gal[igal].MetalsHotGas[0] += fwind * SNIIAllMetals;
 
      	//Cold Gas
@@ -497,6 +497,419 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
 
 
 
+
+
+#ifdef CHECK_SFH_AND_RINGS
+
+/*********************************************
+ *
+ * Ensure that no values became negative due
+ * to precision
+ *
+ *********************************************/
+int mm;
+
+#ifdef CHECK_NO_NEGATIVE_VALUES
+  //cold gas galaxy p
+  if(Gal[p].ColdGas < 0.0)
+    if(Gal[p].ColdGas > -1e-3)
+      {
+	Gal[p].ColdGas = 0.;
+	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	  Gal[p].MetalsColdGas[mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+	for(kk=0;kk<NUM_ELEMENTS;kk++)
+	  Gal[q].ColdGas_elements[kk] = 0.;
+#endif
+#ifdef H2_AND_RINGS
+	for (jj=0; jj<RNUM; jj++)
+   	  {
+   	    Gal[p].ColdGasRings[jj]=0.;
+   	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+   	      Gal[p].MetalsColdGasRings[jj][mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+   	 for(kk=0;kk<NUM_ELEMENTS;kk++)
+   	    Gal[p].ColdGasRings_elements[jj][kk] = 0.;
+#endif
+   	  }
+#endif
+      }
+
+
+
+  //disk mass galaxy p
+  if(Gal[p].DiskMass < 0.0)
+    if(Gal[p].DiskMass > -1e-3)
+      {
+  	Gal[p].DiskMass = 0.;
+  	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+  	  Gal[p].MetalsDiskMass[mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+  	for(kk=0;kk<NUM_ELEMENTS;kk++)
+  	Gal[q].DiskMass_elements[kk] = 0.;
+#endif
+#ifdef H2_AND_RINGS
+  	for (jj=0; jj<RNUM; jj++)
+  	  {
+  	    Gal[p].DiskMassRings[jj]=0.;
+  	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+  	      Gal[p].MetalsDiskMassRings[jj][mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+  	  for(kk=0;kk<NUM_ELEMENTS;kk++)
+  	    Gal[p].DiskMassRings_elements[jj][kk] = 0.;
+#endif
+  	  }
+#endif
+
+#ifdef STAR_FORMATION_HISTORY
+       for (ii=0; ii<=Gal[p].sfh_ibin; ii++)
+	 {
+	   Gal[p].sfh_DiskMass[ii] = 0.;
+	   for(jj=0;jj<RNUM;jj++)
+	     Gal[p].sfh_DiskMassRings[jj][ii] =0.;
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     Gal[p].sfh_MetalsDiskMass[ii][mm] =0.;
+#ifdef INDIVIDUAL_ELEMENTS
+	   for(kk=0;kk<NUM_ELEMENTS;kk++)
+	     Gal[p].sfh_DiskMass_elements[ii][kk] =0.;
+#endif
+	 }
+#endif
+       }
+
+
+  //bulge mass galaxy p
+  if(Gal[p].BulgeMass < 0.0)
+    if(Gal[p].BulgeMass > -1e-3)
+      {
+	Gal[p].BulgeMass = 0.;
+	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	  Gal[p].MetalsBulgeMass[mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+    	for(kk=0;kk<NUM_ELEMENTS;kk++)
+    	  Gal[q].BulgeMass_elements[kk] = 0.;
+#endif
+#ifdef H2_AND_RINGS
+#ifdef RINGS_IN_BULGES
+    	for (jj=0; jj<RNUM; jj++)
+    	  {
+    	    Gal[p].BulgeMassRings[jj]=0.;
+    	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+    	      Gal[p].MetalsBulgeMassRings[jj][mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+    	    for(kk=0;kk<NUM_ELEMENTS;kk++)
+    	      Gal[p].BulgeMassRings_elements[jj][kk] = 0.;
+#endif
+    	  }
+#endif
+#endif
+
+#ifdef STAR_FORMATION_HISTORY
+       for (ii=0; ii<=Gal[p].sfh_ibin; ii++)
+	 {
+	   Gal[p].sfh_BulgeMass[ii] = 0.;
+	   for(jj=0;jj<RNUM;jj++)
+	     Gal[p].sfh_BulgeMassRings[jj][ii] =0.;
+	   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	     Gal[p].sfh_MetalsBulgeMass[ii][mm] =0.;
+#ifdef INDIVIDUAL_ELEMENTS
+	   for(kk=0;kk<NUM_ELEMENTS;kk++)
+	     Gal[p].sfh_BulgeMass_elements[ii][kk] =0.;
+#endif
+	 }
+#endif
+      }
+
+
+  //set all negative rings to zero
+  for (jj=0; jj<RNUM; jj++)
+    {
+      //gasmass
+      if(Gal[p].ColdGasRings[jj]<0.)
+     	{
+     	  Gal[p].ColdGasRings[jj]=0.;
+          for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+            Gal[p].MetalsColdGasRings[jj][mm] = 0.;
+     #ifdef INDIVIDUAL_ELEMENTS
+       	  for(kk=0;kk<NUM_ELEMENTS;kk++)
+       	    Gal[p].ColdGasRings_elements[jj][kk] = 0.;
+     #endif
+     	}
+
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+     	if(Gal[p].MetalsColdGasRings[jj][mm]<0.)
+                Gal[p].MetalsColdGasRings[jj][mm] = 0.;
+     #ifdef INDIVIDUAL_ELEMENTS
+      for(kk=0;kk<NUM_ELEMENTS;kk++)
+     	if(Gal[p].ColdGasRings_elements[jj][kk] < 0.)
+     	  Gal[p].ColdGasRings_elements[jj][kk] = 0.;
+     #endif
+
+      //diskmass
+      if(Gal[p].DiskMassRings[jj]<0.)
+	{
+	  Gal[p].DiskMassRings[jj]=0.;
+#ifdef STAR_FORMATION_HISTORY
+	  for (ii=0; ii<=Gal[p].sfh_ibin; ii++)
+	     Gal[p].sfh_DiskMassRings[jj][ii] =0.;
+#endif
+       	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+       	      Gal[p].MetalsDiskMassRings[jj][mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+  	  for(kk=0;kk<NUM_ELEMENTS;kk++)
+  	    Gal[p].DiskMassRings_elements[jj][kk] = 0.;
+#endif
+	}
+
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	if(Gal[p].MetalsDiskMassRings[jj][mm]<0.)
+           Gal[p].MetalsDiskMassRings[jj][mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+      for(kk=0;kk<NUM_ELEMENTS;kk++)
+	if(Gal[p].DiskMassRings_elements[jj][kk] < 0.)
+	  Gal[p].DiskMassRings_elements[jj][kk] = 0.;
+#endif
+
+#ifdef RINGS_IN_BULGES
+      //bulgemass
+      if(Gal[p].BulgeMassRings[jj]<0.)
+      	{
+      	  Gal[p].BulgeMassRings[jj]=0.;
+#ifdef STAR_FORMATION_HISTORY
+	  for (ii=0; ii<=Gal[p].sfh_ibin; ii++)
+	     Gal[p].sfh_BulgeMassRings[jj][ii] =0.;
+#endif
+          for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+            Gal[p].MetalsBulgeMassRings[jj][mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+        	  for(kk=0;kk<NUM_ELEMENTS;kk++)
+        	    Gal[p].BulgeMassRings_elements[jj][kk] = 0.;
+#endif
+      	}
+
+      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+      	if(Gal[p].MetalsBulgeMassRings[jj][mm]<0.)
+                 Gal[p].MetalsBulgeMassRings[jj][mm] = 0.;
+      #ifdef INDIVIDUAL_ELEMENTS
+      for(kk=0;kk<NUM_ELEMENTS;kk++)
+      	if(Gal[p].BulgeMassRings_elements[jj][kk] < 0.)
+      	  Gal[p].BulgeMassRings_elements[jj][kk] = 0.;
+      #endif
+#endif
+
+    }
+
+#endif //CHECK_NO_NEGATIVE_VALUES
+
+
+
+
+
+
+
+  /*************************************************
+   *
+   * set rings to 0 if total is 0
+   *
+   */
+    //set metals and elements to 0
+    //galaxy p cold gas
+  //set rings to 0
+ #ifdef H2_AND_RINGS
+   if(Gal[p].ColdGas == 0. || Gal[p].DiskMass == 0. || Gal[p].BulgeMass == 0.)
+     for (jj=0; jj<RNUM; jj++)
+       {
+ 	//galaxy p cold gas
+ 	if(Gal[p].ColdGas == 0.)
+ 	  {
+ 	    Gal[p].ColdGasRings[jj]=0.;
+ 	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 	      Gal[p].MetalsColdGasRings[jj][mm] = 0.;
+ #ifdef INDIVIDUAL_ELEMENTS
+ 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
+ 	    Gal[p].ColdGasRings_elements[jj][kk] = 0.;
+ #endif
+ 	  }
+
+ 	//galaxy p disk mass
+ 	if(Gal[p].DiskMass == 0.)
+ 	  {
+ 	    Gal[p].DiskMassRings[jj]=0.;
+ 	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 	      Gal[p].MetalsDiskMassRings[jj][mm] = 0.;
+ #ifdef INDIVIDUAL_ELEMENTS
+ 	   for(kk=0;kk<NUM_ELEMENTS;kk++)
+ 	    Gal[p].DiskMassRings_elements[jj][kk] = 0.;
+ #endif
+ 	  }
+
+
+#ifdef RINGS_IN_BULGES
+ 	//galaxy p Bulge mass
+ 	if(Gal[p].BulgeMass == 0.)
+ 	  {
+ 	    Gal[p].BulgeMassRings[jj]=0.;
+ 	    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+ 	      Gal[p].MetalsBulgeMassRings[jj][mm] = 0.;
+#ifdef INDIVIDUAL_ELEMENTS
+ 	    for(kk=0;kk<NUM_ELEMENTS;kk++)
+ 	      Gal[p].BulgeMassRings_elements[jj][kk] = 0.;
+#endif
+ 	  }
+#endif //RINGS_IN_BULGES
+
+       }
+ #endif
+
+
+
+/*************************************************
+ *
+ * check to make sure sum of rings = total mass
+ * if not update the rings
+ *
+ * // Mass += fractionRings[jj]/RNUM*Gal[q].HotGas;
+ * The correction is never larger than 10% except when
+ * total is non-zero and sum of rings is zero or vice
+ * versa. This only happens for very small masses due
+ * to precision.
+ *
+ * If the correction is not always made, over enough
+ * calculations large difference can appear between
+ * total and rings sum.
+ */
+
+  double sum_rings, sum_rings_metals, ring_sum_minus_tot=0.;
+  double fract, fract_metals;
+
+  //galaxy p cold gas
+  if(Gal[p].ColdGas>0.)
+    {
+      sum_rings=0.;
+      sum_rings_metals=0.;
+      for (jj=0; jj<RNUM; jj++)
+	{
+	  sum_rings+=Gal[p].ColdGasRings[jj];
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    sum_rings_metals+= Gal[p].MetalsColdGasRings[jj][mm];
+	} // Mass += fractionRings[jj]/RNUM*Gal[q].HotGas;
+
+      if(sum_rings>0.)
+	fract=Gal[p].ColdGas/sum_rings;
+      else
+	{
+	  //if there is no mass in rings, reset total to 0
+	  fract=0.;
+	  Gal[p].ColdGas=0.;
+	}
+
+      if(sum_rings_metals>0.)
+	{
+	  fract_metals=0.;
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    fract_metals+= Gal[p].MetalsColdGas[mm];
+	  fract_metals /= sum_rings_metals;
+	}
+      else
+	{
+	  //if there is no mass in rings, reset total to 0
+	  fract_metals=0.;
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+		Gal[p].MetalsColdGas[mm]=0.;
+	}
+
+      if(sum_rings/Gal[p].ColdGas !=1.)
+	{
+	  for (jj=0;jj<RNUM;jj++)
+	    {
+	      Gal[p].ColdGasRings[jj] *= fract;
+	      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+		Gal[p].MetalsColdGasRings[jj][mm] = (Gal[p].MetalsColdGasRings[jj][mm]*fract_metals);
+
+	    }
+
+	  ring_sum_minus_tot=-Gal[p].ColdGas;
+	  for (jj=0; jj<RNUM; jj++) // Mass += fractionRings[jj]/RNUM*Gal[q].HotGas;
+	    ring_sum_minus_tot+=Gal[p].ColdGasRings[jj];
+	  if((ring_sum_minus_tot < -1e-4 && ring_sum_minus_tot/Gal[p].ColdGas < -1e-4) ||
+	      (ring_sum_minus_tot >  1e-4 && ring_sum_minus_tot/Gal[p].ColdGas >  1e-4))
+	    {
+	      printf("ring_sum_minus_tot=%0.10e 1e-5*ColdGas=%0.10e\n", ring_sum_minus_tot, 1e-5*Gal[p].ColdGas);
+	      terminate("");
+	    }
+	}
+    }
+
+
+  //printf("DiskMass= %e\n",Gal[p].DiskMass);
+   //galaxy p disk mass
+  if(Gal[p].DiskMass>0.)
+    {
+      sum_rings=0.;
+      sum_rings_metals=0;
+      for (jj=0; jj<RNUM; jj++)
+	{
+	  sum_rings+=Gal[p].DiskMassRings[jj];
+	  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	    sum_rings_metals+= Gal[p].MetalsDiskMassRings[jj][mm];
+     	}
+
+      //printf("sum_rings= %e\n",sum_rings);
+
+      if(sum_rings>0.)
+	fract=Gal[p].DiskMass/sum_rings;
+      else
+	{
+	 //if there is no mass in rings, reset total to 0
+	 fract=0.;
+	Gal[p].DiskMass=0.;
+	}
+      /*if(fract>0. && Gal[p].DiskMass>1e-6 && sum_rings>1e-6  && (fract>1.3 || fract<0.7))
+      	{
+      	  printf("fract=%0.5f %s %d\n",fract,call_function, call_line);
+      	  terminate("Total and Ring Sum for Metals too different Disk Mass");
+      	}*/
+      if(sum_rings_metals>0.)
+      	{
+       	 fract_metals=0.;
+         for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+           fract_metals+= Gal[p].MetalsDiskMass[mm];
+	 fract_metals /= sum_rings_metals;
+        }
+      else
+	{
+	//if there is no mass in rings, reset total to 0
+	fract_metals=0.;
+	for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+	  Gal[p].MetalsDiskMass[mm]=0.;
+	}
+
+      //printf("fract= %e\n",fract);
+
+      if(sum_rings/Gal[p].DiskMass !=1.)
+	{
+	  for (jj=0;jj<RNUM;jj++)
+	    {
+	      Gal[p].DiskMassRings[jj] *= fract;
+	      for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
+		Gal[p].MetalsDiskMassRings[jj][mm] = (Gal[p].MetalsDiskMassRings[jj][mm]*fract_metals);
+
+	    }
+
+	  ring_sum_minus_tot=-Gal[p].DiskMass;
+	  for (jj=0; jj<RNUM; jj++)
+	    ring_sum_minus_tot+=Gal[p].DiskMassRings[jj];
+	  if((ring_sum_minus_tot < -1e-6 && ring_sum_minus_tot < -1e-6*Gal[p].DiskMass) ||
+	      (ring_sum_minus_tot >  1e-6 && ring_sum_minus_tot >  1e-6*Gal[p].DiskMass))
+	    {
+	      printf("ring_sum_minus_tot=%0.10e 1e-5*ColdGas=%0.10e\n", ring_sum_minus_tot, 1e-5*Gal[p].DiskMass);
+	      terminate("");
+	    }
+	}
+    }
+
+
+#endif //CHECK_SFH_AND_RINGS
 
 
 

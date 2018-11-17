@@ -213,10 +213,10 @@ struct GALAXY			/* Galaxy data */
   double sfh_BulgeMassRings[RNUM][SFH_NBIN]; //Stellar mass in disk RINGS, in bin in standard units
 #endif
 #endif
-  float sfh_ICM[SFH_NBIN]; //Stellar mass in ICM, in bin in standard units
-  float sfh_MetalsDiskMass[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in disk.
-  float sfh_MetalsBulgeMass[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in bulge.
-  float sfh_MetalsICM[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in ICM.
+  double sfh_ICM[SFH_NBIN]; //Stellar mass in ICM, in bin in standard units
+  double sfh_MetalsDiskMass[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in disk.
+  double sfh_MetalsBulgeMass[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in bulge.
+  double sfh_MetalsICM[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in ICM.
 #ifdef TRACK_SFH_MASSGROWTH_CHANNELS
   double sfh_MassFromInSitu[SFH_NBIN]; //Stellar mass formed in situ, in standard units.
   double sfh_MassFromMergers[SFH_NBIN]; //Stellar mass accreted from mergers, in standard units.
