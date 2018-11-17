@@ -604,6 +604,17 @@ inf likelihood
 ****************************************************************************************************************************************************************
 ****************************************************************************************************************************************************************
 
+SMF z=0, 2
+RedFraction z=0, 2
+BulgeFraction z=0
+StellarMetals z=0
+GasMetals z=0, z=2
+BHBM z=0
+SizevsMassDisc z=0
+SizevsMassBulge z=0
+GasBin1
+GasBin2
+GasBin3
 
 WITH TDYN - FINAL RUNS
 1 - all constraints
@@ -612,13 +623,20 @@ WITH TDYN - FINAL RUNS
 
 ON TEST0
 
-2
-3
-4
-5
-6
-7
-8
+2 - SMF z=0
+3 - SMF z=2
+4 - RedFraction z=0
+5 - RedFraction z=2
+6 - BulgeFraction z=0
+7 - StellarMetals z=0
+8 - GasMetals z=0
+9 - GasMetals z=2
+10 - BHBM z=0
+11 - SizevsMassDisc z=0
+12 - SizevsMassBulge z=0
+13 - GasBin1
+14 - GasBin2
+15 - GasBin3
 
 
 
