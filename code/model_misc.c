@@ -2298,11 +2298,6 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	       Yield[kk] += Gal[q].DiskMassRings_elements[jj][kk]*fractionRings[jj];
 	       YieldRings[jj][kk] = Gal[q].DiskMassRings_elements[jj][kk]*fractionRings[jj];
 	     }
-	   for (ii=0; ii<=Gal[q].sfh_ibin; ii++)
-	     {
-	       sfh_Mass[ii]+=fractionRings[jj]*Gal[q].sfh_DiskMassRings[jj][ii];
-	       sfh_MassRings[jj][ii]=fractionRings[jj]*Gal[q].sfh_DiskMassRings[jj][ii];
-	     }
 #endif
      	 }
 
@@ -2371,11 +2366,6 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 	     {
 	       Yield[kk] += Gal[q].BulgeMassRings_elements[jj][kk]*fractionRings[jj];
 	       YieldRings[jj][kk] = Gal[q].BulgeMassRings_elements[jj][kk]*fractionRings[jj];
-	     }
-	   for (ii=0; ii<=Gal[q].sfh_ibin; ii++)
-	     {
-	       sfh_Mass[ii]+=fractionRings[jj]*Gal[q].sfh_BulgeMassRings[jj][ii];
-	       sfh_MassRings[jj][ii]=fractionRings[jj]*Gal[q].sfh_BulgeMassRings[jj][ii];
 	     }
 #endif
 	 }
@@ -2870,8 +2860,8 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 
 
 
-   mass_checks(p,"model_misc.c",__LINE__);
-   mass_checks(q,"model_misc.c",__LINE__);
+   //mass_checks(p,"model_misc.c",__LINE__);
+   //mass_checks(q,"model_misc.c",__LINE__);
 
 
 
@@ -3367,8 +3357,8 @@ void mass_checks(int igal, char call_function[], int call_line) {
 	    }
 	}
     }
-  if((ring_sum_minus_tot < -1e-5 && ring_sum_minus_tot < -1e-5*Gal[igal].DiskMass) ||
-      (ring_sum_minus_tot >  1e-5 && ring_sum_minus_tot >  1e-5*Gal[igal].DiskMass))
+  if((ring_sum_minus_tot < -1e-4 && ring_sum_minus_tot < -1e-4*Gal[igal].DiskMass) ||
+      (ring_sum_minus_tot >  1e-4 && ring_sum_minus_tot >  1e-4*Gal[igal].DiskMass))
   // if((sfh_sum/Gal[igal].DiskMass > 1.0+1.e-3 || sfh_sum/Gal[igal].DiskMass < 1.0-1.e-3) && Gal[igal].DiskMass>1.e-3 )
      {
        printf("            ring_sum_minus_tot = %g\n",ring_sum_minus_tot);
