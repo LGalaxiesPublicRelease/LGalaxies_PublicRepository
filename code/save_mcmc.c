@@ -18,7 +18,7 @@ void save_galaxy_for_mcmc(int gal_index)
   //printf("ID=%lld snap=%d sampleID=%d\n", HaloIDs[HaloGal[gal_index].HaloNr].FirstHaloInFOFgroup,
   //		HaloGal[gal_index].SnapNum, SampleIDs[treenr]);
   int snap, fof, ii;
-  float low_mass_limit, high_mass_limit, log10_StellarMass;
+  float low_mass_limit=9.0, high_mass_limit=12.0, log10_StellarMass;
   double log10_Hubble_h, totmetals;
 
 #ifdef MR_PLUS_MRII

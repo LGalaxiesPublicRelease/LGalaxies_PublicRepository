@@ -866,7 +866,7 @@ void bulgesize_from_merger(double mass_ratio, int merger_centralgal, int p,
 #ifdef RINGS_IN_BULGES
   //Bulge Mass was added into the same place as the disk, it will now be redistributed
   //according to a Jaffe profile and after the new bulge size has been calculated
-void distribute_bulge_material(merger_centralgal)
+void distribute_bulge_material(int merger_centralgal)
 {
   double rb=Gal[merger_centralgal].BulgeSize, TotMassInsideRings=0.,fractionRings[RNUM];
   int jj, ii;

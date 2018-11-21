@@ -108,6 +108,7 @@ void update_h2fraction(int p)
 
 }
 
+//THIS FUNCTION DOESN"T WORK ANYMORE
 void init_H2fraction_KMT08()
 {
   FILE *fd;

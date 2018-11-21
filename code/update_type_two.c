@@ -232,7 +232,7 @@ void load_all_auxdata(int filenr)
   } //end if ThisTask==0
 
   if(ThisTask==0)
-  	printf("aux data read  by task %d\n", ThisTask);
+  	printf("aux data read  by task 0\n");
 
   MPI_Barrier(MPI_COMM_WORLD);
 
@@ -241,7 +241,7 @@ void load_all_auxdata(int filenr)
   	TreeAuxData = mymalloc("TreeAuxData", bytes);
 
   if(ThisTask==0)
-  	printf("broadcasting aux data\n", ThisTask);
+  	printf("broadcasting aux data\n");
 
   //MPI_BCast has a limit of 2Gb so everything needs to be passed in smaller chunks
   //Maximum number of messages to broadcast
@@ -264,7 +264,7 @@ void load_all_auxdata(int filenr)
   }
 
   if(ThisTask==0)
-  	printf("done broadcasting aux data\n", ThisTask);
+  	printf("done broadcasting aux data\n");
 
   MPI_Barrier(MPI_COMM_WORLD);
 #endif

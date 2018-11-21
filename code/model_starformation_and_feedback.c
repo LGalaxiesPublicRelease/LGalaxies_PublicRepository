@@ -323,7 +323,7 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
 
   if (DiskRadiusModel == 0)
     Gal[p].DiskRadius=get_stellar_disk_radius(p);
-    
+
   mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
   mass_checks(centralgal,"model_starformation_and_feedback.c",__LINE__);
 
@@ -1105,7 +1105,7 @@ void check_disk_instability(int p, double dt)
 
        dmass=stars;
        j=0; //avoid non-definded j if dmass<1e-6
-       if(dmass>1.0e-6)
+      // if(dmass>1.0e-6)
 	 for(j=0;j<RNUM;j++)
 	   {
 	     //mass is transfered first from the inner rings
@@ -1119,7 +1119,7 @@ void check_disk_instability(int p, double dt)
 	   }
 
        //check needed in case there is a ring with 0 mass in the middle
-       if(Gal[p].DiskMassRings[j]>0)
+       if(Gal[p].DiskMassRings[j]>0.)
 	 fractionRings[j]=dmass/Gal[p].DiskMassRings[j];
        else
 	 fractionRings[j]=0.;
@@ -1128,6 +1128,7 @@ void check_disk_instability(int p, double dt)
        //for(j=0;j<RNUM;j++)
 	// fractionRings[j]=dmass/Gal[p].DiskMass;
        transfer_material_with_rings(p,"BulgeMass",p,"DiskMass",fractionRings,"model_starformation_and_feedback.c", __LINE__);
+       mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 #else
        transfer_material(p,"BulgeMass",p,"DiskMass",fraction, "model_starformation_and_feedback.c", __LINE__);
 #endif
@@ -1148,6 +1149,7 @@ void check_disk_instability(int p, double dt)
 	     //  fractionRings[j]*=BlackHoleGrowthRate*Gal[p].BlackHoleMass/(Gal[p].DiskMass+Gal[p].BulgeMass);
 
 	     transfer_material_with_rings(p,"BlackHoleMass",p,"ColdGas",fractionRings,"model_starformation_and_feedback.c", __LINE__);
+	     mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 #else
 	     fraction*=0.1*BlackHoleGrowthRate  / (1.0 + pow2((BlackHoleCutoffVelocity / Gal[p].Vvir)));
 	     transfer_material(p,"BlackHoleMass",p,"ColdGas",fraction, "model_starformation_and_feedback.c", __LINE__);
@@ -1177,7 +1179,7 @@ void check_disk_instability(int p, double dt)
 	 }*/
 
      }// if(stars > 0.0)
-  
+   mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 } //end check_disk_instability
 
 
@@ -1267,9 +1269,9 @@ void update_bulgesize_from_disk_instability(int p, double stars)
   /*size of new formed bulge, which consist of the stellar mass trasfered from the disk*/
   /*combine the old bulge with the new materials and caculate the bulge size assuming energy conservation */
   diskmass=stars;
-  j=0; //avoid non-definded j if dmass<1e-6
-  if(diskmass>1.0e-6)
-    {
+  //j=0;
+ // if(diskmass>1.0e-6)
+  //  {
       for(j=0;j<RNUM;j++)
   	{
 	  //mass is transfered first from the inner rings first
@@ -1287,8 +1289,8 @@ void update_bulgesize_from_disk_instability(int p, double stars)
 	  else
 	    bulgesize=diskmass/Gal[p].DiskMassRings[j]*RingRadius[j]+(1-diskmass/Gal[p].DiskMassRings[j])*RingRadius[j-1];
 	}
-    }
-  else bulgesize=0.5*RingRadius[0];
+  //  }
+  //else bulgesize=0.5*RingRadius[0];
 
   if(Gal[p].BulgeMass <1.e-9)
     Gal[p].BulgeSize=bulgesize;

@@ -80,7 +80,7 @@ double get_likelihood()
   double *binsamdata, *PropertyToBin;
   //variables for the bulge-blackhole mass test using binomial
   double binblackholeup[2]={0.0,0.0}, binblackholedown[2]={0.0,0.0};
-  double final_probability, redshift_probability, current_probability;
+  double final_probability, redshift_probability, current_probability=0.;
   int ObsNr, kk, snap, ii;
   double color_UV, color_VJ;
   //OBSERVATIONAL CUT
@@ -102,7 +102,7 @@ double get_likelihood()
   double slope_color_cut[NOUT]={0.00};
 #endif
   FILE *fa;
-  char buf[1000], sbuf[1000];
+  char buf[5000], sbuf[5000];
 
   /* Bin samdata into binsamdata according to observational constraints.
    * The first argument of the bin functions and of the likelihood
@@ -326,19 +326,19 @@ double get_likelihood()
 			  if(strcmp(MCMC_Obs[ObsNr].Name,"ColdGasFractionvsStellarMass")==0)
 			    PropertyToBin[kk] = MCMC_GAL[kk].ColdGas[snap]/MCMC_GAL[kk].StellarMass[snap];
 
-			    if(strcmp(MCMC_Obs[ObsNr].Name,"StellarMetallicityvsStellarMass")==0)
-			      PropertyToBin[kk] = MCMC_GAL[kk].MetalsStellarMass[snap]/MCMC_GAL[kk].StellarMass[snap]/0.0134;
+			  if(strcmp(MCMC_Obs[ObsNr].Name,"StellarMetallicityvsStellarMass")==0)
+			    PropertyToBin[kk] = MCMC_GAL[kk].MetalsStellarMass[snap]/MCMC_GAL[kk].StellarMass[snap]/0.0134;
 
-			    if(strcmp(MCMC_Obs[ObsNr].Name,"ColdGasMetallicityvsStellarMass")==0)
+			  if(strcmp(MCMC_Obs[ObsNr].Name,"ColdGasMetallicityvsStellarMass")==0)
 			      //if(MCMC_GAL[kk].GasMetallicity[snap]>0. && (MCMC_GAL[kk].Sfr[snap]*1.e9 / MCMC_GAL[kk].StellarMass[snap] > 0.01) && MCMC_GAL[kk].Type[snap]<2 )
-				if(MCMC_GAL[kk].GasMetallicity[snap]>0. && MCMC_GAL[kk].Type[snap]<2 )
-				PropertyToBin[kk] = MCMC_GAL[kk].GasMetallicity[snap];
+			    if(MCMC_GAL[kk].GasMetallicity[snap]>0. && MCMC_GAL[kk].Type[snap]<2 )
+			      PropertyToBin[kk] = MCMC_GAL[kk].GasMetallicity[snap];
 
-			    if(strcmp(MCMC_Obs[ObsNr].Name,"SizevsStellarMass_Discs")==0)
-				  PropertyToBin[kk] = MCMC_GAL[kk].StellarHalfMassRadius[snap];
+			  if(strcmp(MCMC_Obs[ObsNr].Name,"SizevsStellarMass_Discs")==0)
+			    PropertyToBin[kk] = MCMC_GAL[kk].StellarHalfMassRadius[snap];
 
-			    if(strcmp(MCMC_Obs[ObsNr].Name,"SizevsStellarMass_Bulges")==0)
-				  PropertyToBin[kk] = MCMC_GAL[kk].StellarHalfMassRadius[snap];
+			  if(strcmp(MCMC_Obs[ObsNr].Name,"SizevsStellarMass_Bulges")==0)
+			    PropertyToBin[kk] = MCMC_GAL[kk].StellarHalfMassRadius[snap];
 			}
 		      else
 			PropertyToBin[kk] = 0.;
