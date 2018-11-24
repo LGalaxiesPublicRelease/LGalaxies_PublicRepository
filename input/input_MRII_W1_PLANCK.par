@@ -227,7 +227,9 @@ ReIncorporationFactor	    2.4e+10  ;(eq. S22 in Henriques15) Fraction of ejected
 %-------------------------------------------
 %%Fraction of Metals returned to Hot component
 %-------------------------------------------
-FracZtoHot                  0.29     ;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNII metals put into hot gas
+FracZSNIItoHot				0.5		;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNII metals put into hot gas from the disc
+									%(in situations where DETAILED_METALS_AND_MASS_RETURN is not on, FracSNIItoHot is assumed for all metals)
+FracZSNIatoHot				0.5		;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNIa metals put into hot gas from the disc
 
 %-------------------------------------------
 %% IMF

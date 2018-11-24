@@ -565,8 +565,12 @@ void read_parameter_file(char *fname)
   addr[nt] = &ReincVelocitypower;
   id[nt++] = DOUBLE;
 
-  strcpy(tag[nt], "FracZtoHot");
-  addr[nt] = &FracZtoHot;
+  strcpy(tag[nt], "FracZSNIItoHot");
+  addr[nt] = &FracZSNIItoHot;
+  id[nt++] = DOUBLE;
+
+  strcpy(tag[nt], "FracZSNIatoHot");
+  addr[nt] = &FracZSNIatoHot;
   id[nt++] = DOUBLE;
 
 //in the future ready in different energies for each type of SN

@@ -72,6 +72,13 @@
 //#define LENSIGMAH 101
 //#define LENZ 13
 #endif
+
+#ifdef METALRICHWIND
+#ifdef GASDENSITYFWIND
+#define NORMGASDENSITY 10. //Msun/pc^2 //ISM gas surface density to normalise to when calculating density-dependent direct ejection into HotGas (18-05-18)
+#endif
+#endif
+
 				
 #define  ALLOCPARAMETER 50.  /* new definition !!! THIS HAS TO BE 50 !!! DONT EVER EVER EVER CHANGE !!! */
 

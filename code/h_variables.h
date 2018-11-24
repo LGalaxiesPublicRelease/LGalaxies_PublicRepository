@@ -173,7 +173,8 @@ extern double EjectSlope;
 extern double ReIncorporationFactor;
 extern double ReincZpower;
 extern double ReincVelocitypower;
-extern double FracZtoHot;
+extern double FracZSNIItoHot;
+extern double FracZSNIatoHot;
 #ifdef H2_AND_RINGS
 extern double Clumpingfactor;
 extern double Warmphasefactor;

@@ -131,60 +131,10 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
 
       else if(StarFormationModel == 4)	/*The star formation law in Fu et al. 2010*/
 	{
-	  double sigma_H2, N_sf=1.0, sigma2_crit=70, area;
-	  //area in pc^2
-	  if(j==0)
-	    area = RingRadius[j]*RingRadius[j]*1e12/Hubble_h;
-	  else
-	    area = (RingRadius[j]*RingRadius[j]-RingRadius[j-1]*RingRadius[j-1])*1e12/Hubble_h;
-	  sigma_H2 = Gal[p].ColdGasRings[j]*1e10/Hubble_h*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR/area;
+	  //double sigma_H2, N_sf=1.0, sigma2_crit=70, area;
 
-	  //Gal[p].H2fractionRings[j]+=Gal[p].BulgeMass*0.05;
 	  if(Gal[p].H2fractionRings[j]>=0.0)
-	    {
-	      //strdotr[j] = sfe * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR*10000.;
 	      strdotr[j] = sfe * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j] / WARM_PHASE_FACTOR;
-
-
-
-	     /* if(j==0)
-	     	    area = RingRadius[j];
-	     	  else
-	     	    area = RingRadius[j]-RingRadius[j-1];
-	     	  sigma_H2 = Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR/area;
-
-	      if(Gal[p].Type == 0)
-		{
-		  cold_crit_rate = SfrColdCrit * Gal[p].Vmax/200.  * Gal[p].ColdGasRadius/Gal[p].ColdGas*500.;
-		  //cold_crit_rate = SfrColdCrit * Gal[p].Vmax/200. / sigma_H2 * 5.e0;  //between 2 and 3
-		}
-	      else
-		{
-		  cold_crit_rate = SfrColdCrit * Gal[p].InfallVmax/200.  * Gal[p].ColdGasRadius/Gal[p].ColdGas*500.;
-		  //cold_crit_rate = SfrColdCrit * Gal[p].InfallVmax/200. / sigma_H2 * 5.e0;
-		}
-
-	      if (cold_crit_rate>1.)
-		cold_crit_rate = 1.;
-
-	         if(cold_crit_rate < 0)
-	           cold_crit_rate=0.;
-
-
-	     	    strdotr[j] = sfe * 2. * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR * (1 - cold_crit_rate);*/
-
-
-	      //strdotr[j] = sfe * Gal[p].ColdGasRings[j]* (1 - cold_crit);
-	      //strdotr[j] = sfe * Gal[p].ColdGasRings[j]/WARM_PHASE_FACTOR;
-	     //strdotr[j] = sfe * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR* (1 - cold_crit) ; //Only cold H2 component is proportional to star formation rate.
-
-	     //strdotr[j] = (12e7/tdyn)/UnitTime_in_years*Hubble_h * sigma_H2/10. * pow(1+sigma_H2/(sigma2_crit), N_sf)/pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),5.);
-	    
-	     //Somerville
-	     //strdotr[j] = (sfe*pow(10.,6.0))/UnitTime_in_years*Hubble_h * sigma_H2/10. * pow(1+sigma_H2/(sigma2_crit), N_sf);
-	     //area is in pc^2, *1e6 makes it in Kpc^2 as needed
-	     //strdotr[j] = strdotr[j] * (area * 1e6) /1e10*Hubble_h;
-	    }
 	  else strdotr[j]=0.0;
 	}
 

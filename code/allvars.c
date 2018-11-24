@@ -184,7 +184,8 @@ double EjectSlope;
 double ReIncorporationFactor;
 double ReincZpower;
 double ReincVelocitypower;
-double FracZtoHot;
+double FracZSNIItoHot;
+double FracZSNIatoHot;
 #ifdef FEEDBACK_COUPLED_WITH_MASS_RETURN
 double EnergySNcode, EnergySN;
 double EnergySNIIcode, EnergySNII;
