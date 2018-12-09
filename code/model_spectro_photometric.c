@@ -39,7 +39,7 @@ void setup_LumTables_precomputed(char SimName[])
   int MetalLoop, AgeLoop, band, snap;
   char buf[1000], FilterName[100], dummy[100], SSP[1000];
   char dumb_FilterFile[100];
-  float dumb_filterlambda;
+  double dumb_filterlambda;
   int dumb_ssp_nsnaps, dumb_ssp_nage, dumb_ssp_nmetallicites, dumb_nmag;
 
 #ifdef BC03
@@ -93,7 +93,7 @@ void setup_LumTables_precomputed(char SimName[])
   	//There is a different file for each band
   	for(band = 0; band < NMAG; band++)
   	{
-  		fscanf(fa,"%s %f %s" ,dumb_FilterFile, &dumb_filterlambda, FilterName);
+  		fscanf(fa,"%s %lf %s" ,dumb_FilterFile, &dumb_filterlambda, FilterName);
   		//READ TABLES
   		//char *filenames[] = { "m0001", "m001", "m002", "m004" };
   	  //sprintf(buf, "/galformod/data/L-Galaxies/Util/PhotTables_2.0//%s_Phot_Table_%s_Mag%s_%s.dat", PhotPrefix, SimName, FilterName,
@@ -136,7 +136,7 @@ void setup_LumTables_precomputed(char SimName[])
   		 * last call stays on global array  SSP_logAgeTab*/
   		for(AgeLoop = 0; AgeLoop < SSP_NAGES; AgeLoop++)
   		{
-  			fscanf(fb, " %e ", &SSP_logAgeTab[AgeLoop]);
+  			fscanf(fb, " %lf ", &SSP_logAgeTab[AgeLoop]);
 
   			if(SSP_logAgeTab[AgeLoop] > 0.0)	// avoid taking a log of 0 ...
   			{
@@ -155,7 +155,7 @@ void setup_LumTables_precomputed(char SimName[])
   			//for each age
   			for(AgeLoop = 0; AgeLoop < SSP_NAGES; AgeLoop++)
   			{
-  				fscanf(fb, "%e", &LumTables[band][MetalLoop][snap][AgeLoop]);
+  				fscanf(fb, "%lf", &LumTables[band][MetalLoop][snap][AgeLoop]);
   				LumTables[band][MetalLoop][snap][AgeLoop] = pow(10., -LumTables[band][MetalLoop][snap][AgeLoop] / 2.5);
   			}		//end loop on age
   		}		//end loop on redshift (everything done for current band)
