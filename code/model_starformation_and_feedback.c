@@ -387,6 +387,7 @@ void update_from_star_formation(int p, double stars, double starsRings[], char t
   transfer_material(p,"DiskMass",p,"ColdGas",fraction,"model_starformation_and_feedback.c", __LINE__);
 #endif
 
+  mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 
 
 
@@ -432,7 +433,6 @@ void update_from_star_formation(int p, double stars, double starsRings[], char t
     }
 #endif
 
-  mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 
   if (FeedbackReheatingModel == 0 || FeedbackReheatingModel == 1)
     {
@@ -440,24 +440,24 @@ void update_from_star_formation(int p, double stars, double starsRings[], char t
   * fraction of all stars formed, not just long lived */
 #ifdef DETAILED_METALS_AND_MASS_RETURN
 #ifdef METALS_SELF
-      Gal[p].MetalsHotGasSelf.str.type2 += Yield * FracZtoHot * stars;
+      Gal[p].MetalsHotGasSelf.str.type2 += Yield * FracZSNIItoHot * stars;
 #endif
 #else //IF NOT DETAILED_METALS_AND_MASS_RETURN
       //This part is not used if OPT+=DELAYED_ENRICHMENT_AND MASS_RETURN as yield
       //and recycling fraction are not fixed:
 #ifndef H2_AND_RINGS
-      Gal[p].MetalsColdGas[0] += Yield * (1.-FracZtoHot) * stars;
+      Gal[p].MetalsColdGas[0] += Yield * (1.-FracZSNIItoHot) * stars;
 #else
       for(jj=0;jj<RNUM;jj++)
 	{
-	  Gal[p].MetalsColdGasRings[jj][0] += Yield* (1.-FracZtoHot) * starsRings[jj];
-	  Gal[p].MetalsColdGas[0] += Yield* (1.-FracZtoHot) * starsRings[jj];
+	  Gal[p].MetalsColdGasRings[jj][0] += Yield* (1.-FracZSNIItoHot) * starsRings[jj];
+	  Gal[p].MetalsColdGas[0] += Yield* (1.-FracZSNIItoHot) * starsRings[jj];
 	}
 #endif
-      Gal[Gal[p].CentralGal].MetalsHotGas[0] += Yield * FracZtoHot * stars;
-      Gal[Gal[p].CentralGal].HotGas += Yield * FracZtoHot * stars;
+      Gal[Gal[p].CentralGal].MetalsHotGas[0] += Yield * FracZSNIItoHot * stars;
+      Gal[Gal[p].CentralGal].HotGas += Yield * FracZSNIItoHot * stars;
 #ifdef METALS_SELF
-      Gal[p].MetalsHotGasSelf[0] += Yield * FracZtoHot * stars;
+      Gal[p].MetalsHotGasSelf[0] += Yield * FracZSNIItoHot * stars;
 #endif
 #endif //DETAILED_METALS_AND_MASS_RETURN
     }

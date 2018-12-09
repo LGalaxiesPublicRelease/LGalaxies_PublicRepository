@@ -162,11 +162,7 @@ void disrupt(int p, int centralgal)
     for (jj=0;jj<RNUM;jj++)
       fractionRings[jj]=1.;
     transfer_material_with_rings(centralgal,"ICM",p,"DiskMass",fractionRings,"disrupt.c", __LINE__);
-#ifdef RINGS_IN_BULGES
     transfer_material_with_rings(centralgal,"ICM",p,"BulgeMass",fractionRings,"disrupt.c", __LINE__);
-#else
-    transfer_material(centralgal,"ICM",p,"BulgeMass",1.,"disrupt.c", __LINE__);
-#endif
 #else
     transfer_material(centralgal,"ICM",p,"BulgeMass",1.,"disrupt.c", __LINE__);
     transfer_material(centralgal,"ICM",p,"DiskMass",1.,"disrupt.c", __LINE__);

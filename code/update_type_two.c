@@ -127,7 +127,7 @@ void update_type_two_coordinate_and_velocity(int tree, int i, int centralgal)
       }
 }
 
-void get_coordinates(float *pos, float *vel, long long ID, int tree, int halonr, int snapnum)
+void get_coordinates(double *pos, double *vel, long long ID, int tree, int halonr, int snapnum)
 {
   int m, k, start, nids;
 

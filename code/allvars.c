@@ -258,11 +258,11 @@ double tau_dt[STEPS*MAXSNAPS];//Width of every timestep in the code. (Used for S
 
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
 //SSP PHOT TABLES
-float SSP_logMetalTab[SSP_NMETALLICITES];
-float SSP_logAgeTab[SSP_NAGES];
-float RedshiftTab[MAXSNAPS];
-float LumTables[NMAG][SSP_NMETALLICITES][MAXSNAPS][SSP_NAGES];
-float FilterLambda[NMAG+1];	//wavelength of each filter + 1 for V-band
+double SSP_logMetalTab[SSP_NMETALLICITES];
+double SSP_logAgeTab[SSP_NAGES];
+double RedshiftTab[MAXSNAPS];
+double LumTables[NMAG][SSP_NMETALLICITES][MAXSNAPS][SSP_NAGES];
+double FilterLambda[NMAG+1];	//wavelength of each filter + 1 for V-band
 #ifdef SPEC_PHOTABLES_ON_THE_FLY
 int NLambdaFilter[NMAG];
 #endif

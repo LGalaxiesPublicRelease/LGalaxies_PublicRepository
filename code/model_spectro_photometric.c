@@ -67,9 +67,10 @@ void setup_LumTables_precomputed(char SimName[])
 		terminate("nmetallicites on file not equal to SSP_NMETALLICITES");
 	}
 
+
 	for(MetalLoop=0;MetalLoop<SSP_NMETALLICITES;MetalLoop++)
 	{
-		fscanf(fa, "%f", &SSP_logMetalTab[MetalLoop]);
+		fscanf(fa, "%lf", &SSP_logMetalTab[MetalLoop]);
 		SSP_logMetalTab[MetalLoop]=log10(SSP_logMetalTab[MetalLoop]);
 	}
 	fclose(fa);
@@ -116,7 +117,7 @@ void setup_LumTables_precomputed(char SimName[])
   		printf("reading file %s \n", buf);
 #endif
 #endif
-  		fscanf(fb, "%s %f %d %d", dummy, &FilterLambda[band], &dumb_ssp_nsnaps, &dumb_ssp_nage);
+  		fscanf(fb, "%s %lf %d %d", dummy, &FilterLambda[band], &dumb_ssp_nsnaps, &dumb_ssp_nage);
   		/* check that the numbers on top of the file correspond to (LastDarkMatterSnapShot+1) and SSP_NAGES */
   		if(FilterLambda[band] != dumb_filterlambda)
   		{
@@ -150,7 +151,7 @@ void setup_LumTables_precomputed(char SimName[])
   		//read luminosities at each output redshift
   		for(snap = 0; snap < (LastDarkMatterSnapShot+1); snap++)
   		{
-  			fscanf(fb, " %f ", &RedshiftTab[snap]);
+  			fscanf(fb, " %lf ", &RedshiftTab[snap]);
   			//for each age
   			for(AgeLoop = 0; AgeLoop < SSP_NAGES; AgeLoop++)
   			{

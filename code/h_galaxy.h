@@ -59,9 +59,7 @@ struct GALAXY			/* Galaxy data */
   double BulgeMass; 
 #ifdef H2_AND_RINGS
   double DiskMassRings[RNUM];
-#ifdef RINGS_IN_BULGES
   double BulgeMassRings[RNUM];
-#endif
 #endif
   double HotGas;
   //double ReheatedGas;
@@ -81,9 +79,7 @@ struct GALAXY			/* Galaxy data */
   double MetalsBulgeMass[NUM_METAL_CHANNELS];
 #ifdef H2_AND_RINGS
   double MetalsDiskMassRings[RNUM][NUM_METAL_CHANNELS];
-#ifdef RINGS_IN_BULGES
   double MetalsBulgeMassRings[RNUM][NUM_METAL_CHANNELS];
-#endif
 #endif
   double MetalsHotGas[NUM_METAL_CHANNELS];
   //double MetalsReheatedGas;
@@ -209,13 +205,15 @@ struct GALAXY			/* Galaxy data */
   double sfh_BulgeMass[SFH_NBIN]; //Stellar mass in bulge, in bin in standard units
 #ifdef H2_AND_RINGS
   double sfh_DiskMassRings[RNUM][SFH_NBIN]; //Stellar mass in disk RINGS, in bin in standard units
-#ifdef RINGS_IN_BULGES
   double sfh_BulgeMassRings[RNUM][SFH_NBIN]; //Stellar mass in disk RINGS, in bin in standard units
-#endif
 #endif
   double sfh_ICM[SFH_NBIN]; //Stellar mass in ICM, in bin in standard units
   double sfh_MetalsDiskMass[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in disk.
   double sfh_MetalsBulgeMass[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in bulge.
+#ifdef H2_AND_RINGS
+  double sfh_MetalsDiskMassRings[RNUM][SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in disk.
+  double sfh_MetalsBulgeMassRings[RNUM][SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in bulge.
+#endif
   double sfh_MetalsICM[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in ICM.
 #ifdef TRACK_SFH_MASSGROWTH_CHANNELS
   double sfh_MassFromInSitu[SFH_NBIN]; //Stellar mass formed in situ, in standard units.
@@ -234,6 +232,10 @@ struct GALAXY			/* Galaxy data */
   double sfh_DiskMass_elements[SFH_NBIN][NUM_ELEMENTS];
   double sfh_BulgeMass_elements[SFH_NBIN][NUM_ELEMENTS];
   double sfh_ICM_elements[SFH_NBIN][NUM_ELEMENTS];
+#ifdef H2_AND_RINGS
+  double sfh_DiskMass_elementsRings[RNUM][SFH_NBIN][NUM_ELEMENTS];
+  double sfh_BulgeMass_elementsRings[RNUM][SFH_NBIN][NUM_ELEMENTS];
+#endif
 #endif
   double DiskMass_elements[NUM_ELEMENTS];
   double BulgeMass_elements[NUM_ELEMENTS];
@@ -247,9 +249,7 @@ struct GALAXY			/* Galaxy data */
 #endif
 #ifdef H2_AND_RINGS
   double DiskMassRings_elements[RNUM][NUM_ELEMENTS];
-#ifdef RINGS_IN_BULGES
   double BulgeMassRings_elements[RNUM][NUM_ELEMENTS];
-#endif
   double ColdGasRings_elements[RNUM][NUM_ELEMENTS];
 #endif
 #endif //INDIVIDUAL_ELEMENTS

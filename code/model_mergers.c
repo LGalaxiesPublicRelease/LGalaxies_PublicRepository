@@ -267,7 +267,7 @@ void deal_with_galaxy_merger(int p, double time, double deltaT, int nstep)
 	make_bulge_from_burst(merger_centralgal);
     }
 
-#ifdef RINGS_IN_BULGES
+#ifdef H2_AND_RINGS
   //Bulge Mass was added into the same place as the disk, it will now be redistributed
   //according to a Jaffe profile and after the new bulge size has been calculated
   distribute_bulge_material(merger_centralgal);
@@ -527,11 +527,7 @@ void add_galaxies_together(int t, int p, double deltaT)
     transfer_material_with_rings(t,"DiskMass",p,"DiskMass",fractionRings,"model_mergers.c", __LINE__);
 
   if(Gal[p].BulgeMass>0.)
-#ifdef RINGS_IN_BULGES
     transfer_material_with_rings(t,"BulgeMass",p,"BulgeMass",fractionRings,"model_mergers.c", __LINE__);
-#else
-    transfer_material(t,"BulgeMass",p,"BulgeMass",1.,"model_mergers.c", __LINE__);
-#endif
 
 #else
   if(BulgeFormationInMinorMergersOn)
@@ -863,7 +859,7 @@ void bulgesize_from_merger(double mass_ratio, int merger_centralgal, int p,
 
 }
 
-#ifdef RINGS_IN_BULGES
+#ifdef H2_AND_RINGS
   //Bulge Mass was added into the same place as the disk, it will now be redistributed
   //according to a Jaffe profile and after the new bulge size has been calculated
 void distribute_bulge_material(int merger_centralgal)
@@ -902,4 +898,4 @@ void distribute_bulge_material(int merger_centralgal)
 #endif
     }
 }
-#endif //RINGS_IN_BULGES
+#endif //H2_AND_RINGS

@@ -283,55 +283,55 @@ int ELETOBIGCOUNTA;
 int FRACCOUNTA;
 
 //Arrays that yield tables are written to:
-float lifetimeMasses[LIFETIME_MASS_NUM];
-float lifetimeMetallicities[LIFETIME_Z_NUM];
-float lifetimes[LIFETIME_Z_NUM][LIFETIME_MASS_NUM];
-float AGBMasses[AGB_MASS_NUM]; //Initial star masses [Msun]
-float AGBMetallicities[AGB_Z_NUM]; //Initial star metallicities [Msun]
-float AGBEjectedMasses[AGB_Z_NUM][AGB_MASS_NUM]; //Total mass ejected [Msun]
-float AGBTotalMetals[AGB_Z_NUM][AGB_MASS_NUM]; //Total metal YIELD ejected [Msun]
-float AGBYields[AGB_Z_NUM][11][AGB_MASS_NUM]; //YIELD ejected, for each element [Msun]
-float SNIIMasses[SNII_MASS_NUM];
-float SNIIMetallicities[SNII_Z_NUM];
-float SNIIEjectedMasses[SNII_Z_NUM][SNII_MASS_NUM];
-float SNIITotalMetals[SNII_Z_NUM][SNII_MASS_NUM];
-float SNIIYields[SNII_Z_NUM][11][SNII_MASS_NUM];
+double lifetimeMasses[LIFETIME_MASS_NUM];
+double lifetimeMetallicities[LIFETIME_Z_NUM];
+double lifetimes[LIFETIME_Z_NUM][LIFETIME_MASS_NUM];
+double AGBMasses[AGB_MASS_NUM]; //Initial star masses [Msun]
+double AGBMetallicities[AGB_Z_NUM]; //Initial star metallicities [Msun]
+double AGBEjectedMasses[AGB_Z_NUM][AGB_MASS_NUM]; //Total mass ejected [Msun]
+double AGBTotalMetals[AGB_Z_NUM][AGB_MASS_NUM]; //Total metal YIELD ejected [Msun]
+double AGBYields[AGB_Z_NUM][11][AGB_MASS_NUM]; //YIELD ejected, for each element [Msun]
+double SNIIMasses[SNII_MASS_NUM];
+double SNIIMetallicities[SNII_Z_NUM];
+double SNIIEjectedMasses[SNII_Z_NUM][SNII_MASS_NUM];
+double SNIITotalMetals[SNII_Z_NUM][SNII_MASS_NUM];
+double SNIIYields[SNII_Z_NUM][11][SNII_MASS_NUM];
 #ifndef DTD
-float SNIaMasses[SNIA_MASS_NUM];
-float SNIaEjectedMasses[SNIA_MASS_NUM];
-float SNIaTotalMetals[SNIA_MASS_NUM];
-float SNIaYields[42][SNIA_MASS_NUM];
+double SNIaMasses[SNIA_MASS_NUM];
+double SNIaEjectedMasses[SNIA_MASS_NUM];
+double SNIaTotalMetals[SNIA_MASS_NUM];
+double SNIaYields[42][SNIA_MASS_NUM];
 #else
-float SNIaYields[42];
+double SNIaYields[42];
 #endif
 
 //Integrated yields arrays:
-float NormSNIIMassEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
-float NormSNIIMetalEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
+double NormSNIIMassEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
+double NormSNIIMetalEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
 #ifdef INDIVIDUAL_ELEMENTS
-float NormSNIIYieldRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM][NUM_ELEMENTS];
+double NormSNIIYieldRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM][NUM_ELEMENTS];
 #endif
-float NormAGBMassEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
-float NormAGBMetalEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
+double NormAGBMassEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
+double NormAGBMetalEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
 #ifdef INDIVIDUAL_ELEMENTS
-float NormAGBYieldRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM][NUM_ELEMENTS];
+double NormAGBYieldRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM][NUM_ELEMENTS];
 #endif
-float NormSNIaMassEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
-float NormSNIaMetalEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
+double NormSNIaMassEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
+double NormSNIaMetalEjecRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM];
 #ifdef INDIVIDUAL_ELEMENTS
-float NormSNIaYieldRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM][NUM_ELEMENTS];
+double NormSNIaYieldRate[STEPS*MAXSNAPS][SFH_NBIN][LIFETIME_Z_NUM][NUM_ELEMENTS];
 #endif
 
 //Arrays used to plot SNe rates from SFH bins (yield_integrals.c):
-float TheSFH[SFH_NBIN];
-float SNIIRate[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
-float SNIaRate[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
-float AGBRate[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
+double TheSFH[SFH_NBIN];
+double SNIIRate[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
+double SNIaRate[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
+double AGBRate[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
 //Arrays used to plot SNe rates from SFH-timesteps (calc_SNe_rates.c):
-float TheSFH2[STEPS*MAXSNAPS];
-float SNIIRate2[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
-float SNIaRate2[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
-float AGBRate2[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
+double TheSFH2[STEPS*MAXSNAPS];
+double SNIIRate2[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
+double SNIaRate2[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
+double AGBRate2[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
 
 
 //IMF parameters (for chemical enrichment):
@@ -409,13 +409,13 @@ float AGBRate2[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
 #endif
 
 //table containing the Metallicity grid of the SSP tables (converted to log10)
-extern float SSP_logMetalTab[SSP_NMETALLICITES];
+extern double SSP_logMetalTab[SSP_NMETALLICITES];
 //table containing the Age grid of the SSP tables (originally in years, converted to log10(internal time units 1e12 Yrs/h))
-extern float SSP_logAgeTab[SSP_NAGES];
+extern double SSP_logAgeTab[SSP_NAGES];
 //table containing redshift (different from the one in the code when scaling to future times)
-extern float RedshiftTab[MAXSNAPS];
-extern float LumTables[NMAG][SSP_NMETALLICITES][MAXSNAPS][SSP_NAGES];
-extern float FilterLambda[NMAG+1];//wavelength of each filter + 1 for V-band
+extern double RedshiftTab[MAXSNAPS];
+extern double LumTables[NMAG][SSP_NMETALLICITES][MAXSNAPS][SSP_NAGES];
+extern double FilterLambda[NMAG+1];//wavelength of each filter + 1 for V-band
 
 #ifdef SPEC_PHOTABLES_ON_THE_FLY
 #define MAX_NLambdaFilter 1000
