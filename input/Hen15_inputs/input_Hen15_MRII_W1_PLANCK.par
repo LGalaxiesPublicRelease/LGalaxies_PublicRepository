@@ -25,13 +25,13 @@ SimulationDir	        /net/bootes/export/data1/Millennium2/BigRun/modified_trees
 LastDarkMatterSnapShot  67
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
-OutputDir               /net/bootes/scratch-ssd/SAM/test3/MRII/
-%OutputDir                /net/bootes/scratch2/SAM/Hen15_tests/MRII/
-%OutputDir                /net/bootes/scratch2/SAM/Hen15_tests/only_SN/MRII/
-%OutputDir                 /net/bootes/scratch2/SAM/Hen15_tests/only_AGN/MRII/
-%OutputDir                /net/bootes/scratch2/SAM/Hen15_tests/no_feedback/MRII/
-%OutputDir                /net/bootes/scratch2/SAM/Hen15_tests/no_disruption/MRII
-%OutputDir                 /net/bootes/scratch2/SAM/Hen15_tests/HT09_disruption/MRII/
+%OutputDir               /net/bootes/scratch-ssd/SAM/test3/MRII/
+%OutputDir                /net/bootes/scratch2/SAM/HWL18/MRII/
+%OutputDir                /net/bootes/scratch2/SAM/HWL18/only_SN/MRII/
+OutputDir                 /net/bootes/scratch2/SAM/HWL18/only_AGN/MRII/
+%OutputDir                /net/bootes/scratch2/SAM/HWL18/no_feedback/MRII/
+%OutputDir                /net/bootes/scratch2/SAM/HWL18/no_disruption/MRII
+%OutputDir                 /net/bootes/scratch2/SAM/HWL18/HT09_disruption/MRII/
 
 MaxMemSize           5000   85000 ; 18000 ; 100000 galtree
 

@@ -273,7 +273,7 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
   o->ColdGasRadius = g->ColdGasRadius;
   o->DiskRadius = g->DiskRadius;
 
-#ifndef RINGS_IN_BULGES
+#ifndef H2_AND_RINGS
   o->BulgeSize = g->BulgeSize;
 #else
   //BULGE
@@ -343,19 +343,19 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
 //METALS
 
 #ifndef   DETAILED_METALS_AND_MASS_RETURN
-  o->MetalsColdGas = CORRECTDBFLOAT(g->MetalsColdGas);
-  o->MetalsStellarMass = CORRECTDBFLOAT(g->MetalsDiskMass)+ CORRECTDBFLOAT(g->MetalsBulgeMass);
-  o->MetalsDiskMass = CORRECTDBFLOAT(g->MetalsDiskMass);
-  o->MetalsBulgeMass = CORRECTDBFLOAT(g->MetalsBulgeMass);
-  o->MetalsHotGas = CORRECTDBFLOAT(g->MetalsHotGas);
-  //o->MetalsReheatedGas = CORRECTDBFLOAT(g->MetalsReheatedGas);
-  o->MetalsEjectedMass = CORRECTDBFLOAT(g->MetalsEjectedMass);   
-  o->MetalsICM = CORRECTDBFLOAT(g->MetalsICM);
+  o->MetalsColdGas[0] = CORRECTDBFLOAT(g->MetalsColdGas[0]);
+  o->MetalsStellarMass[0] = CORRECTDBFLOAT(g->MetalsDiskMass[0])+ CORRECTDBFLOAT(g->MetalsBulgeMass[0]);
+  o->MetalsDiskMass[0] = CORRECTDBFLOAT(g->MetalsDiskMass[0]);
+  o->MetalsBulgeMass[0] = CORRECTDBFLOAT(g->MetalsBulgeMass[0]);
+  o->MetalsHotGas[0] = CORRECTDBFLOAT(g->MetalsHotGas[0]);
+  //o->MetalsReheatedGas[0] = CORRECTDBFLOAT(g->MetalsReheatedGas[0]);
+  o->MetalsEjectedMass[0] = CORRECTDBFLOAT(g->MetalsEjectedMass[0]);   
+  o->MetalsICM[0] = CORRECTDBFLOAT(g->MetalsICM[0]); 
 #ifdef METALS_SELF
-  o->MetalsHotGasSelf = CORRECTDBFLOAT(g->MetalsHotGasSelf);
+  o->MetalsHotGasSelf[0] = CORRECTDBFLOAT(g->MetalsHotGasSelf[0]);
 #endif
 #else
-  for(ll=0;ll<3;ll++)
+  for(ll=0;ll<NUM_METAL_CHANNELS;ll++)
     {
       o->MetalsColdGas[ll] = g->MetalsColdGas[ll];
       o->MetalsStellarMass[ll] =  g->MetalsDiskMass[ll]+g->MetalsBulgeMass[ll];
@@ -389,16 +389,15 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
 
   	o->DiskMassRings[ll] = g->DiskMassRings[ll];
 
-#ifdef RINGS_IN_BULGES
-  	o->BulgeMassRings[ll] = g->BulgeMassRings[ll];
   	int ii;
-  	 for(ii=0;ii<3;ii++)
+  	o->BulgeMassRings[ll] = g->BulgeMassRings[ll];
+
+  	 for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
   	    {
   	     o->MetalsColdGasRings[ll][ii] = g->MetalsColdGasRings[ll][ii];
   	     o->MetalsDiskMassRings[ll][ii] = g->MetalsDiskMassRings[ll][ii];
   	     o->MetalsBulgeMassRings[ll][ii] = g->MetalsBulgeMassRings[ll][ii];
   	    }
-#endif
   }
 #endif
 
@@ -418,14 +417,12 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
  	  for(ll=0; ll<RNUM; ll++)
  	    {
  	      o->sfh_DiskMassRings[ll][j]=g->sfh_DiskMassRings[ll][j];
-#ifdef RINGS_IN_BULGES
  	      o->sfh_BulgeMassRings[ll][j]=g->sfh_BulgeMassRings[ll][j];
-#endif
  	    }
 #endif
  	  o->sfh_ICM[j]=g->sfh_ICM[j];
 
- 	 for(ll=0; ll<3; ll++)
+ 	 for(ll=0; ll<NUM_METAL_CHANNELS; ll++)
 	 {
  	  o->sfh_MetalsDiskMass[j][ll]=g->sfh_MetalsDiskMass[j][ll];
  	  o->sfh_MetalsBulgeMass[j][ll]=g->sfh_MetalsBulgeMass[j][ll];
@@ -457,9 +454,7 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
  	  for(ll=0; ll<RNUM; ll++)
  	    {
  	      sfh_bin[j].sfh_DiskMassRings[ll] = g->sfh_DiskMassRings[ll][j];
-#ifdef RINGS_IN_BULGES
  	      sfh_bin[j].sfh_BulgeMassRings[ll] = g->sfh_BulgeMassRings[ll][j];
-#endif
  	    }
 #endif
 	  sfh_bin[j].sfh_ICM = g->sfh_ICM[j];
@@ -487,13 +482,11 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
 	  for(ll=0; ll<RNUM; ll++)
 	    {
 	      o->sfh_DiskMassRings[ll][j]=0.;
-#ifdef RINGS_IN_BULGES
 	      o->sfh_BulgeMassRings[ll][j]=0.;
-#endif
 	    }
 #endif
 	  o->sfh_ICM[j]=0.;
-	  for(ll=0; ll<3; ll++)
+	  for(ll=0; ll<NUM_METAL_CHANNELS; ll++)
 	    {
 	  o->sfh_MetalsDiskMass[j][ll]=0.;
 	  o->sfh_MetalsBulgeMass[j][ll]=0.;
@@ -522,9 +515,7 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
 	  for(ll=0; ll<RNUM; ll++)
 	    {
 	      sfh_bin[j].sfh_DiskMassRings[ll]=0.;
-#ifdef RINGS_IN_BULGES
 	      sfh_bin[j].sfh_BulgeMassRings[ll]=0.;
-#endif
 	    }
 #endif
 	  sfh_bin[j].sfh_ICM=0;
@@ -549,9 +540,7 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
       for(ll=0; ll<RNUM; ll++)
 	{
 	  o->DiskMassRings_elements[ll][kk] = g -> DiskMassRings_elements[ll][kk];
-#ifdef RINGS_IN_BULGES
 	  o->BulgeMassRings_elements[ll][kk] = g -> BulgeMassRings_elements[ll][kk];
-#endif
 	  o->ColdGasRings_elements[ll][kk] = g->ColdGasRings_elements[ll][kk];
 	}
 #endif

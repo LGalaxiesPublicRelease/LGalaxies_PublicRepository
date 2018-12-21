@@ -17,36 +17,36 @@ struct GALAXY			/* Galaxy data */
   int MergerCentralGal;  /* Galaxy this galaxy will merge onto.  Own ID for
 			  * types 0 and 1, unless 1's have little dark matter
 			  * and already merging to type 0. */
-  float CentralMvir;
+  double CentralMvir;
   /* properties of subhalo at the last time this galaxy was a central galaxy */
-  float Pos[3];
-  float MergCentralPos[3];
-  float Vel[3];
-  float Pos_notupdated[3];
-  float Vel_notupdated[3];
+  double Pos[3];
+  double MergCentralPos[3];
+  double Vel[3];
+  double Pos_notupdated[3];
+  double Vel_notupdated[3];
 #ifdef HALOPROPERTIES
-  float HaloM_Mean200;
-  float HaloM_Crit200;
-  float HaloM_TopHat;
-  float HaloPos[3];
-  float HaloVel[3];
-  float HaloVelDisp;
-  float HaloVmax;
+  double HaloM_Mean200;
+  double HaloM_Crit200;
+  double HaloM_TopHat;
+  double HaloPos[3];
+  double HaloVel[3];
+  double HaloVelDisp;
+  double HaloVmax;
 #endif
   double HaloSpin[3];
   double ColdGasSpin[3];
   double DiskSpin[3];
   int   Len;   
-  float Mvir;
-  float Rvir;
-  float Vvir;
-  float Vmax;
-  float InfallVmax;
-  float InfallVmaxPeak; // km/s - Max previous Vmax at infall
+  double Mvir;
+  double Rvir;
+  double Vvir;
+  double Vmax;
+  double InfallVmax;
+  double InfallVmaxPeak; // km/s - Max previous Vmax at infall
   int InfallSnap;
-  float InfallHotGas;
-  float InfallHotGasRadius;
-  float HotRadius;
+  double InfallHotGas;
+  double InfallHotGasRadius;
+  double HotRadius;
   /* baryonic reservoirs */
   double ColdGas;
 #ifdef H2_AND_RINGS
@@ -59,138 +59,134 @@ struct GALAXY			/* Galaxy data */
   double BulgeMass; 
 #ifdef H2_AND_RINGS
   double DiskMassRings[RNUM];
-#ifdef RINGS_IN_BULGES
   double BulgeMassRings[RNUM];
-#endif
 #endif
   double HotGas;
   //double ReheatedGas;
   double EjectedMass;
 #ifdef EXCESS_MASS
-  float ExcessMass;
+  double ExcessMass;
 #endif
-  float BlackHoleMass;
-  float BlackHoleGas;
-  float ICM;
+  double BlackHoleMass;
+  double BlackHoleGas;
+  double ICM;
 
-  float MetalsColdGas[NUM_METAL_CHANNELS];
+  double MetalsColdGas[NUM_METAL_CHANNELS];
 #ifdef H2_AND_RINGS
-  float MetalsColdGasRings[RNUM][NUM_METAL_CHANNELS];
+  double MetalsColdGasRings[RNUM][NUM_METAL_CHANNELS];
 #endif
-  float MetalsDiskMass[NUM_METAL_CHANNELS];
-  float MetalsBulgeMass[NUM_METAL_CHANNELS];
+  double MetalsDiskMass[NUM_METAL_CHANNELS];
+  double MetalsBulgeMass[NUM_METAL_CHANNELS];
 #ifdef H2_AND_RINGS
-  float MetalsDiskMassRings[RNUM][NUM_METAL_CHANNELS];
-#ifdef RINGS_IN_BULGES
-  float MetalsBulgeMassRings[RNUM][NUM_METAL_CHANNELS];
+  double MetalsDiskMassRings[RNUM][NUM_METAL_CHANNELS];
+  double MetalsBulgeMassRings[RNUM][NUM_METAL_CHANNELS];
 #endif
-#endif
-  float MetalsHotGas[NUM_METAL_CHANNELS];
-  //float MetalsReheatedGas;
-  float MetalsEjectedMass[NUM_METAL_CHANNELS];
+  double MetalsHotGas[NUM_METAL_CHANNELS];
+  //double MetalsReheatedGas;
+  double MetalsEjectedMass[NUM_METAL_CHANNELS];
 #ifdef EXCESS_MASS
-  float MetalsExcessMass[NUM_METAL_CHANNELS];
+  double MetalsExcessMass[NUM_METAL_CHANNELS];
 #endif
 #ifdef METALS_SELF
-  float MetalsHotGasSelf[NUM_METAL_CHANNELS];
+  double MetalsHotGasSelf[NUM_METAL_CHANNELS];
 #endif
-  float MetalsICM[NUM_METAL_CHANNELS];
+  double MetalsICM[NUM_METAL_CHANNELS];
 
 #ifdef TRACK_MASSGROWTH_CHANNELS
-  float MassFromInSitu;
-  float MassFromMergers;
-  float MassFromBursts;
+  double MassFromInSitu;
+  double MassFromMergers;
+  double MassFromBursts;
 #endif
 #ifdef TRACK_BURST
-  float BurstMass;
+  double BurstMass;
 #endif //TRACK_BURST
 
 
   /* misc */
-  float PrimordialAccretionRate;
-  float CoolingRate;
-  float CoolingRate_beforeAGN;
-  float CoolingRadius;
+  double PrimordialAccretionRate;
+  double CoolingRate;
+  double CoolingRate_beforeAGN;
+  double CoolingRadius;
   double CoolingGas;
-  float QuasarAccretionRate;
-  float RadioAccretionRate;
-  //float RadioMass;
-  float AGNheatingFromCentral;
+  double QuasarAccretionRate;
+  double RadioAccretionRate;
+  //double RadioMass;
+  double AGNheatingFromCentral;
 #ifdef H2_AND_RINGS
   double Sfr;
   double SfrRings[RNUM];
 #else
-  float Sfr;
+  double Sfr;
 #endif
-  float SfrBulge;
-  float StarMerge;
-  float XrayLum;
-  float BulgeSize;
-  float DiskRadius;
-  float ColdGasRadius;
-  float StellarHalfMassRadius;
+  double SfrBulge;
+  double StarMerge;
+  double XrayLum;
+  double BulgeSize;
+  double DiskRadius;
+  double ColdGasRadius;
+  double StellarHalfMassRadius;
 #ifdef GALAXYTREE
   int   DisruptOn;
 #endif
-  // float halfradius;
-  //float periradius;
+  // double halfradius;
+  //double periradius;
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
-  float CosInclination; //angle between galaxy spin and the z-axis
+  double CosInclination; //angle between galaxy spin and the z-axis
 #endif
 #ifndef HT09_DISRUPTION
-  float OriMergTime;
-  float MergTime;
-  float OriMvir;
-  float OriRvir;
+  double OriMergTime;
+  double MergTime;
+  double OriMvir;
+  double OriRvir;
 #else
-  float OriMergRadius;
-  float MergRadius;
-  float OriMergmass;
+  double OriMergRadius;
+  double MergRadius;
+  double OriMergmass;
 #endif
-  float MergeSat;
-  float DistanceToCentralGal[3];
+  double MergeSat;
+  double DistanceToCentralGal[3];
   int MergeOn;
 #ifdef TRACK_SPLASHBACKS
   int flagSplashBack;
-  float TimeSinceSplashBack;
+  double TimeSinceSplashBack;
 #endif
 #ifdef TRACK_NMERGERS
-  float NMajorMergers;
-  float NMinorMergers;
+  double NMajorMergers;
+  double NMinorMergers;
 #endif
 
   /* luminosities in various bands */
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
 #ifndef POST_PROCESS_MAGS
 #ifdef OUTPUT_REST_MAGS
-  float Lum[NMAG][NOUT];
-  float YLum[NMAG][NOUT];
-  float LumBulge[NMAG][NOUT];
-  float YLumBulge[NMAG][NOUT];
-  float LumDust[NMAG][NOUT];
+  double Lum[NMAG][NOUT];
+  double YLum[NMAG][NOUT];
+  double LumBulge[NMAG][NOUT];
+  double YLumBulge[NMAG][NOUT];
+  double LumDust[NMAG][NOUT];
 #ifdef ICL
-  float ICLLum[NMAG][NOUT];
+  double ICLLum[NMAG][NOUT];
 #endif
 #endif //OUTPUT_REST_MAGS
 
 #ifdef COMPUTE_OBS_MAGS
-  float ObsLum[NMAG][NOUT];
-  float ObsYLum[NMAG][NOUT];
-  float ObsLumBulge[NMAG][NOUT];
-  float ObsYLumBulge[NMAG][NOUT];
-  float ObsLumDust[NMAG][NOUT];
+  double ObsLum[NMAG][NOUT];
+  double ObsYLum[NMAG][NOUT];
+  double ObsLumBulge[NMAG][NOUT];
+  double ObsYLumBulge[NMAG][NOUT];
+  double ObsLumDust[NMAG][NOUT];
 #ifdef ICL
-  float ObsICL[NMAG][NOUT];
+  double ObsICL[NMAG][NOUT];
 #endif
 
 #ifdef OUTPUT_MOMAF_INPUTS
-  float dObsLum[NMAG][NOUT];
-  float dObsYLum[NMAG][NOUT];
-  float dObsLumBulge[NMAG][NOUT];
-  float dObsYLumBulge[NMAG][NOUT];
-  float dObsLumDust[NMAG][NOUT];
+  double dObsLum[NMAG][NOUT];
+  double dObsYLum[NMAG][NOUT];
+  double dObsLumBulge[NMAG][NOUT];
+  double dObsYLumBulge[NMAG][NOUT];
+  double dObsLumDust[NMAG][NOUT];
 #ifdef ICL
-  float dObsICL[NMAG][NOUT];
+  double dObsICL[NMAG][NOUT];
 #endif
 #endif
 #endif //COMPUTE_OBS_MAGS
@@ -198,25 +194,27 @@ struct GALAXY			/* Galaxy data */
 #endif //ndef POST_PROCESS_MAGS
 #endif //COMPUTE_SPECPHOT_PROPERTIES
 
-  float MassWeightAge[NOUT];
+  double MassWeightAge[NOUT];
 #ifdef STAR_FORMATION_HISTORY
   int sfh_ibin; //Index of highest bin currently in use
-  float sfh_age; //Time in years of last call to sph_update_bins
-  float sfh_dt[SFH_NBIN]; //Size of time interval in units of years
-  float sfh_t[SFH_NBIN]; //Time at low-redshift edge of bin in same units
+  double sfh_age; //Time in years of last call to sph_update_bins
+  double sfh_dt[SFH_NBIN]; //Size of time interval in units of years
+  double sfh_t[SFH_NBIN]; //Time at low-redshift edge of bin in same units
   int sfh_Nbins[SFH_NBIN]; //Number of bins on the time interval
   double sfh_DiskMass[SFH_NBIN]; //Stellar mass in disk, in bin in standard units
   double sfh_BulgeMass[SFH_NBIN]; //Stellar mass in bulge, in bin in standard units
 #ifdef H2_AND_RINGS
   double sfh_DiskMassRings[RNUM][SFH_NBIN]; //Stellar mass in disk RINGS, in bin in standard units
-#ifdef RINGS_IN_BULGES
   double sfh_BulgeMassRings[RNUM][SFH_NBIN]; //Stellar mass in disk RINGS, in bin in standard units
 #endif
+  double sfh_ICM[SFH_NBIN]; //Stellar mass in ICM, in bin in standard units
+  double sfh_MetalsDiskMass[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in disk.
+  double sfh_MetalsBulgeMass[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in bulge.
+#ifdef H2_AND_RINGS
+  double sfh_MetalsDiskMassRings[RNUM][SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in disk.
+  double sfh_MetalsBulgeMassRings[RNUM][SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in bulge.
 #endif
-  float sfh_ICM[SFH_NBIN]; //Stellar mass in ICM, in bin in standard units
-  float sfh_MetalsDiskMass[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in disk.
-  float sfh_MetalsBulgeMass[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in bulge.
-  float sfh_MetalsICM[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in ICM.
+  double sfh_MetalsICM[SFH_NBIN][NUM_METAL_CHANNELS]; //Metals locked up in stars in ICM.
 #ifdef TRACK_SFH_MASSGROWTH_CHANNELS
   double sfh_MassFromInSitu[SFH_NBIN]; //Stellar mass formed in situ, in standard units.
   double sfh_MassFromMergers[SFH_NBIN]; //Stellar mass accreted from mergers, in standard units.
@@ -231,26 +229,28 @@ struct GALAXY			/* Galaxy data */
 #ifdef INDIVIDUAL_ELEMENTS
   //All: [H][He][Cb][N][O][Ne][Mg][Si][S][Ca][Fe] or //Only [H][He][O][Mg][Fe]
 #ifdef STAR_FORMATION_HISTORY
-  float sfh_DiskMass_elements[SFH_NBIN][NUM_ELEMENTS];
-  float sfh_BulgeMass_elements[SFH_NBIN][NUM_ELEMENTS];
-  float sfh_ICM_elements[SFH_NBIN][NUM_ELEMENTS];
+  double sfh_DiskMass_elements[SFH_NBIN][NUM_ELEMENTS];
+  double sfh_BulgeMass_elements[SFH_NBIN][NUM_ELEMENTS];
+  double sfh_ICM_elements[SFH_NBIN][NUM_ELEMENTS];
+#ifdef H2_AND_RINGS
+  double sfh_DiskMass_elementsRings[RNUM][SFH_NBIN][NUM_ELEMENTS];
+  double sfh_BulgeMass_elementsRings[RNUM][SFH_NBIN][NUM_ELEMENTS];
 #endif
-  float DiskMass_elements[NUM_ELEMENTS];
-  float BulgeMass_elements[NUM_ELEMENTS];
-  float ColdGas_elements[NUM_ELEMENTS];
-  float HotGas_elements[NUM_ELEMENTS];
-  //float ReheatedGas_elements[NUM_ELEMENTS];
-  float ICM_elements[NUM_ELEMENTS];
-  float EjectedMass_elements[NUM_ELEMENTS];
+#endif
+  double DiskMass_elements[NUM_ELEMENTS];
+  double BulgeMass_elements[NUM_ELEMENTS];
+  double ColdGas_elements[NUM_ELEMENTS];
+  double HotGas_elements[NUM_ELEMENTS];
+  //double ReheatedGas_elements[NUM_ELEMENTS];
+  double ICM_elements[NUM_ELEMENTS];
+  double EjectedMass_elements[NUM_ELEMENTS];
 #ifdef EXCESS_MASS
-  float ExcessMass_elements[NUM_ELEMENTS];
+  double ExcessMass_elements[NUM_ELEMENTS];
 #endif
 #ifdef H2_AND_RINGS
-  float DiskMassRings_elements[RNUM][NUM_ELEMENTS];
-#ifdef RINGS_IN_BULGES
-  float BulgeMassRings_elements[RNUM][NUM_ELEMENTS];
-#endif
-  float ColdGasRings_elements[RNUM][NUM_ELEMENTS];
+  double DiskMassRings_elements[RNUM][NUM_ELEMENTS];
+  double BulgeMassRings_elements[RNUM][NUM_ELEMENTS];
+  double ColdGasRings_elements[RNUM][NUM_ELEMENTS];
 #endif
 #endif //INDIVIDUAL_ELEMENTS
 } *Gal, *HaloGal;

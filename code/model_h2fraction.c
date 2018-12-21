@@ -108,6 +108,7 @@ void update_h2fraction(int p)
 
 }
 
+//THIS FUNCTION DOESN"T WORK ANYMORE
 void init_H2fraction_KMT08()
 {
   FILE *fd;
@@ -216,7 +217,13 @@ void init_jump_index_H2Fraction(void)
 
 int get_jump_index_H2Fraction(double sigmaH)
 {
-  return jumptab_H2[(int) ((sigmaH - H2Fraction_SigmaHgrid[1]) * jumpfac_H2)];
+	int idx;
+
+	idx = (int) ((sigmaH - H2Fraction_SigmaHgrid[1]) * jumpfac_H2);
+	if(idx<0)
+		idx=0;
+	return jumptab_H2[idx];
+	  //return jumptab_H2[(int) ((sigmaH - H2Fraction_SigmaHgrid[1]) * jumpfac_H2)];
 }
 
 
@@ -224,20 +231,34 @@ int get_jump_index_H2Fraction(double sigmaH)
 //only used if H2FractionRecipe=1
 double update_H2fraction_KMT09(double logsigmah, double metallicity )
 {
-  int ii,jj;
+  int ii, jj;
   double mf1, mf2, mf;
 
   metallicity = max(metallicity, H2Fraction_Zgrid[0]);
   metallicity = min(metallicity, H2Fraction_Zgrid[LENZ-1]);
-  logsigmah = max(logsigmah, H2Fraction_SigmaHgrid[0]);
-  logsigmah = min(logsigmah, H2Fraction_SigmaHgrid[LENSIGMAH-1]);
-
   //find interpolation point for metallicity
   for (ii=0; metallicity > H2Fraction_Zgrid[ii+1]; ii++ );
-  //find interpolation point for sigmaH
-  jj = get_jump_index_H2Fraction(logsigmah);
-  while(H2Fraction_SigmaHgrid[jj+1] < logsigmah)
-    jj++;
+
+  if(logsigmah<=H2Fraction_SigmaHgrid[0])
+    {
+	  logsigmah=H2Fraction_SigmaHgrid[0];
+	  jj=0;
+    }
+  else if(logsigmah>=H2Fraction_SigmaHgrid[LENSIGMAH-1])
+    {
+	  logsigmah= H2Fraction_SigmaHgrid[LENSIGMAH-1];
+	  jj = LENSIGMAH-1;
+    }
+  else
+    {
+	  //logsigmah = max(logsigmah, H2Fraction_SigmaHgrid[0]);
+	  //logsigmah = min(logsigmah, H2Fraction_SigmaHgrid[LENSIGMAH-1]);
+
+	  //find interpolation point for sigmaH
+	  jj = get_jump_index_H2Fraction(logsigmah);
+	  while(H2Fraction_SigmaHgrid[jj+1] < logsigmah)
+		  jj++;
+    }
 
   mf1=H2Fraction[ii][jj]+ ( H2Fraction[ii+1][jj]-H2Fraction[ii][jj] ) * ( metallicity-H2Fraction_Zgrid[ii] ) / ( H2Fraction_Zgrid[ii+1]-H2Fraction_Zgrid[ii] );
   mf2=H2Fraction[ii][jj+1]+ ( H2Fraction[ii+1][jj+1]-H2Fraction[ii][jj+1] ) * ( metallicity-H2Fraction_Zgrid[ii] ) / ( H2Fraction_Zgrid[ii+1]-H2Fraction_Zgrid[ii] );

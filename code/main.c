@@ -279,7 +279,7 @@ void SAM(int filenr)
   //for(treenr = 0; treenr < NTrees_Switch_MR_MRII/5.; treenr++)
   //for(treenr = NTrees_Switch_MR_MRII; treenr < Ntrees; treenr++)
   for(treenr = 0; treenr < Ntrees; treenr++)
-  //for(treenr = 0; treenr <10.+1;treenr++)
+  //for(treenr = 0; treenr <10+1;treenr++)
   //for(treenr = 0; treenr <100;treenr++)
   {
       //printf("doing tree %d of %d (MR trees=%d)\n", treenr, Ntrees, NTrees_Switch_MR_MRII);
@@ -826,13 +826,15 @@ void evolve_galaxies(int halonr, int ngal, int treenr)
 	    if(Gal[p].Type == 3) continue;
 	    mass_checks(p,"main.c",__LINE__);
 	    
-	    if (Gal[p].Type == 0 || Gal[p].Type == 1) {
+	    if (Gal[p].Type == 0 || Gal[p].Type == 1)
+	      {
 		if((ReIncorporationModel == 2 && Gal[p].Type==0) || ReIncorporationModel < 2)
+		  if(Gal[p].EjectedMass>0.)
 		    reincorporate_gas(p, deltaT / STEPS);
 		// determine cooling gas given halo properties and add it to the cold phase
 		mass_checks(p,"main.c",__LINE__);
 		compute_cooling(p, deltaT / STEPS, ngal);
-	    }
+	      }
 	}
 
 	/* This must be separated as now satellite AGN can heat central
@@ -846,8 +848,10 @@ void evolve_galaxies(int halonr, int ngal, int treenr)
 	    cool_gas_onto_galaxy(p, deltaT / STEPS);
 	    mass_checks(p,"main.c",__LINE__);
 #ifdef H2_AND_RINGS
-	    gas_inflow(p, deltaT / STEPS);
+	    if(Gal[p].ColdGas>0.)
+	      gas_inflow(p, deltaT / STEPS);
 #endif
+	    mass_checks(p,"main.c",__LINE__);
 	    starformation(p, FOF_centralgal, time, deltaT / STEPS, nstep);
 	    mass_checks(p,"main.c",__LINE__);
 #ifdef DEBUG

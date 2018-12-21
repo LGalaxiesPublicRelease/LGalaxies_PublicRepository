@@ -267,44 +267,11 @@ void deal_with_galaxy_merger(int p, double time, double deltaT, int nstep)
 	make_bulge_from_burst(merger_centralgal);
     }
 
-#ifdef RINGS_IN_BULGES
+#ifdef H2_AND_RINGS
   //Bulge Mass was added into the same place as the disk, it will now be redistributed
   //according to a Jaffe profile and after the new bulge size has been calculated
-
-  double rb=Gal[merger_centralgal].BulgeSize, TotMassInsideRings=0.,fractionRings[RNUM];
-  int jj, ii;
-
-  if(rb>0.)
-    TotMassInsideRings=(RingRadius[RNUM-1]/rb)/(1+RingRadius[RNUM-1]/rb);
-
-  if(TotMassInsideRings>0.)
-    {
-      fractionRings[0]=(RingRadius[0]/rb)/(1+RingRadius[0]/rb)/TotMassInsideRings;
-      for(jj=1; jj<RNUM; jj++)
-	fractionRings[jj]= ((RingRadius[jj]/rb)/(1+RingRadius[jj]/rb)-(RingRadius[jj-1]/rb)/(1+RingRadius[jj-1]/rb))/TotMassInsideRings;
-    }
-  else
-    for(jj=0; jj<RNUM; jj++)
-      fractionRings[jj]=0.;
-
-  //RINGS
-  for(jj=0;jj<RNUM;jj++)
-    {
-      Gal[merger_centralgal].BulgeMassRings[jj] = fractionRings[jj]*Gal[merger_centralgal].BulgeMass;
-      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
-	Gal[merger_centralgal].MetalsBulgeMassRings[jj][ii] = (Gal[merger_centralgal].MetalsBulgeMass[ii] * fractionRings[jj]);
-
-#ifdef INDIVIDUAL_ELEMENTS
-      int kk;
-      for(kk=0;kk<NUM_ELEMENTS;kk++)
-	Gal[merger_centralgal].BulgeMassRings_elements[jj][kk] = fractionRings[jj]*Gal[merger_centralgal].BulgeMass_elements[kk];
+  distribute_bulge_material(merger_centralgal);
 #endif
-#ifdef STAR_FORMATION_HISTORY
-      for (ii=0; ii<=Gal[p].sfh_ibin; ii++)
-	Gal[merger_centralgal].sfh_BulgeMassRings[jj][ii] = fractionRings[jj]*Gal[merger_centralgal].sfh_BulgeMass[ii];
-#endif
-    }
-#endif //RINGS_IN_BULGES
 
   mass_checks(p,"model_mergers.c",__LINE__);
   mass_checks(merger_centralgal,"model_mergers.c",__LINE__);
@@ -560,11 +527,7 @@ void add_galaxies_together(int t, int p, double deltaT)
     transfer_material_with_rings(t,"DiskMass",p,"DiskMass",fractionRings,"model_mergers.c", __LINE__);
 
   if(Gal[p].BulgeMass>0.)
-#ifdef RINGS_IN_BULGES
     transfer_material_with_rings(t,"BulgeMass",p,"BulgeMass",fractionRings,"model_mergers.c", __LINE__);
-#else
-    transfer_material(t,"BulgeMass",p,"BulgeMass",1.,"model_mergers.c", __LINE__);
-#endif
 
 #else
   if(BulgeFormationInMinorMergersOn)
@@ -896,3 +859,43 @@ void bulgesize_from_merger(double mass_ratio, int merger_centralgal, int p,
 
 }
 
+#ifdef H2_AND_RINGS
+  //Bulge Mass was added into the same place as the disk, it will now be redistributed
+  //according to a Jaffe profile and after the new bulge size has been calculated
+void distribute_bulge_material(int merger_centralgal)
+{
+  double rb=Gal[merger_centralgal].BulgeSize, TotMassInsideRings=0.,fractionRings[RNUM];
+  int jj, ii;
+
+  if(rb>0.)
+    TotMassInsideRings=(RingRadius[RNUM-1]/rb)/(1+RingRadius[RNUM-1]/rb);
+
+  if(TotMassInsideRings>0.)
+    {
+      fractionRings[0]=(RingRadius[0]/rb)/(1+RingRadius[0]/rb)/TotMassInsideRings;
+      for(jj=1; jj<RNUM; jj++)
+	fractionRings[jj]= ((RingRadius[jj]/rb)/(1+RingRadius[jj]/rb)-(RingRadius[jj-1]/rb)/(1+RingRadius[jj-1]/rb))/TotMassInsideRings;
+    }
+  else
+    for(jj=0; jj<RNUM; jj++)
+      fractionRings[jj]=0.;
+
+  //RINGS
+  for(jj=0;jj<RNUM;jj++)
+    {
+      Gal[merger_centralgal].BulgeMassRings[jj] = fractionRings[jj]*Gal[merger_centralgal].BulgeMass;
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	Gal[merger_centralgal].MetalsBulgeMassRings[jj][ii] = (Gal[merger_centralgal].MetalsBulgeMass[ii] * fractionRings[jj]);
+
+#ifdef INDIVIDUAL_ELEMENTS
+      int kk;
+      for(kk=0;kk<NUM_ELEMENTS;kk++)
+	Gal[merger_centralgal].BulgeMassRings_elements[jj][kk] = fractionRings[jj]*Gal[merger_centralgal].BulgeMass_elements[kk];
+#endif
+#ifdef STAR_FORMATION_HISTORY
+      for (ii=0; ii<=Gal[merger_centralgal].sfh_ibin; ii++)
+	Gal[merger_centralgal].sfh_BulgeMassRings[jj][ii] = fractionRings[jj]*Gal[merger_centralgal].sfh_BulgeMass[ii];
+#endif
+    }
+}
+#endif //H2_AND_RINGS

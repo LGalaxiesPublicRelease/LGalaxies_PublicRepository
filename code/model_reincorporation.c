@@ -82,7 +82,7 @@ void reincorporate_gas(int p, double dt)
 
   /*Update ejected and hot gas contents*/
   if (Gal[p].EjectedMass > 0.)
-    transfer_material(p,"HotGas",p,"EjectedMass",((float)reincorporated)/Gal[p].EjectedMass,"model_reincorporation.c", __LINE__);
+    transfer_material(p,"HotGas",p,"EjectedMass",reincorporated/Gal[p].EjectedMass,"model_reincorporation.c", __LINE__);
 
   mass_checks(p,"model_reincorporation.c",__LINE__);
 

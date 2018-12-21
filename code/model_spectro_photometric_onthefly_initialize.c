@@ -80,7 +80,7 @@ void read_filters(double LambdaFilter[NMAG][MAX_NLambdaFilter], double FluxFilte
   for(bandn=0;bandn<NMAG;bandn++)
   {
 
-  	fscanf(fa,"%s %f %s" ,FilterFile, &FilterLambda[bandn],FilterName);
+  	fscanf(fa,"%s %lf %s" ,FilterFile, &FilterLambda[bandn],FilterName);
   	sprintf(buf2, "%s/Filters/%s",SpecPhotDir,FilterFile);
 
   	if((fb=fopen(buf2,"r"))==NULL)
@@ -141,7 +141,7 @@ void read_MetalTab()
 
   for(i=0;i<SSP_NMETALLICITES;i++)
   {
-		fscanf(fa, "%f", &SSP_logMetalTab[i]);
+		fscanf(fa, "%lf", &SSP_logMetalTab[i]);
 		SSP_logMetalTab[i]=log10(SSP_logMetalTab[i]);
   }
 
@@ -195,10 +195,13 @@ void read_InputSSP_spectra(double LambdaInputSSP[SSP_NAGES][SSP_NLambda], double
 
   	}
   	if(MetalLoop==0) //only read age table once
+  	  {
   		if(age>0.)
   			SSP_logAgeTab[ageloop]=log10(age / 1.0e6 / UnitTime_in_Megayears * Hubble_h);
+
   		else
   			SSP_logAgeTab[ageloop]=0.;
+  	  }
   }
 
   fclose(fa);

@@ -7,7 +7,7 @@
     float Mg;
     float Fe;
 };
-#endif  //MAINELEMENTS
+#endif  //MAINELEMENTS*/
 /* Define two views into the same element structure/array.
    For example define:
       union elements DiskMassElements;
@@ -16,7 +16,8 @@
    or
       DiskMassElements.arr[0]
 */
-/*union elements
+/*
+union elements
 {
     struct elements_str str;
     float arr[NUM_ELEMENTS];
@@ -32,6 +33,7 @@
 #endif
 #endif //INDIVIDUAL_ELEMENTS
 
-#else
+#else //DETAILED_METALS_AND_MASS_RETURN
+
 #define NUM_METAL_CHANNELS 1
 #endif //DETAILED_METALS_AND_MASS_RETURN

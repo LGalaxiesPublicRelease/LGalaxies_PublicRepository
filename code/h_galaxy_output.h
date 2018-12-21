@@ -127,9 +127,7 @@ struct GALAXY_OUTPUT {
     float BulgeMass; // 10^10/h Msun // Mass of stars in the bulge
 #ifdef OUTPUT_RINGS
     float DiskMassRings[RNUM]; // 1e10 Msun/h // Mass of stars within each annular ring
-#ifdef RINGS_IN_BULGES
     float BulgeMassRings[RNUM]; // 1e10 Msun/h // Mass of stars within each annular ring
-#endif
 #endif     //H2_AND_RINGS
     float HotGas; // 10^10/h Msun // Mass in hot gas
     float ReheatedGas; // 10^10/h Msun // Mass in reheated gas
@@ -158,9 +156,7 @@ struct GALAXY_OUTPUT {
     float MetalsBulgeMass[NUM_METAL_CHANNELS]; // 10^10/h Msun // Mass in metals in the bulge
 #ifdef OUTPUT_RINGS
     float MetalsDiskMassRings[RNUM][NUM_METAL_CHANNELS]; // 10^10/h Msun // Mass in metals in stars in each annular ring
-#ifdef RINGS_IN_BULGES
     float MetalsBulgeMassRings[RNUM][NUM_METAL_CHANNELS]; // 10^10/h Msun // Mass in metals in stars in each annular ring
-#endif
 #endif       //H2_AND_RINGS
     float MetalsHotGas[NUM_METAL_CHANNELS]; // 10^10/h Msun // Mass in metals in the hot gas
     //float MetalsReheatedGas[NUM_METAL_CHANNELS]; // 10^10/h Msun // Mass in metals in the Reheated gas
@@ -253,9 +249,7 @@ struct GALAXY_OUTPUT {
     float sfh_BulgeMass[SFH_NBIN]; // 10^10 Msun/h // Star formation history in the bulge.
 #ifdef OUTPUT_RINGS
     float sfh_DiskMassRings[RNUM][SFH_NBIN]; // 10^10 Msun/h // Star formation history in the disk RINGS.
-#ifdef RINGS_IN_BULGES
     float sfh_BulgeMassRings[RNUM][SFH_NBIN]; // 10^10 Msun/h // Star formation history in the bulge RINGS.
-#endif
 #endif
     float sfh_ICM[SFH_NBIN]; // 10^10 Msun/h // Star formation history in intra-cluster stars.
     float sfh_MetalsDiskMass[SFH_NBIN][NUM_METAL_CHANNELS]; // 10^10 Msun/h // Metal formation history in the disk.
@@ -283,9 +277,7 @@ struct GALAXY_OUTPUT {
     float BulgeMass_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in bulge.
 #ifdef OUTPUT_RINGS
     float DiskMassRings_elements[RNUM][NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in each annular ring.
-#ifdef RINGS_IN_BULGES
     float BulgeMassRings_elements[RNUM][NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in each annular ring.
-#endif
 #endif     //H2_AND_RINGS
     float ColdGas_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in cold gas.
 #ifdef OUTPUT_RINGS
@@ -313,9 +305,7 @@ struct SFH_BIN {
     float sfh_BulgeMass; // 1e10 Msun/h // SFH of bulge
 #ifdef OUTPUT_RINGS
     float sfh_DiskMassRings[RNUM]; // 10^10 Msun/h // Star formation history in the disk RINGS.
-#ifdef RINGS_IN_BULGES
     float sfh_BulgeMassRings[RNUM]; // 10^10 Msun/h // Star formation history in the bulge RINGS.
-#endif
 #endif
     float sfh_ICM; // 1e10 Msun/h // SFH of ICM
 #ifdef TRACK_SFH_MASSGROWTH_CHANNELS

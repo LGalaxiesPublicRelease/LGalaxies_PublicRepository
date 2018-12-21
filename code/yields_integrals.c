@@ -463,7 +463,7 @@ void integrate_yields()
 
 			  if ((lifetimes[Zi][Mi_lower] > SNIA_MIN_TIME) && (lifetimes[Zi][Mi_upper] < SNIA_MAX_TIME) && (t_upper > SNIA_MIN_TIME) && (t_lower < SNIA_MAX_TIME))
 			    {
-			      int j, kk;
+			      int j;
 			      //for (j=t_lower_lifetime-1;j>=t_upper_lifetime;j--) //DO NOT USE THIS!! This is the infamous -1. It means the oldest stars to die at each snapshot aren't considered for SN-Ia contribution, **incorrectly** reducing the amount of iron ejected by SPs. (13-06-16)
 			      for (j=t_lower_lifetime;j>=t_upper_lifetime;j--) //This is the corrected loop definition, without the -1. (13-06-16)
 				{
@@ -477,14 +477,16 @@ void integrate_yields()
 				      NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-lifetimes[Zi][j+1]) * ((DTD_lower * SNIAEJECMASS) + (DTD_upper * SNIAEJECMASS))/2.0; //IN [MSun/yr]
 				      NormSNIaMetalEjecRate[(STEPS*snap)+step][i][Zi] = NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi];
 #ifdef INDIVIDUAL_ELEMENTS
-				      for (kk=0;kk<NUM_ELEMENTS;kk++)
+ 					int k; //Iterator for the L-Galaxies elements arrays [0 to 10]
+				      for (k=0;k<NUM_ELEMENTS;k++)
 					{
+					 int kk; //Iterator for the SNIa input yield arrays [0 to 41]
 #ifndef MAINELEMENTS
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-lifetimes[Zi][j+1]) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-lifetimes[Zi][j+1]) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #else
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-lifetimes[Zi][j+1]) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-lifetimes[Zi][j+1]) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #endif
 					}
 #endif //INDIVIDUAL_ELEMENTS
@@ -499,14 +501,16 @@ void integrate_yields()
 				      NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-SNIA_MIN_TIME) * ((DTD_lower * SNIAEJECMASS) + (DTD_upper * SNIAEJECMASS))/2.0; //IN [MSun/yr]
 				      NormSNIaMetalEjecRate[(STEPS*snap)+step][i][Zi] = NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi];
 #ifdef INDIVIDUAL_ELEMENTS
-				      for (kk=0;kk<NUM_ELEMENTS;kk++)
+				int k; //Iterator for the L-Galaxies elements arrays [0 to 10]
+				      for (k=0;k<NUM_ELEMENTS;k++)
 					{
+					int kk; //Iterator for the SNIa input yield arrays [0 to 41]
 #ifndef MAINELEMENTS
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #else
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #endif
 					}
 #endif //INDIVIDUAL_ELEMENTS
@@ -516,14 +520,16 @@ void integrate_yields()
 				      NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi] += 0.0;
 				      NormSNIaMetalEjecRate[(STEPS*snap)+step][i][Zi] = NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi];
 #ifdef INDIVIDUAL_ELEMENTS
-				      for (kk=0;kk<NUM_ELEMENTS;kk++)
+ int k; //Iterator for the L-Galaxies elements arrays [0 to 10]
+				      for (k=0;k<NUM_ELEMENTS;k++)
 					{
+					  int kk; //Iterator for the SNIa input yield arrays [0 to 41]
 #ifndef MAINELEMENTS
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += 0.0;
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += 0.0;
 #else
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += 0.0;
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += 0.0;
 #endif
 					}
 #endif //INDIVIDUAL_ELEMENTS
@@ -537,14 +543,16 @@ void integrate_yields()
 				      NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi] += A_FACTOR*F316 * KALPHA * (t_upper-t_lower) * ((DTD_lower * SNIAEJECMASS) + (DTD_upper * SNIAEJECMASS))/2.0; //IN [MSun/yr] //Using t_upper/t_lower is the equivalent of using Mi_lower_actual/Mi_upper_actual for SNe-II and AGB stars.
 				      NormSNIaMetalEjecRate[(STEPS*snap)+step][i][Zi] = NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi];
 #ifdef INDIVIDUAL_ELEMENTS
-				      for (kk=0;kk<NUM_ELEMENTS;kk++)
+					 int k; //Iterator for the L-Galaxies elements arrays [0 to 10]
+				      for (k=0;k<NUM_ELEMENTS;k++)
 					{
+					 int kk; //Iterator for the SNIa input yield arrays [0 to 41]
 #ifndef MAINELEMENTS
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (t_upper-t_lower) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (t_upper-t_lower) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #else
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (t_upper-t_lower) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (t_upper-t_lower) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #endif
 					}
 #endif //INDIVIDUAL_ELEMENTS
@@ -558,14 +566,16 @@ void integrate_yields()
 				      NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi] += A_FACTOR*F316 * KALPHA * (t_upper-SNIA_MIN_TIME) * ((DTD_lower * SNIAEJECMASS) + (DTD_upper * SNIAEJECMASS))/2.0; //IN [MSun/yr] //Using t_upper/t_lower is the equivalent of using Mi_lower_actual/Mi_upper_actual for SNe-II and AGB stars.
 				      NormSNIaMetalEjecRate[(STEPS*snap)+step][i][Zi] = NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi];
 #ifdef INDIVIDUAL_ELEMENTS
-				      for (kk=0;kk<NUM_ELEMENTS;kk++)
+					int k; //Iterator for the L-Galaxies elements arrays [0 to 10]
+				      for (k=0;k<NUM_ELEMENTS;k++)
 					{
+					 int kk; //Iterator for the SNIa input yield arrays [0 to 41]
 #ifndef MAINELEMENTS
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (t_upper-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (t_upper-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #else
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (t_upper-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (t_upper-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #endif
 					}
 #endif //INDIVIDUAL_ELEMENTS
@@ -579,14 +589,16 @@ void integrate_yields()
 				      NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi] += A_FACTOR*F316 * KALPHA * (SNIA_MAX_TIME-t_lower) * ((DTD_lower * SNIAEJECMASS) + (DTD_upper * SNIAEJECMASS))/2.0; //IN [MSun/yr] //Using t_upper/t_lower is the equivalent of using Mi_lower_actual/Mi_upper_actual for SNe-II and AGB stars.
 				      NormSNIaMetalEjecRate[(STEPS*snap)+step][i][Zi] = NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi];
 #ifdef INDIVIDUAL_ELEMENTS
-				      for (kk=0;kk<NUM_ELEMENTS;kk++)
+					int k; //Iterator for the L-Galaxies elements arrays [0 to 10]
+				      for (k=0;k<NUM_ELEMENTS;k++)
 					{
+					int kk; //Iterator for the SNIa input yield arrays [0 to 41]
 #ifndef MAINELEMENTS
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (SNIA_MAX_TIME-t_lower) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (SNIA_MAX_TIME-t_lower) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #else
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (SNIA_MAX_TIME-t_lower) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (SNIA_MAX_TIME-t_lower) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #endif
 					}
 #endif //INDIVIDUAL_ELEMENTS
@@ -600,14 +612,16 @@ void integrate_yields()
 				      NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-t_lower) * ((DTD_lower * SNIAEJECMASS) + (DTD_upper * SNIAEJECMASS))/2.0; //IN [MSun/yr]
 				      NormSNIaMetalEjecRate[(STEPS*snap)+step][i][Zi] = NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi];
 #ifdef INDIVIDUAL_ELEMENTS
-				      for (kk=0;kk<NUM_ELEMENTS;kk++)
+					int k; //Iterator for the L-Galaxies elements arrays [0 to 10]
+				      for (k=0;k<NUM_ELEMENTS;k++)
 					{
+					int kk; //Iterator for the SNIa input yield arrays [0 to 41]
 #ifndef MAINELEMENTS
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-t_lower) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-t_lower) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #else
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-t_lower) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-t_lower) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #endif
 					}
 #endif //INDIVIDUAL_ELEMENTS
@@ -621,14 +635,16 @@ void integrate_yields()
 				      NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-SNIA_MIN_TIME) * ((DTD_lower * SNIAEJECMASS) + (DTD_upper * SNIAEJECMASS))/2.0; //IN [MSun/yr]
 				      NormSNIaMetalEjecRate[(STEPS*snap)+step][i][Zi] = NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi];
 #ifdef INDIVIDUAL_ELEMENTS
-				      for (kk=0;kk<NUM_ELEMENTS;kk++)
+					int k; //Iterator for the L-Galaxies elements arrays [0 to 10]
+				      for (k=0;k<NUM_ELEMENTS;k++)
 					{
+					int kk; //Iterator for the SNIa input yield arrays [0 to 41]
 #ifndef MAINELEMENTS
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #else
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (lifetimes[Zi][j]-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #endif
 					}
 #endif //INDIVIDUAL_ELEMENTS
@@ -638,14 +654,16 @@ void integrate_yields()
 				      NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi] += 0.0;
 				      NormSNIaMetalEjecRate[(STEPS*snap)+step][i][Zi] = NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi];
 #ifdef INDIVIDUAL_ELEMENTS
-				      for (kk=0;kk<NUM_ELEMENTS;kk++)
+					int k; //Iterator for the L-Galaxies elements arrays [0 to 10]
+				      for (k=0;k<NUM_ELEMENTS;k++)
 					{
+					int kk; //Iterator for the SNIa input yield arrays [0 to 41]
 #ifndef MAINELEMENTS
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += 0.0;
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += 0.0;
 #else
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += 0.0;
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += 0.0;
 #endif
 					}
 #endif //INDIVIDUAL_ELEMENTS
@@ -659,14 +677,16 @@ void integrate_yields()
 				      NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi] += A_FACTOR*F316 * KALPHA * (t_upper-lifetimes[Zi][j+1]) * ((DTD_lower * SNIAEJECMASS) + (DTD_upper * SNIAEJECMASS))/2.0; //IN [MSun/yr]
 				      NormSNIaMetalEjecRate[(STEPS*snap)+step][i][Zi] = NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi];
 #ifdef INDIVIDUAL_ELEMENTS
-				      for (kk=0;kk<NUM_ELEMENTS;kk++)
+					int k; //Iterator for the L-Galaxies elements arrays [0 to 10]
+				      for (k=0;k<NUM_ELEMENTS;k++)
 					{
+					int kk; //Iterator for the SNIa input yield arrays [0 to 41]
 #ifndef MAINELEMENTS
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (t_upper-lifetimes[Zi][j+1]) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (t_upper-lifetimes[Zi][j+1]) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #else
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (t_upper-lifetimes[Zi][j+1]) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (t_upper-lifetimes[Zi][j+1]) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #endif
 					}
 #endif //INDIVIDUAL_ELEMENTS
@@ -680,14 +700,16 @@ void integrate_yields()
 				      NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi] += A_FACTOR*F316 * KALPHA * (t_upper-SNIA_MIN_TIME) * ((DTD_lower * SNIAEJECMASS) + (DTD_upper * SNIAEJECMASS))/2.0; //IN [MSun/yr]
 				      NormSNIaMetalEjecRate[(STEPS*snap)+step][i][Zi] = NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi];
 #ifdef INDIVIDUAL_ELEMENTS
-				      for (kk=0;kk<NUM_ELEMENTS;kk++)
+					int k; //Iterator for the L-Galaxies elements arrays [0 to 10]
+				      for (k=0;k<NUM_ELEMENTS;k++)
 					{
+					int kk; //Iterator for the SNIa input yield arrays [0 to 41]
 #ifndef MAINELEMENTS
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (t_upper-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (t_upper-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #else
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (t_upper-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (t_upper-SNIA_MIN_TIME) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #endif
 					}
 #endif //INDIVIDUAL_ELEMENTS
@@ -701,14 +723,16 @@ void integrate_yields()
 				      NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi] += A_FACTOR*F316 * KALPHA * (SNIA_MAX_TIME-lifetimes[Zi][j+1]) * ((DTD_lower * SNIAEJECMASS) + (DTD_upper * SNIAEJECMASS))/2.0; //IN [MSun/yr]
 				      NormSNIaMetalEjecRate[(STEPS*snap)+step][i][Zi] = NormSNIaMassEjecRate[(STEPS*snap)+step][i][Zi];
 #ifdef INDIVIDUAL_ELEMENTS
-				      for (kk=0;kk<NUM_ELEMENTS;kk++)
+					int k; //Iterator for the L-Galaxies elements arrays [0 to 10]
+				      for (k=0;k<NUM_ELEMENTS;k++)
 					{
+					int kk; //Iterator for the SNIa input yield arrays [0 to 41]
 #ifndef MAINELEMENTS
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (SNIA_MAX_TIME-lifetimes[Zi][j+1]) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=5; break; case 3: kk=6; break; case 4: kk=7; break; case 5: kk=9; break; case 6: kk=11; break; case 7: kk=13; break; case 8: kk=15; break; case 9: kk=19; break; case 10: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (SNIA_MAX_TIME-lifetimes[Zi][j+1]) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #else
-					  switch(kk){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
-					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][kk] += A_FACTOR*F316 * KALPHA * (SNIA_MAX_TIME-lifetimes[Zi][j+1]) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
+					  switch(k){case 0: kk=0; break; case 1: kk=1; break; case 2: kk=7; break; case 3: kk=11; break; case 4: kk=25; break;}
+					  NormSNIaYieldRate[(STEPS*snap)+step][i][Zi][k] += A_FACTOR*F316 * KALPHA * (SNIA_MAX_TIME-lifetimes[Zi][j+1]) * ((DTD_lower * SNIaYields[kk]) + (DTD_upper * SNIaYields[kk]))/2.0; //IN [Msun/yr]
 #endif
 					}
 #endif //INDIVIDUAL_ELEMENTS
@@ -914,7 +938,7 @@ void integrate_yields()
 	    if(NormSNIaMassEjecRate[ii][jj][kk]>0.7)
 	      {
 		printf("ii=%d jj=%d kk=%d SNIarate=%0.2f\n",ii,jj,kk, NormSNIaMassEjecRate[ii][jj][kk]);
-		terminate("AGB rate too high");
+		terminate("SNIa rate too high");
 	      }
 
 	    if(NormSNIIMassEjecRate[ii][jj][kk]<0.)

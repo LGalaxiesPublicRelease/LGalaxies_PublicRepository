@@ -46,7 +46,7 @@
   *        SN feedback.   */
 void starformation(int p, int centralgal, double time, double dt, int nstep)
 {
-	/*! Variables: reff-Rdisk, tdyn=Rdisk/Vmax, strdot=Mstar_dot, stars=strdot*dt*/
+  /* Variables: reff-Rdisk, tdyn=Rdisk/Vmax, strdot=Mstar_dot, stars=strdot*dt*/
   double tdyn, strdot=0., stars, cold_crit;
   int ii;
 #ifdef H2_AND_RINGS
@@ -131,60 +131,10 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
 
       else if(StarFormationModel == 4)	/*The star formation law in Fu et al. 2010*/
 	{
-	  double sigma_H2, N_sf=1.0, sigma2_crit=70, area;
-	  //area in pc^2
-	  if(j==0)
-	    area = RingRadius[j]*RingRadius[j]*1e12/Hubble_h;
-	  else
-	    area = (RingRadius[j]*RingRadius[j]-RingRadius[j-1]*RingRadius[j-1])*1e12/Hubble_h;
-	  sigma_H2 = Gal[p].ColdGasRings[j]*1e10/Hubble_h*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR/area;
+	  //double sigma_H2, N_sf=1.0, sigma2_crit=70, area;
 
-	  //Gal[p].H2fractionRings[j]+=Gal[p].BulgeMass*0.05;
 	  if(Gal[p].H2fractionRings[j]>=0.0)
-	    {
-	      //strdotr[j] = sfe * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR*10000.;
 	      strdotr[j] = sfe * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j] / WARM_PHASE_FACTOR;
-
-
-
-	     /* if(j==0)
-	     	    area = RingRadius[j];
-	     	  else
-	     	    area = RingRadius[j]-RingRadius[j-1];
-	     	  sigma_H2 = Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR/area;
-
-	      if(Gal[p].Type == 0)
-		{
-		  cold_crit_rate = SfrColdCrit * Gal[p].Vmax/200.  * Gal[p].ColdGasRadius/Gal[p].ColdGas*500.;
-		  //cold_crit_rate = SfrColdCrit * Gal[p].Vmax/200. / sigma_H2 * 5.e0;  //between 2 and 3
-		}
-	      else
-		{
-		  cold_crit_rate = SfrColdCrit * Gal[p].InfallVmax/200.  * Gal[p].ColdGasRadius/Gal[p].ColdGas*500.;
-		  //cold_crit_rate = SfrColdCrit * Gal[p].InfallVmax/200. / sigma_H2 * 5.e0;
-		}
-
-	      if (cold_crit_rate>1.)
-		cold_crit_rate = 1.;
-
-	         if(cold_crit_rate < 0)
-	           cold_crit_rate=0.;
-
-
-	     	    strdotr[j] = sfe * 2. * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR * (1 - cold_crit_rate);*/
-
-
-	      //strdotr[j] = sfe * Gal[p].ColdGasRings[j]* (1 - cold_crit);
-	      //strdotr[j] = sfe * Gal[p].ColdGasRings[j]/WARM_PHASE_FACTOR;
-	     //strdotr[j] = sfe * Gal[p].ColdGasRings[j]*Gal[p].H2fractionRings[j]/WARM_PHASE_FACTOR* (1 - cold_crit) ; //Only cold H2 component is proportional to star formation rate.
-
-	     //strdotr[j] = (12e7/tdyn)/UnitTime_in_years*Hubble_h * sigma_H2/10. * pow(1+sigma_H2/(sigma2_crit), N_sf)/pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),5.);
-	    
-	     //Somerville
-	     //strdotr[j] = (sfe*pow(10.,6.0))/UnitTime_in_years*Hubble_h * sigma_H2/10. * pow(1+sigma_H2/(sigma2_crit), N_sf);
-	     //area is in pc^2, *1e6 makes it in Kpc^2 as needed
-	     //strdotr[j] = strdotr[j] * (area * 1e6) /1e10*Hubble_h;
-	    }
 	  else strdotr[j]=0.0;
 	}
 
@@ -323,7 +273,7 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
 
   if (DiskRadiusModel == 0)
     Gal[p].DiskRadius=get_stellar_disk_radius(p);
-    
+
   mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
   mass_checks(centralgal,"model_starformation_and_feedback.c",__LINE__);
 
@@ -437,6 +387,7 @@ void update_from_star_formation(int p, double stars, double starsRings[], char t
   transfer_material(p,"DiskMass",p,"ColdGas",fraction,"model_starformation_and_feedback.c", __LINE__);
 #endif
 
+  mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 
 
 
@@ -482,7 +433,6 @@ void update_from_star_formation(int p, double stars, double starsRings[], char t
     }
 #endif
 
-  mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 
   if (FeedbackReheatingModel == 0 || FeedbackReheatingModel == 1)
     {
@@ -490,24 +440,24 @@ void update_from_star_formation(int p, double stars, double starsRings[], char t
   * fraction of all stars formed, not just long lived */
 #ifdef DETAILED_METALS_AND_MASS_RETURN
 #ifdef METALS_SELF
-      Gal[p].MetalsHotGasSelf.str.type2 += Yield * FracZtoHot * stars;
+      Gal[p].MetalsHotGasSelf.str.type2 += Yield * FracZSNIItoHot * stars;
 #endif
-#else //DETAILED_METALS_AND_MASS_RETURN
+#else //IF NOT DETAILED_METALS_AND_MASS_RETURN
       //This part is not used if OPT+=DELAYED_ENRICHMENT_AND MASS_RETURN as yield
       //and recycling fraction are not fixed:
 #ifndef H2_AND_RINGS
-      Gal[p].MetalsColdGas += Yield * (1.-FracZtoHot) * stars;
+      Gal[p].MetalsColdGas[0] += Yield * (1.-FracZSNIItoHot) * stars;
 #else
       for(jj=0;jj<RNUM;jj++)
 	{
-	  Gal[p].MetalsColdGasRings[jj] += Yield* (1.-FracZtoHot) * starsRings[jj];
-	  Gal[p].MetalsColdGas += Yield* (1.-FracZtoHot) * starsRings[jj];
+	  Gal[p].MetalsColdGasRings[jj][0] += Yield* (1.-FracZSNIItoHot) * starsRings[jj];
+	  Gal[p].MetalsColdGas[0] += Yield* (1.-FracZSNIItoHot) * starsRings[jj];
 	}
 #endif
-      Gal[Gal[p].CentralGal].MetalsHotGas += Yield * FracZtoHot * stars;
-      Gal[Gal[p].CentralGal].HotGas += Yield * FracZtoHot * stars;
+      Gal[Gal[p].CentralGal].MetalsHotGas[0] += Yield * FracZSNIItoHot * stars;
+      Gal[Gal[p].CentralGal].HotGas += Yield * FracZSNIItoHot * stars;
 #ifdef METALS_SELF
-      Gal[p].MetalsHotGasSelf += Yield * FracZtoHot * stars;
+      Gal[p].MetalsHotGasSelf[0] += Yield * FracZSNIItoHot * stars;
 #endif
 #endif //DETAILED_METALS_AND_MASS_RETURN
     }
@@ -662,6 +612,8 @@ void SN_feedback(int p, int centralgal, double stars, double starsRings[], char 
       update_from_feedback(p, centralgal, reheated_mass, ejected_mass,  reheated_massr);
 #endif
     }
+
+  mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 
 }
 
@@ -1103,7 +1055,7 @@ void check_disk_instability(int p, double dt)
 
        dmass=stars;
        j=0; //avoid non-definded j if dmass<1e-6
-       if(dmass>1.0e-6)
+      // if(dmass>1.0e-6)
 	 for(j=0;j<RNUM;j++)
 	   {
 	     //mass is transfered first from the inner rings
@@ -1117,7 +1069,7 @@ void check_disk_instability(int p, double dt)
 	   }
 
        //check needed in case there is a ring with 0 mass in the middle
-       if(Gal[p].DiskMassRings[j]>0)
+       if(Gal[p].DiskMassRings[j]>0.)
 	 fractionRings[j]=dmass/Gal[p].DiskMassRings[j];
        else
 	 fractionRings[j]=0.;
@@ -1126,6 +1078,7 @@ void check_disk_instability(int p, double dt)
        //for(j=0;j<RNUM;j++)
 	// fractionRings[j]=dmass/Gal[p].DiskMass;
        transfer_material_with_rings(p,"BulgeMass",p,"DiskMass",fractionRings,"model_starformation_and_feedback.c", __LINE__);
+       mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 #else
        transfer_material(p,"BulgeMass",p,"DiskMass",fraction, "model_starformation_and_feedback.c", __LINE__);
 #endif
@@ -1146,6 +1099,7 @@ void check_disk_instability(int p, double dt)
 	     //  fractionRings[j]*=BlackHoleGrowthRate*Gal[p].BlackHoleMass/(Gal[p].DiskMass+Gal[p].BulgeMass);
 
 	     transfer_material_with_rings(p,"BlackHoleMass",p,"ColdGas",fractionRings,"model_starformation_and_feedback.c", __LINE__);
+	     mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 #else
 	     fraction*=0.1*BlackHoleGrowthRate  / (1.0 + pow2((BlackHoleCutoffVelocity / Gal[p].Vvir)));
 	     transfer_material(p,"BlackHoleMass",p,"ColdGas",fraction, "model_starformation_and_feedback.c", __LINE__);
@@ -1175,7 +1129,7 @@ void check_disk_instability(int p, double dt)
 	 }*/
 
      }// if(stars > 0.0)
-  
+   mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 } //end check_disk_instability
 
 
@@ -1265,9 +1219,9 @@ void update_bulgesize_from_disk_instability(int p, double stars)
   /*size of new formed bulge, which consist of the stellar mass trasfered from the disk*/
   /*combine the old bulge with the new materials and caculate the bulge size assuming energy conservation */
   diskmass=stars;
-  j=0; //avoid non-definded j if dmass<1e-6
-  if(diskmass>1.0e-6)
-    {
+  //j=0;
+ // if(diskmass>1.0e-6)
+  //  {
       for(j=0;j<RNUM;j++)
   	{
 	  //mass is transfered first from the inner rings first
@@ -1285,8 +1239,8 @@ void update_bulgesize_from_disk_instability(int p, double stars)
 	  else
 	    bulgesize=diskmass/Gal[p].DiskMassRings[j]*RingRadius[j]+(1-diskmass/Gal[p].DiskMassRings[j])*RingRadius[j-1];
 	}
-    }
-  else bulgesize=0.5*RingRadius[0];
+  //  }
+  //else bulgesize=0.5*RingRadius[0];
 
   if(Gal[p].BulgeMass <1.e-9)
     Gal[p].BulgeSize=bulgesize;

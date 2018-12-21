@@ -55,7 +55,7 @@ void mymalloc_init(void);
 void save_galaxy_tree_reorder_on_disk(void);
 int save_galaxy_tree_mp_comp(const void *a, const void *b);
 
-void get_coordinates(float *pos, float *vel, long long ID, int tree, int halonr, int snapnum);
+void get_coordinates(double *pos, double *vel, long long ID, int tree, int halonr, int snapnum);
 
 
 //functions used to scale to a different cosmology
@@ -243,6 +243,9 @@ double collisional_starburst_recipe(double mass_ratio, int merger_centralgal, in
 void make_bulge_from_burst(int p);
 void grow_black_hole(int merger_centralgal, double mass_ratio, double deltaT);
 void check_disk_instability(int p, double dt);
+#ifdef H2_AND_RINGS
+void distribute_bulge_material(int merger_centralgal);
+#endif
 
 double lum_to_mag(double lum);
 double mag_to_lum(double mag);
@@ -400,21 +403,21 @@ void find_actual_ejecta_limits(int channel_type, double Mi_lower_actual, double 
 
 //in recipe_yields.c:
 void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep);
-int find_initial_metallicity(int p, int sfh_bin, int table_type, int component_type);
+int find_initial_metallicity(double metallicity, int table_type, int component_type);
 #ifdef INSTANTANEOUS_RECYCLE
-void reset_ejection_rates(int i, int sfh_ibin,
+void reset_ejection_rates(int ii, int sfh_ibin,
 		 double *NormSNIIMassEjecRate_actual, double *NormSNIIMetalEjecRate_actual,
 		 double *NormSNIaMassEjecRate_actual, double *NormAGBMassEjecRate_actual,
 		 double *NormSNIaMetalEjecRate_actual, double *NormAGBMetalEjecRate_actual);
 #endif
 
 #ifndef INDIVIDUAL_ELEMENTS
-void compute_actual_eject_rates(int TimeBin, int i, int Zi, double Zi_disp, int sfh_ibin, double SFRxStep, double SFRxStep_Phys, double Metallicity,
+void compute_actual_eject_rates(int TimeBin, int ii, int Zi, double Zi_disp, int sfh_ibin, double SFRxStep, double SFRxStep_Phys, double Metallicity,
 				 double *SNIIEjectaMass, double *SNIIAllMetals, double *SNIIUnProcessedMetals,
 				 double *SNIaEjectaMass, double *SNIaAllMetals, double *SNIaUnProcessedMetals,
 				 double *AGBEjectaMass, double *AGBAllMetals, double *AGBUnProcessedMetals);
 #else
-void compute_actual_eject_rates(int TimeBin, int i, int Zi, double Zi_disp, int sfh_ibin, double SFRxStep, double SFRxStep_Phys, double Metallicity, double *MetallicityElement_Phys,
+void compute_actual_eject_rates(int TimeBin, int ii, int Zi, double Zi_disp, int sfh_ibin, double SFRxStep, double SFRxStep_Phys, double Metallicity, double *MetallicityElement_Phys,
 				 double *SNIIEjectaMass, double *SNIIAllMetals, double *SNIIUnProcessedMetals,
 				 double *SNIaEjectaMass, double *SNIaAllMetals, double *SNIaUnProcessedMetals,
 				 double *AGBEjectaMass, double *AGBAllMetals, double *AGBUnProcessedMetals,
