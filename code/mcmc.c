@@ -814,8 +814,11 @@ void read_mcmc_par (int snapnum)
 	else if(strcmp(MCMC_PAR[i].Name,"ReincVelocitypower")==0)
 	  ReincVelocitypower = MCMC_PAR[i].PropValue[snap];
 
-	else if(strcmp(MCMC_PAR[i].Name,"FracZtoHot")==0)
-	  FracZtoHot = MCMC_PAR[i].PropValue[snap];
+        else if(strcmp(MCMC_PAR[i].Name,"FracZSNIItoHot")==0)
+          FracZSNIItoHot = MCMC_PAR[i].PropValue[snap];
+
+        else if(strcmp(MCMC_PAR[i].Name,"FracZSNIatoHot")==0)
+          FracZSNIatoHot = MCMC_PAR[i].PropValue[snap];
 
 	else if(strcmp(MCMC_PAR[i].Name,"Yield")==0)
 	  Yield = MCMC_PAR[i].PropValue[snap];

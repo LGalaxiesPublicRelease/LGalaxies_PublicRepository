@@ -243,6 +243,7 @@ double collisional_starburst_recipe(double mass_ratio, int merger_centralgal, in
 void make_bulge_from_burst(int p);
 void grow_black_hole(int merger_centralgal, double mass_ratio, double deltaT);
 void check_disk_instability(int p, double dt);
+void check_disk_instability_gas(int p, double dt);
 #ifdef H2_AND_RINGS
 void distribute_bulge_material(int merger_centralgal);
 #endif

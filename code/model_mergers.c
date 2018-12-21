@@ -280,8 +280,12 @@ void deal_with_galaxy_merger(int p, double time, double deltaT, int nstep)
   /* If we are in the presence of a minor merger, check disk stability (the disk
    * is completely destroyed in major mergers)*/
   if(DiskInstabilityModel==0)
+    {
+    if(mass_ratio < ThreshMajorMerger && (Gal[merger_centralgal].ColdGas) > 0.0)
+      check_disk_instability_gas(merger_centralgal, deltaT/STEPS);
     if(mass_ratio < ThreshMajorMerger && (Gal[merger_centralgal].DiskMass+Gal[merger_centralgal].BulgeMass) > 0.0)
-      check_disk_instability(merger_centralgal, deltaT/STEPS);
+         check_disk_instability(merger_centralgal, deltaT/STEPS);
+    }
 
   mass_checks(merger_centralgal,"model_mergers.c",__LINE__);
 
@@ -421,7 +425,9 @@ void add_galaxies_together(int t, int p, double deltaT)
    * TODO Correct artificial diffusion of metals when BulgeFormationInMinorMergersOn=1. */
   int outputbin, j, ii;
   float tspin[3],tmass,pmass;
+#ifdef TRACK_NMERGERS
   double mass_ratio, tmass_total, pmass_total;
+#endif
   /* t central, p satellite */
 
   mass_checks(p,"model_mergers.c",__LINE__);
@@ -434,6 +440,7 @@ void add_galaxies_together(int t, int p, double deltaT)
   Gal[t].MergeSat +=(Gal[p].DiskMass+Gal[p].BulgeMass);
   Gal[p].MergeSat=0.;
 
+#ifdef TRACK_NMERGERS
   tmass_total = Gal[t].DiskMass+Gal[t].BulgeMass+Gal[t].ColdGas;
   pmass_total = Gal[p].DiskMass+Gal[p].BulgeMass+Gal[p].ColdGas;
 
@@ -441,6 +448,7 @@ void add_galaxies_together(int t, int p, double deltaT)
      mass_ratio = min(tmass_total,pmass_total) / max(tmass_total,pmass_total);
   else
     mass_ratio = 1.0;
+#endif
 
 #ifdef H2_AND_RINGS
   double ringtot, fractionRings[RNUM], rd;

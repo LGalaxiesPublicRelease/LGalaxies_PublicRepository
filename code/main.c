@@ -103,16 +103,19 @@ int main(int argc, char **argv)
 
 
   //copy input parameters and makefile options to output directory
-  sprintf(buf, "mkdir %s/inputs/", FinalOutputDir);
-  system(buf);
-  sprintf(buf, "cp %s %s/inputs/", argv[1], FinalOutputDir);
-  system(buf);
-  sprintf(buf, "cp %s %s/inputs/", FileWithFilterNames, FinalOutputDir);
-  system(buf);
-  sprintf(buf, "cp ./My_Makefile_options %s/inputs/", FinalOutputDir);
-  system(buf);
-  sprintf(buf, "cp ./Makefile_compilers %s/inputs/", FinalOutputDir);
-  system(buf);
+  if (ThisTask == 0)
+    {
+      sprintf(buf, "mkdir %s/inputs/", FinalOutputDir);
+      system(buf);
+      sprintf(buf, "cp %s %s/inputs/", argv[1], FinalOutputDir);
+      system(buf);
+      sprintf(buf, "cp %s %s/inputs/", FileWithFilterNames, FinalOutputDir);
+      system(buf);
+      sprintf(buf, "cp ./My_Makefile_options %s/inputs/", FinalOutputDir);
+      system(buf);
+      sprintf(buf, "cp ./Makefile_compilers %s/inputs/", FinalOutputDir);
+      system(buf);
+    }
 
   //time(&start);
 

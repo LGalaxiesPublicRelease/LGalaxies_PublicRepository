@@ -268,8 +268,12 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
 
 
   if(DiskInstabilityModel==0)
+    {
+   if(Gal[p].ColdGas > 0.0)
+         check_disk_instability_gas(p,dt);
     if(Gal[p].DiskMass > 0.0)
-      check_disk_instability(p,dt);
+         check_disk_instability(p,dt);
+    }
 
   if (DiskRadiusModel == 0)
     Gal[p].DiskRadius=get_stellar_disk_radius(p);
@@ -986,7 +990,120 @@ void update_massweightage(int p, double stars, double time)
 }
 
 
+/** @brief Checks for disk stability using the
+ *         Mo, Mao & White (1998) criteria as in Irodotou2018 */
 
+void check_disk_instability_gas(int p, double dt)
+{
+
+  double Mcrit, fraction, unstable_mass, mass, BH_unstable_mass;
+#ifdef H2_AND_RINGS
+  double radius, vmax;
+  double dmass, fractionRings[RNUM];
+  int jj;
+#endif
+
+  mass = Gal[p].ColdGas;
+
+#ifndef H2_AND_RINGS
+  /* check stellar disk -> eq 34 Guo2010*/
+  if (Gal[p].Type != 0)
+    Mcrit = Gal[p].InfallVmax * Gal[p].InfallVmax * Gal[p].ColdGasRadius / G;
+  else
+    Mcrit = Gal[p].Vmax * Gal[p].Vmax * Gal[p].ColdGasRadius / G;
+#else
+   if (Gal[p].Type != 0)
+     vmax=Gal[p].InfallVmax;
+   else
+     vmax=Gal[p].Vmax;
+
+   Mcrit = vmax * vmax *  get_gas_disk_radius(p) / G;
+#endif
+
+   mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
+
+   unstable_mass = mass - Mcrit;
+
+   if(BHGrowthInDiskInstabilityModel == 1)
+       if(unstable_mass > 0.0)
+	 {
+	   //mass to be transferred to the black hole
+	   BH_unstable_mass = unstable_mass * BlackHoleGrowthRate  / (1.0 + pow2((BlackHoleCutoffVelocity / Gal[p].Vvir)));
+
+	   if(BH_unstable_mass>unstable_mass)
+	     BH_unstable_mass = unstable_mass;
+	   unstable_mass -= BH_unstable_mass;
+
+#ifdef H2_AND_RINGS
+	   for(jj=0;jj<RNUM;jj++)
+	     fractionRings[jj]=0.;
+
+	   dmass = BH_unstable_mass;
+	   for(jj=0;jj<RNUM;jj++)
+     	     {
+	       //mass is transfered first from the inner rings
+	       //until the necessary mass is achieved
+	       if(dmass>Gal[p].ColdGasRings[jj])
+		 {
+		   dmass-=Gal[p].ColdGasRings[jj];
+		   fractionRings[jj]=1.;
+		 }
+	       else break;
+     	     }
+
+            //check needed in case there is a ring with 0 mass in the middle
+            if(Gal[p].ColdGasRings[jj]>0.)
+              fractionRings[jj]=dmass/Gal[p].ColdGasRings[jj];
+            else
+              fractionRings[jj]=0.;
+
+            transfer_material_with_rings(p,"BlackHoleMass",p,"ColdGas",fractionRings,"model_starformation_and_feedback.c", __LINE__);
+            mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
+ #else
+            fraction = BH_unstable_mass/mass * BlackHoleGrowthRate  / (1.0 + pow2((BlackHoleCutoffVelocity / Gal[p].Vvir)));
+            transfer_material(p,"BlackHoleMass",p,"ColdGas",fraction, "model_starformation_and_feedback.c", __LINE__);
+ #endif
+            Gal[p].QuasarAccretionRate += BH_unstable_mass/mass*Gal[p].ColdGas / (dt*STEPS);
+
+	 }// if(unstable_mass > 0.0)
+
+
+   /* add excess stars to the bulge */
+   if(unstable_mass > 0.0)
+     {
+#ifdef H2_AND_RINGS
+       for(jj=0;jj<RNUM;jj++)
+	 fractionRings[jj]=0.;
+
+       dmass=unstable_mass;
+
+       for(jj=0;jj<RNUM;jj++)
+	   {
+	     //mass is transfered first from the inner rings
+	     //until the necessary mass is achieved
+	     if(dmass>Gal[p].ColdGasRings[jj])
+	       {
+		 dmass-=Gal[p].ColdGasRings[jj];
+		 fractionRings[jj]=1.;
+	       }
+	     else break;
+	   }
+
+       //check needed in case there is a ring with 0 mass in the middle
+       if(Gal[p].ColdGasRings[jj]>0.)
+	 fractionRings[jj]=dmass/Gal[p].ColdGasRings[jj];
+       else
+	 fractionRings[jj]=0.;
+
+       transfer_material_with_rings(p,"DiskMass",p,"ColdGas",fractionRings,"model_starformation_and_feedback.c", __LINE__);
+       mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
+#else
+       transfer_material(p,"DiskMass",p,"ColdGas",unstable_mass/mass, "model_starformation_and_feedback.c", __LINE__);
+#endif
+
+     }// if(unstable_mass > 0.0)
+   mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
+} //end check_disk_instability_gas
 
 
 /** @brief Checks for disk stability using the
@@ -1016,22 +1133,13 @@ void check_disk_instability(int p, double dt)
   else
     Mcrit = Gal[p].Vmax * Gal[p].Vmax * Gal[p].DiskRadius / G;
 #else
-   if(diskmass<1.0e-6)
-     rstar=0.5*RingRadius[0];
-   else
-     {
-       rstar=0.5*RingRadius[0]*Gal[p].DiskMassRings[0];
-       for(j=1;j<RNUM;j++)
-	 rstar+=0.5*(RingRadius[j-1]+RingRadius[j])*Gal[p].DiskMassRings[j];
-       rstar=rstar/diskmass/2.0;      //2.0=mean radius/scale length for exponential disk
-     }
 
    if (Gal[p].Type != 0)
      vmax=Gal[p].InfallVmax;
    else
      vmax=Gal[p].Vmax;
 
-   Mcrit = vmax * vmax * rstar / G;
+   Mcrit = vmax * vmax * get_stellar_disk_radius(p) / G;
 #endif
 
    mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
@@ -1074,16 +1182,13 @@ void check_disk_instability(int p, double dt)
        else
 	 fractionRings[j]=0.;
 
-
-       //for(j=0;j<RNUM;j++)
-	// fractionRings[j]=dmass/Gal[p].DiskMass;
        transfer_material_with_rings(p,"BulgeMass",p,"DiskMass",fractionRings,"model_starformation_and_feedback.c", __LINE__);
        mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 #else
        transfer_material(p,"BulgeMass",p,"DiskMass",fraction, "model_starformation_and_feedback.c", __LINE__);
 #endif
 
-       if(BHGrowthInDiskInstabilityModel == 1)
+      /* if(BHGrowthInDiskInstabilityModel == 1)
 	 if(Gal[p].ColdGas > 0.)
 	   {
 #ifdef H2_AND_RINGS
@@ -1094,10 +1199,6 @@ void check_disk_instability(int p, double dt)
 		 fractionRings[j] = min(1.0,fractionRings[j]);
 	       }
 
-
-	    // for(j=0;j<RNUM;j++)
-	     //  fractionRings[j]*=BlackHoleGrowthRate*Gal[p].BlackHoleMass/(Gal[p].DiskMass+Gal[p].BulgeMass);
-
 	     transfer_material_with_rings(p,"BlackHoleMass",p,"ColdGas",fractionRings,"model_starformation_and_feedback.c", __LINE__);
 	     mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 #else
@@ -1106,7 +1207,7 @@ void check_disk_instability(int p, double dt)
 #endif
 	     Gal[p].QuasarAccretionRate += fraction*Gal[p].ColdGas / (dt*STEPS);
 
-	   }
+	   }*/
 
 
 #ifdef BULGESIZE_DEBUG
@@ -1118,15 +1219,18 @@ void check_disk_instability(int p, double dt)
        }
 #endif
 
-	/*mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
-       if ((Gal[p].BulgeMass > 1e-9 && Gal[p].BulgeSize == 0.0)||
-       (Gal[p].BulgeMass == 0.0 && Gal[p].BulgeSize >1e-9))
-	 {
-	   char sbuf[1000];
-	   sprintf(sbuf, "bulgesize wrong in disk instablility.c \n");
-	   printf("BulgeMass=%g BulgeSize=%g\n",Gal[p].BulgeMass,Gal[p].BulgeSize);
-	   terminate(sbuf);
-	 }*/
+/*
+       //burst of star formation from the instability, same as in mergers, with diskmass transferred in instability = mass of satellite
+       // and total disk mass = mass of central
+       double frac, mass_ratio = fraction;
+       frac = collisional_starburst_recipe(mass_ratio, p, p, time, dt*STEPS);
+       bulgesize_from_merger(mass_ratio, p, p, Gal[p].BulgeMass+Gal[p].DiskMass, Gal[p].BulgeMass, Gal[p].ColdGas,
+			     Gal[p].DiskMass*fraction, 0, Gal[p].ColdGas*fraction, frac,
+			     get_gas_disk_radius(p)/3., get_stellar_disk_radius(p)/3., get_gas_disk_radius(p)/3., get_stellar_disk_radius(p)/3.);
+
+       if(mass_ratio > ThreshMajorMerger)
+          make_bulge_from_burst(p);*/
+
 
      }// if(stars > 0.0)
    mass_checks(p,"model_starformation_and_feedback.c",__LINE__);

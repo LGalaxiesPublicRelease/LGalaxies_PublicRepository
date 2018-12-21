@@ -41,7 +41,6 @@ void update_h2fraction(int p)
 
 	  //update to clumping factor, as in Fu2013, to solve problems with low-z galaxies
 	  if(metallicityr<1.0)
-	    //SigmaHRings=SigmaHRings*Clumpingfactor*pow((1.0/metallicityr),0.7);
 	    SigmaHRings=SigmaHRings*Clumpingfactor*pow(metallicityr,-0.7);
 	    //SigmaHRings=SigmaHRings*Clumpingfactor;
 
@@ -56,12 +55,12 @@ void update_h2fraction(int p)
 	      tau=0.066*SigmaHRings*metallicityr;
 	      s=log(1.+0.6*khi+0.01*khi*khi)/(0.6*tau);
 
-	      //if(s<2.0)
-		//Gal[p].H2fractionRings[j]=(1-0.75*s/(1+0.25*s));///pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),0.75);
-	     // else
-		//Gal[p].H2fractionRings[j]=0.0;
+	      if(s<2.0)
+		Gal[p].H2fractionRings[j]=(1-0.75*s/(1+0.25*s));///pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),0.75);
+	      else
+		Gal[p].H2fractionRings[j]=0.0;
 
-	      //Gal[p].H2fractionRings[j]=max(4-2.*s,0.)/(4.+s);
+	      Gal[p].H2fractionRings[j]=max(4-2.*s,0.)/(4.+s);
 
 	      printf("%0.5f %0.5f\n",max(4-2.*s,0.)/(4.+s), update_H2fraction_KMT09(log10(SigmaHRings), metallicityr));*/
 	      Gal[p].H2fractionRings[j] = update_H2fraction_KMT09(log10(SigmaHRings), metallicityr);

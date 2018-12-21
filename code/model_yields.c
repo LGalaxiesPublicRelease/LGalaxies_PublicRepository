@@ -250,7 +250,7 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
      	    Gal[igal].HotGas_elements[ee] += fwind_SNII * SNIIAllElements[ee] + fwind_SNIa * SNIaAllElements[ee];
      	    Gal[p].ColdGas_elements[ee] += (1.0-fwind_SNII) * SNIIAllElements[ee] + (1.0-fwind_SNIa) * SNIaAllElements[ee] + AGBAllElements[ee];
 #ifdef H2_AND_RINGS
-     	    Gal[p].ColdGasRings_elements[jj][ee] += (1.0-fwind_SNII[jj]) * SNIIAllElements[ee] + (1.0-fwind_SNIa[jj]) * SNIaAllElements[ee] + AGBAllElements[ee];
+     	    Gal[p].ColdGasRings_elements[jj][ee] += (1.0-fwind_SNII) * SNIIAllElements[ee] + (1.0-fwind_SNIa) * SNIaAllElements[ee] + AGBAllElements[ee];
 #endif // H2_AND_RINGS
      	  }
 #endif //INDIVIDUAL_ELEMENTS

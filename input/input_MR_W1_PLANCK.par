@@ -1,6 +1,7 @@
 %create symbolic links to other directories if you don't ahve then in the code folder
-%e.g. ln -s /export/Workspace/SpecPhotTables/ ./SpecPhotTables
+%e.g. ln -s /export/data1/Workspace/SpecPhotTables/ ./SpecPhotTables
 %ln -sfn to change the link
+% unlink to remove link
 
 %------------------------------------------
 %----- SA model inputs       --------------
@@ -14,7 +15,7 @@ FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               ./SpecPhotTables/
+SpecPhotDir               /scratch-ssd/SpecPhotTables/
 PhotPrefix                PLANCK ; WMAP7 ;WMAP7
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/Filter_Names.txt
@@ -24,13 +25,14 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        ./MergerTrees_MR/
+SimulationDir	        /scratch-ssd/Millennium/modified_trees/
 
 LastDarkMatterSnapShot  63
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
-OutputDir               ./output/
-%OutputDir               /net/bootes/scratch-ssd/SAM/test2/MR/
+
+%OutputDir               ./output/
+OutputDir               /scratch-ssd/SAM/test1/MR/
 MinGalOutputMass	0.01
 
 MaxMemSize              6000
@@ -83,7 +85,7 @@ DiskRadiusModel          	      0	 ;%*0 -- use each component (stellar or gas) s
 %Fu 2010 - StarFormationModel 3 & 4 with SFRtdyn 0 + StarFormationModel 2 & 4 with SFRtdyn 1, H2FractionRecipe 0 & 2
 H2FractionRecipe                  0 ;choice of H2 mass fraction recipe 
                                       %*0 -- KMT 2009 (introduced in FU2010, updated in Fu2013 (eq 11 and 12))
-                                      % 1 -- Krumholz et al. 2008
+                                      % 1 -- Krumholz et al. 2008 - NOT SUPPORTED ANYMORE
                                       % 2 -- pressure recipe, Blitz & Rosolowsky 2006 (introduced in FU2010)
 
 StarFormationModel                4  ;%*0 -- Croton2006, Delucia2007, Guo2011, Henriques2015 
@@ -183,6 +185,7 @@ Reionization_zr	            7.0  ;using the analytic fit of Kravtsov et al. 2004
 %1e7 larger when using tdyn tdyn 
 %SfrEfficiency               2.e-9    ;(eq. S14 in Doc)
 SfrEfficiency               0.053    ;(eq. S14 in Doc)
+%SfrEfficiency               0.073    ;(eq. S14 in Doc)
 
 SfrColdCrit                 0.14     ;(eq. S15 in Doc) In units of 10^10Msun  
 									   % there is a factor 3 difference between the eq in Hen15 and in Guo10 because 
@@ -194,20 +197,25 @@ Clumpingfactor              1.0      ;clumping factor in Krumholz' H2 fraction r
 									   % instead concentrated in spiral arms
 									   % for KMT09 H2 formation there is an additional pow((1.0/metallicityr),0.7)
 									   % dependence to solve issues with low-metallicity galaxies
-GasInflowVel                800.      ;km/s/Mpc
+%GasInflowVel                1500.      ;km/s/Mpc
+GasInflowVel                900.      ;km/s/Mpc
 
 %-------------------------------------------
 %% Star formation bursts during mergers
 %-------------------------------------------
-SfrBurstEfficiency          0.18     ;(eq. S33 in Doc)
+SfrBurstEfficiency          0.14     ;(eq. S33 in Doc)
 SfrBurstSlope               0.62      ;(eq. S33 in Doc)
 
 %-------------------------------------------
 % BH growth and AGN feedback
 %-------------------------------------------
-AgnEfficiency               0.0016   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
-BlackHoleGrowthRate	        0.054   ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                                              
-BlackHoleCutoffVelocity     2000.     ;(eq. S23 in Henriques15)
+AgnEfficiency               0.001   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
+BlackHoleGrowthRate	        0.015   ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                                              
+BlackHoleCutoffVelocity     300.     ;(eq. S23 in Henriques15)
+
+%AgnEfficiency               0.0006   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
+%BlackHoleGrowthRate	        0.0154   ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                                              
+%BlackHoleCutoffVelocity     300.     ;(eq. S23 in Henriques15)
 BlackHoleSeedMass           1e-7     ;10^10 Msun/h
 
 %-------------------------------------------
@@ -227,9 +235,16 @@ ReIncorporationFactor	    2.4e+10  ;(eq. S22 in Henriques15) Fraction of ejected
 %-------------------------------------------
 %%Fraction of Metals returned to Hot component
 %-------------------------------------------
+<<<<<<< .mine
+FracZSNIItoHot				0.3		;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNII metals put into hot gas from the disc
+									%(in situations where DETAILED_METALS_AND_MASS_RETURN is not on, FracSNIItoHot is assumed for all metals)
+FracZSNIatoHot				0.3		;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNIa metals put into hot gas from the disc
+||||||| .r174
+=======
 FracZSNIItoHot				0.5		;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNII metals put into hot gas from the disc
 									%(in situations where DETAILED_METALS_AND_MASS_RETURN is not on, FracSNIItoHot is assumed for all metals)
 FracZSNIatoHot				0.5		;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNIa metals put into hot gas from the disc
+>>>>>>> .r188
 
 %-------------------------------------------
 %% IMF

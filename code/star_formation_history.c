@@ -484,7 +484,7 @@ void sfh_update_bins(int p, int snap, int step, double time)
 	  for(jj=0; jj<RNUM; jj++)
 	    {
 	      Gal[p].sfh_DiskMass_elementsRings[jj][i][kk]+=Gal[p].sfh_DiskMass_elementsRings[jj][i+1][kk];
-	      Gal[p].sfh_BulgeMass_elementsRings[jj][i][kk]+=Gal[p].sfh_BulgeMass_elementsRings[jj][i+1][k];
+	      Gal[p].sfh_BulgeMass_elementsRings[jj][i][kk]+=Gal[p].sfh_BulgeMass_elementsRings[jj][i+1][kk];
 	    }
 #endif
 	      Gal[p].sfh_ICM_elements[i][kk] += Gal[p].sfh_ICM_elements[i+1][kk];
