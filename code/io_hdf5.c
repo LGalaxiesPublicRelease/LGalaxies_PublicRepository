@@ -87,6 +87,8 @@ for(ifield=0;ifield<nfields;ifield++){
 	field_ndim++;
     }
 #endif
+/*
+ * Bruno has turned metals into arrays so this is not needed, I think - PAT
 #ifdef DETAILED_METALS_AND_MASS_RETURN
     else if(types[ifield]=='m'){
 	field_type=H5T_NATIVE_FLOAT;
@@ -96,6 +98,7 @@ for(ifield=0;ifield<nfields;ifield++){
 	field_ndim++;
     }
 #endif
+*/
     else terminate("Unknown field type\n");
     
 #ifdef DEBUG_HDF5
