@@ -59,7 +59,7 @@
 
 
 #ifdef FAST_TESTING_MODE
-#define  STEPS 5
+#define  STEPS 10
 #else
 #define  STEPS 20
 #endif
