@@ -51,6 +51,7 @@ endif
 # Either include the default set of Makefile options, or define your own
 # include Makefile_options
 include My_Makefile_options
+#include My_Makefile_options_MCMC
 
 # Choose your system type (copy an entry from Makefile_compilers)
 include My_Makefile_compilers
@@ -79,8 +80,8 @@ tidy:
 # then calls awk scripts from ./awk/ folder to extract cleand-up version of GALAXY_OUTPUT struct
 # and generate different representations of use for post-processing the result 	
 metadata:
-	${CC_MD} ${OPT} ${CFLAGS} -E -CC ./code/h_galaxy_output.h -o ./code/h_galaxy_output.i
-	${CC_MD} ${OPT} ${CFLAGS} -E -CC ./code/h_metals.h -o ./code/h_metals.i
+	${CC} ${OPT} ${CFLAGS} -E -CC ./code/h_galaxy_output.h -o ./code/h_galaxy_output.i
+	${CC} ${OPT} ${CFLAGS} -E -CC ./code/h_metals.h -o ./code/h_metals.i
 	awk -f ./AuxCode/awk/extract_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_TypeString.awk > ./AuxCode/awk/output/L-Galaxies_Types.txt
 	awk -f ./AuxCode/awk/extract_GALAXY_OUTPUT.awk ./code/h_galaxy_output.i |awk -f ./AuxCode/awk/GALAXY_OUTPUT_2_DDL.awk > ./AuxCode/awk/output/L-Galaxies_DDL.sql	
 ifeq (NORMALIZEDDB,$(findstring NORMALIZEDDB,$(OPT)))
