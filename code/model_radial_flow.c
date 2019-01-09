@@ -51,8 +51,8 @@ void gas_inflow(int p, double time)
 #endif
     }
 
- /* //Msun/pc^2
-  SurfaceDensity = Gal[p].ColdGas*1e10 / (Gal[p].ColdGasRadius*Gal[p].ColdGasRadius*1e12);
+  //Msun/pc^2
+  /*SurfaceDensity = Gal[p].ColdGas*1e10 / (Gal[p].ColdGasRadius*Gal[p].ColdGasRadius*1e12);
   if(Gal[p].DiskMass>0.)
     {
     //Velocity = pow(1.+SurfaceDensity,0.05);
@@ -61,7 +61,7 @@ void gas_inflow(int p, double time)
     }
   else
     Velocity = 0.;*/
-  Velocity = GasInflowVel ; 
+  Velocity = GasInflowVel ;
 
   //printf("%e %e %e\n",Velocity,Gal[p].ColdGasRadius, Gal[p].ColdGas);
   for (j=0; j<RNUM; j++)

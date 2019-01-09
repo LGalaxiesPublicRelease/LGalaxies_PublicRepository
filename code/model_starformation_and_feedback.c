@@ -1017,7 +1017,7 @@ void check_disk_instability_gas(int p, double dt)
    else
      vmax=Gal[p].Vmax;
 
-   Mcrit = vmax * vmax *  get_gas_disk_radius(p)/3. / G;
+   Mcrit = vmax * vmax *  get_gas_disk_radius(p) / G;
 #endif
 
    mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
@@ -1139,7 +1139,7 @@ void check_disk_instability(int p, double dt)
    else
      vmax=Gal[p].Vmax;
 
-   Mcrit = vmax * vmax * get_stellar_disk_radius(p)/3. / G;
+   Mcrit = vmax * vmax * get_stellar_disk_radius(p) / G;
 #endif
 
    mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
