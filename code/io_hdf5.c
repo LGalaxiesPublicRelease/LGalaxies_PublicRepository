@@ -38,21 +38,27 @@ for(ifield=0;ifield<nfields;ifield++){
 
     // Find out haw many dimensions our arrays have
     // Note: the ordering of the arrays dimensions is important
+#ifdef H2_AND_RINGS
     if (flagRings[ifield]>0) {
 	dims[field_ndim]=RNUM;
 	dimProd*=RNUM;
 	field_ndim++;
-    }	
+    }
+#endif
+#ifdef STAR_FORMATION_HISTORY	
     if (flagSFH[ifield]>0) {
 	dims[field_ndim]=SFH_NBIN;
 	dimProd*=SFH_NBIN;
 	field_ndim++;
-    }	
+    }
+#endif
+#ifdef DETAILED_METALS_AND_MASS_RETURN
     if (flagElements[ifield]>0) {
 	dims[field_ndim]=NUM_ELEMENTS;
 	dimProd*=NUM_ELEMENTS;
 	field_ndim++;
-    }	
+    }
+#endif
     if (flag3[ifield]>0) {
 	dims[field_ndim]=3;
 	dimProd*=3;

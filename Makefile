@@ -25,9 +25,9 @@ OBJS  = ./code/main.o \
 	./code/scale_cosmology.o
 #	./code/metals.o 
 
-#ifeq (H2_AND_RINGS,$(findstring H2_AND_RINGS,$(OPT)))
+ifeq (H2_AND_RINGS,$(findstring H2_AND_RINGS,$(OPT)))
 OBJS  += ./code/model_h2fraction.o 
-#endif
+endif
 
 # The following is used only to set dependencies
 INCL  = Makefile \
