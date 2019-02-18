@@ -686,7 +686,7 @@ double collisional_starburst_recipe(double mass_ratio, int merger_centralgal, in
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
 #ifndef POST_PROCESS_MAGS
   int ii;
-  for(ii=0,ii<NUM_METAL_CHANNELS;ii++)
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
     metallicitySF += Gal[merger_centralgal].MetalsColdGas[ii]
   metallicitySF /= Gal[merger_centralgal].ColdGas;
 #endif
