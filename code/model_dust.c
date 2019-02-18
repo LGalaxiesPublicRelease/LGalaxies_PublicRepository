@@ -91,8 +91,8 @@ void dust_model(int p, int snap, int halonr)
         }
 
       int ii;
-      for(ii=0,ii<NUM_METAL_CHANNELS;ii++)
-         Zg += Gal[p].MetalsColdGas[ii]
+      for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+	  Zg += Gal[p].MetalsColdGas[ii];
       Zg/=Gal[p].ColdGas/0.02;
 
 
