@@ -113,14 +113,14 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
 #ifdef METALRICHWIND
 #ifdef GASDENSITYFWIND
 #ifndef H2_AND_RINGS
-    	ColdGasSurfaceDensity = (Gal[p].ColdGas*(1.0e10))/(4.0*3.14159265*Gal[p].ColdGasRadius*Gal[p].ColdGasRadius*(1.0e6*1.0e6)); //in Msun/pc^2
+    	ColdGasSurfaceDensity = (Gal[p].ColdGas/Hubble_h*(1.0e10))/(3.14159265*Gal[p].ColdGasRadius/Hubble_h*Gal[p].ColdGasRadius/Hubble_h*(1.0e6*1.0e6)); //in Msun/pc^2
     	fwind_SNII = min(1.0, 1.0/(ColdGasSurfaceDensity/NORMGASDENSITY)); //Fraction of SN-II ejecta put directly into HotGas. When ColdGasSurfaceDensity <= NORMGASDENSITY (i.e. 10.0 Msun/pc), then fwind_SNII = 1.0.
     	fwind_SNIa = min(1.0, 1.0/(ColdGasSurfaceDensity/NORMGASDENSITY)); //Fraction of SN-Ia ejecta put directly into HotGas. When ColdGasSurfaceDensity <= NORMGASDENSITY (i.e. 10.0 Msun/pc), then fwind_SNII = 1.0.
 #else
     	if(jj==0)
-    		ColdGasSurfaceDensity = (Gal[p].ColdGasRings[jj]*(1.0e10))/(4.0*3.14159265*RingRadius[jj]*RingRadius[jj]*(1.0e6*1.0e6)); //in Msun/pc^2
+    		ColdGasSurfaceDensity = (Gal[p].ColdGasRings[jj]/Hubble_h*(1.0e10))/(3.14159265*RingRadius[jj]/Hubble_h*RingRadius[jj]/Hubble_h*(1.0e6*1.0e6)); //in Msun/pc^2
     	else
-    		ColdGasSurfaceDensity = (Gal[p].ColdGasRings[jj]*(1.0e10))/(4.0*3.14159265*((RingRadius[jj]*RingRadius[jj])-(RingRadius[jj-1]*RingRadius[jj-1]))*(1.0e6*1.0e6)); //in Msun/pc^2
+    		ColdGasSurfaceDensity = (Gal[p].ColdGasRings[jj]/Hubble_h*(1.0e10))/(3.14159265*((RingRadius[jj]/Hubble_h*RingRadius[jj]/Hubble_h)-(RingRadius[jj-1]/Hubble_h*RingRadius[jj-1]/Hubble_h))*(1.0e6*1.0e6)); //in Msun/pc^2
 
     	fwind_SNII = min(1.0, 1.0/(ColdGasSurfaceDensity/NORMGASDENSITY)); //Fraction of SN-II ejecta put directly into HotGas.
     	fwind_SNIa = min(1.0, 1.0/(ColdGasSurfaceDensity/NORMGASDENSITY)); //Fraction of SN-Ia ejecta put directly into HotGas.
