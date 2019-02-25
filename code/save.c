@@ -145,6 +145,8 @@ void save_galaxy_append(int tree, int i, int n)
 
  /*@brief Copies all the relevant properties from the Galaxy structure
         into the Galaxy output structure, some units are corrected.*/
+/* This is a mess.  It should be organised in exactly the same was as h_galaxy_output.h.
+ * (Ideally, all this shoudl be read from a parameter file, but that's another story.) */
 #ifdef NORMALIZEDDB
 void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o, struct SFH_BIN *sfh_bin)
 #else
@@ -175,17 +177,21 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
 
   o->ColdGas = g->ColdGas;
   o->StellarMass = g->BulgeMass+g->DiskMass;
-
   o->DiskMass = g->DiskMass;
   o->BulgeMass = g->BulgeMass;
   o->HotGas = g->HotGas;
-  //o->ReheatedGas = g->ReheatedGas;
+  o->EjectedMass = g->EjectedMass;
+#ifdef EXCESS_MASS
+  o->ExcessMass = g->ExcessMass;
+#endif
+  //o->BlackHoleGas = g->BlackHoleGas;
   o->BlackHoleMass = g->BlackHoleMass;
+  o->EjectedMass = CORRECTDBFLOAT(g->EjectedMass);
+  o->ICM = g->ICM;
 #ifdef OUTPUT_RINGS
   o->H2fraction = g -> H2fraction;
 #endif
 #endif
-
 
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
 #ifndef POST_PROCESS_MAGS
@@ -249,10 +255,6 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
   o->Len = g->Len;
   o->Vmax = g->Vmax;
 
-
-  o->EjectedMass = CORRECTDBFLOAT(g->EjectedMass);
-  //o->BlackHoleGas = g->BlackHoleGas;
-
   for(j = 0; j < 3; j++)
     {
       o->Vel[j] = g->Vel[j];
@@ -291,7 +293,6 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
 
   o->CoolingRadius = g->CoolingRadius;
   //o->CoolingGas = g->CoolingGas;
-  o->ICM = g->ICM;
 
   o->QuasarAccretionRate = g->QuasarAccretionRate * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;
   o->RadioAccretionRate = g->RadioAccretionRate * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;

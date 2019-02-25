@@ -6,7 +6,7 @@
 #define  AVOGADRO    6.0222e23
 #define  BOLTZMANN   1.3806e-16
 #define  GAS_CONST   8.31425e7
-#define  C           2.9979e10
+#define  C           2.9979e10 // Dangerous to have such a short name
 #define  PLANCK      6.6262e-27
 #define  CM_PER_MPC  3.085678e24 // TODO this is read in from input.par
 #define  PROTONMASS  1.6726e-24

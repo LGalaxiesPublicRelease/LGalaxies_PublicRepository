@@ -52,7 +52,6 @@ double infall_recipe(int ngal)
 #endif
 	    tot_mass += Gal[i].DiskMass + Gal[i].BulgeMass + Gal[i].ICM + Gal[i].BlackHoleMass;
 	    tot_mass += Gal[i].ColdGas + Gal[i].HotGas  + Gal[i].EjectedMass + Gal[i].BlackHoleGas;
-	    //tot_mass += Gal[i].ColdGas + Gal[i].HotGas  + Gal[i].ReheatedGas + Gal[i].EjectedMass + Gal[i].BlackHoleGas;
 #ifndef INFALL_UPDATE
 	}
 #endif
@@ -188,19 +187,36 @@ double do_reionization(float Mvir, double Zcurr)
 void add_infall_to_hot(double infallingGas) {
 
     int FOF_centralgal;
+#ifdef EXCESS_MASS
+    double fraction;
+#endif
     
     FOF_centralgal = Gal[0].FOFCentralGal;
 
 #ifdef EXCESS_MASS
+    // InfallModel == 0 throws away gas (and metals) from the HotGas only rather than storing in excess phase,
+    // in order to mimic what earlier models did.
     if (InfallModel == 0) {
 #endif
 
+// The following models allow negative infall but should be restricted to the Hot Gas content
 #if defined(GUO10) || defined(GUO13) || defined(HENRIQUES13)
 //if infallingGas is negative set the limit to be removed at hotgas
-  if(infallingGas<0. && -1.*infallingGas>Gal[FOF_centralgal].HotGas)
-    infallingGas=-Gal[FOF_centralgal].HotGas;
+    if(infallingGas<0. && -1.*infallingGas>Gal[FOF_centralgal].HotGas)
+	infallingGas=-Gal[FOF_centralgal].HotGas;
 #endif
-  Gal[FOF_centralgal].HotGas += infallingGas;
+
+#ifdef EXCESS_MASS
+    fraction=infallingGas/Gal[FOF_centralgal].HotGas;
+    if (fraction < 0.) {
+	fraction=min(-fraction,1.);
+	transfer_material(FOF_centralgal,"ExcessMass",FOF_centralgal,"HotGas",fraction,"add_infall_to_hot", __LINE__);
+    }
+    else
+	Gal[FOF_centralgal].HotGas += infallingGas;
+#else
+	Gal[FOF_centralgal].HotGas += infallingGas;
+#endif
 
 #ifdef INDIVIDUAL_ELEMENTS
     Gal[FOF_centralgal].HotGas_elements[0] += 0.75*(infallingGas/Hubble_h)*1.0e10; //H
@@ -213,7 +229,7 @@ void add_infall_to_hot(double infallingGas) {
 	if (infallingGas > 0.) {
 	    double M_infalltoHot, newgas;
 	    // By preference, we take the infalling gas from any excess component that already exists
-	    newgas = infallingGas - Gal[FOF_centralgal].ExcessMass;
+	    newgas = max(infallingGas - Gal[FOF_centralgal].ExcessMass,0.);
 #ifdef INDIVIDUAL_ELEMENTS
 	    // Extra hydrogen and helium added to ExcessMass (to be reincorporated below)
 	    if (newgas > 0.) {
@@ -242,28 +258,26 @@ void add_infall_to_hot(double infallingGas) {
 		transfer_material(FOF_centralgal,"HotGas",FOF_centralgal,"EjectedMass",fraction,"add_infall_to_hot", __LINE__);
 	    }
 	} else {  // infallingGas <= 0.
-	    double outflowingGas, M_outfromEjected, M_outfromHotGas;
+	    double outflowingGas, M_outfromEjected, massInStart;
 	    // Can't expel more gas than we already have:
-	    outflowingGas = min(-infallingGas,Gal[FOF_centralgal].HotGas+Gal[FOF_centralgal].EjectedMass);
+	    massInStart=Gal[FOF_centralgal].HotGas+Gal[FOF_centralgal].EjectedMass;
+	    outflowingGas = min(-infallingGas,massInStart);
 	    if (outflowingGas > 0.) {
-		// We are going to transfer from the HotGas and Ejected phases in the same proportion as already exists
-		M_outfromEjected = (Gal[FOF_centralgal].EjectedMass/(Gal[FOF_centralgal].HotGas + Gal[FOF_centralgal].EjectedMass)) * outflowingGas;
-		M_outfromHotGas = outflowingGas - M_outfromEjected;
-		// To minimise mixing, first transfer as much of M_outfromEjected as possible from Ejected to Excess
+		fraction=outflowingGas/massInStart;
+		/* We are going to transfer from the HotGas and Ejected phases in the same proportion as already exists
+		 * but to minimise mixing, first transfer as much of M_outfromEjected as possible from Ejected to Excess */
 		if (Gal[FOF_centralgal].EjectedMass > 0.) {
-		    fraction = min(M_outfromEjected/Gal[FOF_centralgal].EjectedMass,1.);
-		    M_outfromEjected -= fraction*Gal[FOF_centralgal].EjectedMass;
-		    transfer_material(FOF_centralgal,"ExcessMass",FOF_centralgal,"EjectedMass",fraction,"add_infall_to_hot", __LINE__);
+		    M_outfromEjected=min(Gal[FOF_centralgal].EjectedMass,outflowingGas);
+		    outflowingGas-=M_outfromEjected;
+		    transfer_material(FOF_centralgal,"ExcessMass",FOF_centralgal,"EjectedMass",M_outfromEjected/Gal[FOF_centralgal].EjectedMass,"add_infall_to_hot", __LINE__);
 		}
 		// Next move from HotGas to the Ejected component
 		if (Gal[FOF_centralgal].HotGas > 0.) {
-		    fraction = M_outfromHotGas/Gal[FOF_centralgal].HotGas;
 		    transfer_material(FOF_centralgal,"EjectedMass",FOF_centralgal,"HotGas",fraction,"add_infall_to_hot", __LINE__);
 		}
 		// Then transfer the rest of M_outfromEjected from the Ejected component to the Excess component, if required
-		if (M_outfromEjected > 0.) {
-		    fraction = M_outfromEjected/Gal[FOF_centralgal].EjectedMass;
-		    transfer_material(FOF_centralgal,"ExcessMass",FOF_centralgal,"EjectedMass",fraction,"add_infall_to_hot", __LINE__);
+		if (outflowingGas > 0.) {
+		    transfer_material(FOF_centralgal,"ExcessMass",FOF_centralgal,"EjectedMass",outflowingGas/Gal[FOF_centralgal].EjectedMass,"add_infall_to_hot", __LINE__);
 		}
 	    }
 	}

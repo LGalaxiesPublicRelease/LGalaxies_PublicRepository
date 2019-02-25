@@ -1218,13 +1218,12 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
 #endif //COMPUTE_SPECPHOT_PROPERTIES
 
   /* Sanity checks */
-  if (fraction > 1.0001) {//1.000001
+  if (fraction > 1 + PRECISION_LIMIT) {
       char sbuf[1000];
       sprintf(sbuf, "\nparent call from: %s, line %d \ntransfer_material: fraction>1\nfraction = %.11f\nFrom '%s' to '%s\n",
 	      call_function, call_line, fraction,cq, cp);
       terminate(sbuf);
   }
-
 
 #ifdef STAR_FORMATION_HISTORY
   if (Gal[p].sfh_ibin != Gal[q].sfh_ibin) {
@@ -1257,8 +1256,6 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
       terminate(sbuf);
     }
 #endif
-
-
 
   //Initialize arrays to contain mass to transfer
   Mass = 0.;
@@ -1304,10 +1301,6 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
     }
 #endif //POST_PROCESS_MAGS
 #endif //COMPUTE_SPECPHOT_PROPERTIES
-
-
-
-
 
   //MASS AND METALS TO BE TRANSFERED
   if (strcmp(cq,"ColdGas")==0)
@@ -1541,11 +1534,6 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
     exit(1);
   }
 
-
-
-
-
-
   //Add to galaxy p
   if (strcmp(cp,"ColdGas")==0)
     {
@@ -1587,7 +1575,6 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   	Gal[p].ReheatedGas_elements[ee] += Yield[ee];
   #endif
       }*/
-
 
   else if (strcmp(cp,"EjectedMass")==0)
     {
@@ -1795,10 +1782,6 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
     printf("\nparent call from: %s, line %d\nUnknown component type %s in call to transfer_material\n",call_function, call_line,cp);
     exit(1);
   }
-
-
-
-
 
   //Subtract from galaxy q;
   if (strcmp(cq,"ColdGas")==0)
@@ -2023,16 +2006,10 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
     exit(1);
   }
 
-
-
-
   mass_checks(p,"model_misc.c",__LINE__);
 
   return;
 }
-
-
-
 
 
 #ifdef H2_AND_RINGS

@@ -906,10 +906,16 @@ void update_from_feedback(int p, int centralgal, double reheated_mass, double ej
 #else
 	  ///with rings ColdGas is a double and using (float) might cause
 	  //(float)(reheated_mass-MassRemain)/Gal[p].ColdGas to be >1
+	  fraction=(float)(reheated_mass-MassRemain)/Gal[p].ColdGas;
+	  if (fraction>1.+PRECISION_LIMIT) {
+	      printf("(reheated_mass-MassRemain)/Gal[p].ColdGas=%f\n",fraction);
+	      terminate("reheated too much gas");
+	  }
+	  fraction = min(fraction,1.);
 	  if(HotGasOnType2Galaxies==0) //tranfer to type 0
-	    transfer_material(centralgal,"HotGas",p,"ColdGas", (float)(reheated_mass-MassRemain)/Gal[p].ColdGas,"model_starformation_and_feedback.c", __LINE__);
+	    transfer_material(centralgal,"HotGas",p,"ColdGas",fraction,"model_starformation_and_feedback.c", __LINE__);
 	  else if(HotGasOnType2Galaxies==1) //tranfer to merger centre
-	    transfer_material(merger_centre,"HotGas",p,"ColdGas", (float)(reheated_mass-MassRemain)/Gal[p].ColdGas,"model_starformation_and_feedback.c", __LINE__);
+	    transfer_material(merger_centre,"HotGas",p,"ColdGas",fraction,"model_starformation_and_feedback.c", __LINE__);
 #endif //H2_AND_RINGS
 	  }
 
