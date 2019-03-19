@@ -86,14 +86,21 @@ void compute_cooling(int p, double dt, int ngal)
   const double atanX=atan(X);
   //LAMBDA_RATIO is (n_e/n)*(n_i/n)
   const double LAMBDA_RATIO=0.25;
-  double a, f, dt_ratio, tau_ratio, teq_ratio, tauCoolP, fg, fg0, Mvir;
+  double a, f, dt_ratio, tau_ratio, teq_ratio, tauCoolP, fg, fg0;
 #endif
 
   mass_checks(p,"cooling.c",__LINE__);
 
+#ifdef COOLING_TEST
+  HotGas = COOLING_TEST_FHOT*BaryonFrac*Gal[p].Mvir;
+  MetalsHotGas = COOLING_TEST_ZHOT*HotGas;
+  dt=COOLING_TEST_DTFAC*dt;
+  if (true) {
+#else
   HotGas = Gal[p].HotGas;
   if(HotGas > TINY_MASS) {
       MetalsHotGas = metals_total(Gal[p].MetalsHotGas);
+#endif
       Mvir = Gal[p].Mvir;
       Vvir = Gal[p].Vvir;
       Rvir = Gal[p].Rvir;
@@ -156,8 +163,11 @@ void compute_cooling(int p, double dt, int ngal)
       x *= (UnitDensity_in_cgs * UnitTime_in_s);  // now in internal units (apart from h factor).
       /* NOTE: because code units are actually UnitMass, UnitLength & UnitTime divided by h,
        * the above expression for x is actually missing a factor h. */
+#ifdef COOLING_TEST
+      x=x*Hubble_h;
+#endif
       rcool = sqrt(MU_RATIO * rhorsq0 * x * tdyn_halo);
-    
+
       // This presumably keeps track of the largest value of the CoolingRadius that this halo has reached.
       // It seems an odd thing to track.  As far as I can tell, it is never used but is written out as a
       // diagnistic after dividing by sqrt(Hubble_h).
@@ -190,11 +200,19 @@ void compute_cooling(int p, double dt, int ngal)
   }
 
   Gal[p].CoolingGas = coolingGas;
+#ifdef COOLING_TEST
+  Gal[p].CoolingTest = coolingGas/HotGas;
+  Gal[p].CoolingGas = 0.1*Gal[p].HotGas;
+#ifdef BETAPROF
+  Gal[p].dt_ratio = dt_ratio;
+  Gal[p].tau_ratio = tau_ratio;
+#endif
+#endif
 
 #ifndef BETAPROF
   /* Calculate X-ray luminosity here before adding in heating.  Basically undoes cooling calculation */
   /* Need to take the log or else get an overflow in cgs units on output. */
-  Gal[p].XrayLum = log10(1.5*(coolingGas*UnitMass_in_g)/(dt*UnitTime_in_s)*temp*BOLTZMANN/(MU*PROTONMASS)) ;
+  Gal[p].XrayLum = log10(1.5*BOLTZMANN*temp*coolingGas*UnitMass_in_g/(mumH*dt*UnitTime_in_s));
 #endif
 
   mass_checks(p,"cooling.c",__LINE__);
@@ -563,7 +581,7 @@ void do_AGN_heating(double dt, int ngal, int FOF_centralgal)
 	  Gal[p].RadioAccretionRate += AGNaccreted / (dt*STEPS);
 	  fraction=AGNaccreted/Gal[p].HotGas;
 	  Gal[p].HotGas -= AGNaccreted;
-	  Gal[p].MetalsHotGas = metals_add(Gal[p].MetalsHotGas,Gal[p].MetalsHotGas, -fraction);
+	  metals_add(Gal[p].MetalsHotGas,Gal[p].MetalsHotGas, -fraction);
 	  mass_checks(p,"cooling.c",__LINE__);
 #ifdef INDIVIDUAL_ELEMENTS
 	  int kk;
@@ -571,7 +589,7 @@ void do_AGN_heating(double dt, int ngal, int FOF_centralgal)
 	    Gal[p].HotGas_elements[kk] *= (1-fraction);
 #endif
 #ifdef METALS_SELF
-	  Gal[p].MetalsHotGasSelf = 	metals_add(Gal[p].MetalsHotGasSelf,Gal[p].MetalsHotGasSelf,-fraction);
+	  metals_add(Gal[p].MetalsHotGasSelf,Gal[p].MetalsHotGasSelf,-fraction);
 #endif	
 
       }

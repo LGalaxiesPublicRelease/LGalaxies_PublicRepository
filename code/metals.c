@@ -35,31 +35,40 @@
 #include "allvars.h"
 #include "proto.h"
 
-#ifndef DETAILED_METALS_AND_MASS_RETURN
+/* Code for metals array.
+ * For simplicity, did away with non-array version. */
 
-// The following mimics the original code with a single metallicity
-
-double metals_add(double m1,
-		 double m2,
-		 double fraction)
+void metals_add(double *m1,
+		double *m2,
+		double fraction)
 {
-  return(m1+fraction*m2);
-}
-
-double metals_init()
-{
-  return(0.);
-}
-
-void metals_print(char s[],double m)
-{
-  printf("%s=%f\n",s,m);
+  int ii;
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+      m1[ii]=m1[ii]+fraction*m2[ii];
   return;
 }
 
-double metals_total(double m)
+void metals_init(double *m)
 {
-  return(m);
+  int ii;
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+      m[ii]=0.;
+  return;
 }
 
-#endif
+void metals_print(char s[],double *m)
+{
+  printf("%s.type1a [Msun] = %.2f\n",s,m[0]*1.0e10/Hubble_h);
+  printf("%s.type2 [Msun]  = %.2f\n",s,m[1]*1.0e10/Hubble_h);
+  printf("%s.agb  [Msun]   = %.2f\n",s,m[2]*1.0e10/Hubble_h);
+  return;
+}
+
+double metals_total(double *m)
+{
+  int ii;
+  double mTotal=0.;
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+      mTotal+=m[ii];
+  return(mTotal);
+}
