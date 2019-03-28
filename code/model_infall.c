@@ -226,7 +226,7 @@ void add_infall_to_hot(double infallingGas) {
 #ifdef EXCESS_MASS
     } else if (InfallModel == 1) {
 	double fraction;
-	if (infallingGas > 0.) {
+	if (infallingGas > TINY_MASS) {
 	    double M_infalltoHot, newgas;
 	    // By preference, we take the infalling gas from any excess component that already exists
 	    newgas = max(infallingGas - Gal[FOF_centralgal].ExcessMass,0.);
@@ -251,7 +251,7 @@ void add_infall_to_hot(double infallingGas) {
 	    fraction = infallingGas/Gal[FOF_centralgal].ExcessMass;
 	    transfer_material(FOF_centralgal,"EjectedMass",FOF_centralgal,"ExcessMass",fraction,"add_infall_to_hot", __LINE__);
 	    // Then transfer the rest of M_infalltoHot from the Ejected component to the HotGas component, if required
-	    if (M_infalltoHot > 0.) {
+	    if (M_infalltoHot > TINY_MASS) {
 		fraction = M_infalltoHot/Gal[FOF_centralgal].EjectedMass;
 		// Fix for rounding error whilst still catching genuine bugs.
 		if (fraction>1. && fraction<1.0001) fraction=1.;
@@ -262,7 +262,7 @@ void add_infall_to_hot(double infallingGas) {
 	    // Can't expel more gas than we already have:
 	    massInStart=Gal[FOF_centralgal].HotGas+Gal[FOF_centralgal].EjectedMass;
 	    outflowingGas = min(-infallingGas,massInStart);
-	    if (outflowingGas > 0.) {
+	    if (outflowingGas > TINY_MASS) {
 		fraction=outflowingGas/massInStart;
 		/* We are going to transfer from the HotGas and Ejected phases in the same proportion as already exists
 		 * but to minimise mixing, first transfer as much of M_outfromEjected as possible from Ejected to Excess */
@@ -276,7 +276,7 @@ void add_infall_to_hot(double infallingGas) {
 		    transfer_material(FOF_centralgal,"EjectedMass",FOF_centralgal,"HotGas",fraction,"add_infall_to_hot", __LINE__);
 		}
 		// Then transfer the rest of M_outfromEjected from the Ejected component to the Excess component, if required
-		if (outflowingGas > 0.) {
+		if (outflowingGas > TINY_MASS) {
 		    transfer_material(FOF_centralgal,"ExcessMass",FOF_centralgal,"EjectedMass",outflowingGas/Gal[FOF_centralgal].EjectedMass,"add_infall_to_hot", __LINE__);
 		}
 	    }
