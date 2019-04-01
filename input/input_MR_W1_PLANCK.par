@@ -12,10 +12,10 @@ FirstFile         40
 LastFile          79
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
-McFile				      ./input/Mc.txt
+McFile			  ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               /scratch-ssd/SpecPhotTables/
+SpecPhotDir               ./SpecPhotTables/
 PhotPrefix                PLANCK ; WMAP7 ;WMAP7
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/Filter_Names.txt
@@ -25,14 +25,13 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        /scratch-ssd/Millennium/modified_trees/
+SimulationDir	        ./MergerTrees/MR
 
 LastDarkMatterSnapShot  63
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
 
-%OutputDir               ./output/
-OutputDir               /scratch-ssd/SAM/test3/MR/
+OutputDir               ./output/
 MinGalOutputMass	0.01
 
 MaxMemSize              6000
@@ -211,8 +210,8 @@ SfrBurstSlope               0.5      ;(eq. S33 in Doc)
 % BH growth and AGN feedback
 %-------------------------------------------
 AgnEfficiency               0.0035   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
-BlackHoleGrowthRate	        0.063   ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                                              
-BlackHoleCutoffVelocity     1500.     ;(eq. S23 in Henriques15)
+BlackHoleGrowthRate	    0.063    ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers 
+BlackHoleCutoffVelocity     1500.    ;(eq. S23 in Henriques15)
 BlackHoleSeedMass           1e-7     ;10^10 Msun/h
 
 %-------------------------------------------

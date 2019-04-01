@@ -12,10 +12,10 @@ FirstFile         40
 LastFile          79
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
-McFile				      ./input/Mc.txt
+McFile			  ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               /scratch-ssd/SpecPhotTables/
+SpecPhotDir               ./SpecPhotTables/
 PhotPrefix                PLANCK ; WMAP7 ;WMAP7
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/Filter_Names.txt
@@ -25,14 +25,13 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        /scratch-ssd/Millennium2/BigRun/modified_trees/
+SimulationDir	        MergerTrees/MRII
 
 LastDarkMatterSnapShot  67
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
-OutputDir               /scratch-ssd/SAM/test3/MRII/
-%OutputDir              ./output/
-MinGalOutputMass	    0.0
+OutputDir              	./output/
+MinGalOutputMass	0.0
 
 MaxMemSize             15000 ; 70000 ; 100000 galtree
 
