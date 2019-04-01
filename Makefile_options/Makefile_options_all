@@ -66,6 +66,7 @@ ifeq (H2_AND_RINGS,$(findstring H2_AND_RINGS,$(OPT)))
 OPT += -DOUTPUT_RINGS
 OPT += -DRINGS_IN_BULGES
 OBJS  += ./code/model_radial_flow.o
+OBJS  += ./code/model_h2fraction.o 
 endif
 
 ###########################

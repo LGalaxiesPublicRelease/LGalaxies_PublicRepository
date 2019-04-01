@@ -2,17 +2,12 @@ EXEC  = L-Galaxies
 
 # Default object files (others may be added with -D options)
 OBJS  = ./code/main.o \
-	./code/io_tree.o \
-	./code/init.o \
-	./code/cool_func.o \
-	./code/save.o \
-	./code/save_galtree.o \
-	./code/mymalloc.o \
-	./code/read_parameters.o \
-	./code/peano.o \
 	./code/allvars.o \
 	./code/age.o \
-	./code/update_type_two.o \
+	./code/cool_func.o \
+	./code/io_tree.o \
+	./code/init.o \
+	./code/metals.o \
 	./code/model_infall.o \
 	./code/model_cooling.o \
 	./code/model_starformation_and_feedback.o \
@@ -22,19 +17,18 @@ OBJS  = ./code/main.o \
 	./code/model_misc.o \
 	./code/model_disrupt.o \
 	./code/model_stripping.o \
-	./code/scale_cosmology.o
-#	./code/metals.o 
-
-ifeq (H2_AND_RINGS,$(findstring H2_AND_RINGS,$(OPT)))
-OBJS  += ./code/model_h2fraction.o 
-endif
+	./code/mymalloc.o \
+	./code/peano.o \
+	./code/read_parameters.o \
+	./code/save.o \
+	./code/save_galtree.o \
+	./code/scale_cosmology.o \
+	./code/update_type_two.o
 
 # The following is used only to set dependencies
 INCL  = Makefile \
-    ./code/allvars.h \
+	./code/allvars.h \
 	./code/h_funcs.h \
-	./code/h_params.h \
-	./code/h_metals.h \
 	./code/h_galaxy_output.h \
 	./code/h_galaxy_tree_data.h \
 	./code/h_galaxy.h \
@@ -42,6 +36,8 @@ INCL  = Makefile \
 	./code/h_halo_ids_data.h \
 	./code/h_halo_aux_data.h \
 	./code/h_lightcone.h \
+	./code/h_metals.h \
+	./code/h_params.h \
 	./code/h_variables.h \
 	./code/proto.h
 ifeq (ALL_SKY_LIGHTCONE,$(findstring ALL_SKY_LIGHTCONE,$(OPT)))
