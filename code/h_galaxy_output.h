@@ -177,6 +177,13 @@ struct GALAXY_OUTPUT {
     float PrimordialAccretionRate; // Msun/yr // Accretion rate of primordial gas.
     float CoolingRadius; // Mpc/h // The radius within which the cooling time scale is shorter than the dynamical timescale
     /* float CoolingGas; // 10^10/h Msun // Mass of cooling gas */
+#ifdef COOLING_TEST
+    float CoolingTest; // 10^10/hMsun? // Whatever is returned by CoolingTest
+#ifdef BETAPROF
+    float dt_ratio; // None // betaprof diagnostic
+    float tau_ratio; // None // betaprof diagnostic
+#endif
+#endif
     float CoolingRate; // Msun/yr // Cooling rate of the hot gas
     float CoolingRate_beforeAGN; // Msun/yr // What the cooling rate of the hot gas would have been if there was no AGN feedback.
     float QuasarAccretionRate; // Msun/yr // Rate at which cold gas is accreted into the central black hole in the quasar mode.

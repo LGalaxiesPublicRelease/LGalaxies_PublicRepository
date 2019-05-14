@@ -678,7 +678,7 @@ void read_parameter_file(char *fname)
 	MinGalOutputMass=0.;
 #ifdef EXCESS_MASS
       else if (strcmp("InfallModel", tag[i]) == 0)
-	InfallModel=0;
+	InfallModel=1;
 #endif
       else if (strcmp("FeedbackEagleScaling", tag[i]) == 0)
       	FeedbackEagleScaling=0;

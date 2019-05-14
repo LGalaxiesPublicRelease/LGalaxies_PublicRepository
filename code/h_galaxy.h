@@ -108,6 +108,13 @@ struct GALAXY			/* Galaxy data */
   double CoolingRate_beforeAGN;
   double CoolingRadius;
   double CoolingGas;
+#ifdef COOLING_TEST
+  double CoolingTest;
+#ifdef BETAPROF
+  double dt_ratio;
+  double tau_ratio;
+#endif
+#endif
   double QuasarAccretionRate;
   double RadioAccretionRate;
   //double RadioMass;

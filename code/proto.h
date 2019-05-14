@@ -345,19 +345,13 @@ void create_sfh_bins();
 void write_sfh_bins();
 #endif //STAR_FORMATION_HISTORY
 
-/*#ifdef DETAILED_METALS_AND_MASS_RETURN
-union metals_arr metals_add(union metals_arr m1, union metals_arr m2, double fraction);
-union metals_arr metals_init();
-void metals_print(char s[],union metals_arr m);
-double metals_total(union metals_arr m);
-#else
-double metals_add(double m1,
-		 double m2,
-		 double fraction);
-double metals_init();
-void metals_print(char s[], double m);
-double metals_total(double m);
-#endif*/
+// Metals always declared as array, even if length 1
+void metals_add(double *m1,
+		double *m2,
+		double fraction);
+void metals_init(double *m);
+void metals_print(char s[],double *m);
+double metals_total(double *m);
 
 #ifdef DETAILED_METALS_AND_MASS_RETURN
 //in read_yield_tables.c:

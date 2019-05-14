@@ -293,6 +293,13 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
 
   o->CoolingRadius = g->CoolingRadius;
   //o->CoolingGas = g->CoolingGas;
+#ifdef COOLING_TEST
+  o->CoolingTest = g->CoolingTest;
+#ifdef BETAPROF
+  o->dt_ratio = g->dt_ratio;
+  o->tau_ratio = g->tau_ratio;
+#endif
+#endif
 
   o->QuasarAccretionRate = g->QuasarAccretionRate * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;
   o->RadioAccretionRate = g->RadioAccretionRate * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;

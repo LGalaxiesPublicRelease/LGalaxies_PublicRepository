@@ -748,8 +748,6 @@ void evolve_galaxies(int halonr, int ngal, int treenr)
 
     /* Time between snapshots */
     deltaT = previoustime - newtime;
-    /* Redshift of current Snapnum - not used but left in in case wanted in future. */
-    //zcurr = ZZ[Halo[halonr].SnapNum];
 
   /* If Gal[0].Centralgal and Gal[0].FOFCentralGal are always the same then we don't need the latter.
      * That will be true whenever (as now) the FirstHaloInFOFGroup always holds the Type 0.
@@ -758,11 +756,9 @@ void evolve_galaxies(int halonr, int ngal, int treenr)
     if (Gal[FOF_centralgal].Type != 0) terminate("(Gal[FOF_centralgal].Type != 0\n");
     if (Gal[0].CentralGal != FOF_centralgal) terminate("(Gal[0].CentralGal != FOF_centralgal\n");
 
-
 #ifdef DEBUG
   debug_galaxy(FOF_centralgal, "main.c",__LINE__);
 #endif
-
 
   // This proves that FOF_centralgal is the galaxy at the centre of the FOF group.
     if(Gal[FOF_centralgal].Type != 0 || Gal[FOF_centralgal].HaloNr != halonr)

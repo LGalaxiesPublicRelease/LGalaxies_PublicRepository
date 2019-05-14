@@ -162,9 +162,10 @@ void compute_cooling(int p, double dt, int ngal)
       x = lambda / (PROTONMASS * BOLTZMANN * temp); // units cm^3 / g s
       x *= (UnitDensity_in_cgs * UnitTime_in_s);  // now in internal units (apart from h factor).
       /* NOTE: because code units are actually UnitMass, UnitLength & UnitTime divided by h,
-       * the above expression for x is actually missing a factor h. */
+       * the above expression for x is actually missing a factor h.
+       * However, because of prolonged arguments over this, have decided not to fix. */
 #ifdef COOLING_TEST
-      x=x*Hubble_h;
+      x *= Hubble_h;
 #endif
       rcool = sqrt(MU_RATIO * rhorsq0 * x * tdyn_halo);
 
