@@ -314,7 +314,7 @@ void do_AGN_heating(double dt, int ngal, int FOF_centralgal)
 
 	  /*  accreted mass onto black hole */
 	  Gal[p].BlackHoleMass += AGNaccreted; //ROB: transfer_mass functions should be used here
-	  Gal[p].RadioAccretionRate += AGNaccreted / (dt*STEPS);
+	  //Gal[p].RadioAccretionRate += AGNaccreted / (dt*STEPS);
 	  fraction=AGNaccreted/Gal[p].HotGas;
 	  Gal[p].HotGas -= AGNaccreted;
 	  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
