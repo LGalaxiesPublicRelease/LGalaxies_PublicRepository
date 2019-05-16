@@ -50,8 +50,7 @@ void update_h2fraction(int p)
 	  if(H2FractionRecipe==0)
 	    {
 	      /*double tau, khi, s;
-	      double var_1 = 0.756; //=3.1/4.1
-	      khi = var_1*(1.+3.1*pow(metallicityr,0.365));
+	      khi = 3.1*(1.+3.1*pow(metallicityr,0.365))/4.1;
 	      tau=0.066*SigmaHRings*metallicityr;
 	      s=log(1.+0.6*khi+0.01*khi*khi)/(0.6*tau);
 
@@ -60,9 +59,9 @@ void update_h2fraction(int p)
 	      else
 		Gal[p].H2fractionRings[j]=0.0;
 
-	      Gal[p].H2fractionRings[j]=max(4-2.*s,0.)/(4.+s);
+	      //Gal[p].H2fractionRings[j]=max(4-2.*s,0.)/(4.+s);
 
-	      printf("%0.5f %0.5f\n",max(4-2.*s,0.)/(4.+s), update_H2fraction_KMT09(log10(SigmaHRings), metallicityr));*/
+	      printf("%0.5f %0.5f\n", Gal[p].H2fractionRings[j], update_H2fraction_KMT09(log10(SigmaHRings), metallicityr));*/
 	      Gal[p].H2fractionRings[j] = update_H2fraction_KMT09(log10(SigmaHRings), metallicityr);
 
 

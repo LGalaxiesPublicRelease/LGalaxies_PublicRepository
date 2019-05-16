@@ -22,8 +22,6 @@ struct GALAXY			/* Galaxy data */
   double Pos[3];
   double MergCentralPos[3];
   double Vel[3];
-  double Pos_notupdated[3];
-  double Vel_notupdated[3];
 #ifdef HALOPROPERTIES
   double HaloM_Mean200;
   double HaloM_Crit200;
@@ -126,7 +124,6 @@ struct GALAXY			/* Galaxy data */
   double Sfr;
 #endif
   double SfrBulge;
-  double StarMerge;
   double XrayLum;
   double BulgeSize;
   double DiskRadius;
@@ -143,14 +140,11 @@ struct GALAXY			/* Galaxy data */
 #ifndef HT09_DISRUPTION
   double OriMergTime;
   double MergTime;
-  double OriMvir;
-  double OriRvir;
 #else
   double OriMergRadius;
   double MergRadius;
   double OriMergmass;
 #endif
-  double MergeSat;
   double DistanceToCentralGal[3];
   int MergeOn;
 #ifdef TRACK_SPLASHBACKS

@@ -180,14 +180,14 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
   o->DiskMass = g->DiskMass;
   o->BulgeMass = g->BulgeMass;
   o->HotGas = g->HotGas;
-  o->EjectedMass = g->EjectedMass;
+  o->EjectedMass = CORRECTDBFLOAT(g->EjectedMass);
+  o->ICM = g->ICM;
 #ifdef EXCESS_MASS
   o->ExcessMass = g->ExcessMass;
 #endif
   //o->BlackHoleGas = g->BlackHoleGas;
   o->BlackHoleMass = g->BlackHoleMass;
-  o->EjectedMass = CORRECTDBFLOAT(g->EjectedMass);
-  o->ICM = g->ICM;
+   
 #ifdef OUTPUT_RINGS
   o->H2fraction = g -> H2fraction;
 #endif
@@ -716,7 +716,10 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
   	  o->MassWeightAge = g->MassWeightAge[n] / (g->DiskMass+g->BulgeMass);
   	  o->MassWeightAge = o->MassWeightAge / 1000. * UnitTime_in_Megayears / Hubble_h;	//Age in Gyr
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
-  	  o->StellarHalfLightRadius=stellar_half_light_radius(o);
+  	  if(o->MagDust[2]==99)
+  	    o->StellarHalfLightRadius=0.;
+  	  else
+  	    o->StellarHalfLightRadius=stellar_half_light_radius(o);
 #endif
       }
     else

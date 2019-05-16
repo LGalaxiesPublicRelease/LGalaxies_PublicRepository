@@ -255,11 +255,13 @@ double half_mass_radius(int p, int do_ColdGas, int do_DiskMass, int do_BulgeMass
 
   M=0.;
   if(do_ColdGas==1)
-    M+=0.5*Gal[p].ColdGas;
+    M+=Gal[p].ColdGas;
   if(do_DiskMass==1)
-    M+=0.5*Gal[p].DiskMass;
+    M+=Gal[p].DiskMass;
   if(do_BulgeMass==1)
-    M+=0.5*Gal[p].BulgeMass;
+    M+=Gal[p].BulgeMass;
+  M*=0.5;
+
 
   if(M<1.0e-6)
     r=0.5*RingRadius[0];
@@ -329,7 +331,7 @@ double bulgemass(double x)
 
 #ifdef COMPUTE_SPECPHOT_PROPERTIES
 //o->ObsMagDust[nlum]=ObsLumDiskDust+ObsLumBulgeDust;
-/** @brief Calculates the half light radius of satellite galaxies on the Vband, NMAG=2 for 40 bands*/
+/** @brief Calculates the half light radius of galaxies on the Vband, NMAG=2 for 40 bands*/
 double stellar_half_light_radius(struct GALAXY_OUTPUT *o)
 {
   double r, rd, rb, L;
@@ -377,7 +379,7 @@ double stellar_half_light_radius(struct GALAXY_OUTPUT *o)
 
 #else //if OUTPUT_RINGS
 
-  L=0.5*(totL);   //to find half mass radius
+  L=0.5*(totL);   //to find half light radius
 
   if(L<1.0e-6)
     r=0.5*RingRadius[0];
@@ -385,7 +387,11 @@ double stellar_half_light_radius(struct GALAXY_OUTPUT *o)
     {
       for(ii=0;ii<RNUM;ii++)
 	{
-	  LightRings=(o->DiskMassRings[ii]/o->DiskMass)*Ldisk+(o->BulgeMassRings[ii]/o->BulgeMass)*Lbulge;  //total mass a each ring
+	  LightRings = 0;
+	  if(o->DiskMass>0)
+	    LightRings+=(o->DiskMassRings[ii]/o->DiskMass)*Ldisk;
+	  if(o->BulgeMass>0)
+	    LightRings+=(o->BulgeMassRings[ii]/o->BulgeMass)*Lbulge;  //total mass a each ring
 	  if(L>LightRings)
 	    L-=LightRings;
 	  else
@@ -466,7 +472,7 @@ void init_galaxy(int p, int halonr)
   Gal[p].Vvir = get_virial_velocity(halonr);
   Gal[p].Mvir = get_virial_mass(halonr);
   Gal[p].Rvir = get_virial_radius(halonr);
-  Gal[p].MergeSat = 0.0;
+  //Gal[p].MergeSat = 0.0;
   Gal[p].InfallSnap = Halo[halonr].SnapNum;
 
   Gal[p].ColdGas = 0.0;
@@ -556,7 +562,7 @@ void init_galaxy(int p, int halonr)
 #endif
 
 
-  Gal[p].StarMerge=0.0;
+  //Gal[p].StarMerge=0.0;
 
   Gal[p].XrayLum = 0.0;
 
@@ -1081,8 +1087,8 @@ void update_type_1(int ngal, int halonr, int prog)
       	Gal[ngal].MergTime -= NumToTime(Halo[halonr].SnapNum) - NumToTime(Halo[prog].SnapNum);
 	  	 //to calculate the position of type 2
       	Gal[ngal].OriMergTime=Gal[ngal].MergTime;
-      	Gal[ngal].OriMvir = get_virial_mass(prog);
-      	Gal[ngal].OriRvir = get_virial_radius(prog);
+      	//Gal[ngal].OriMvir = get_virial_mass(prog);
+      	//Gal[ngal].OriRvir = get_virial_radius(prog);
 #else
       	int central_halonr;
       	if (Halo[Halo[halonr].FirstHaloInFOFgroup].FirstProgenitor == -1 )
@@ -1114,7 +1120,7 @@ void update_type_2(int ngal,int halonr, int prog,int mostmassive)
   int ii;
   mass_checks(ngal,"model_misc.c",__LINE__);
 
- if(Gal[ngal].Type != 2)
+ /*if(Gal[ngal].Type != 2)
     {
       int j;
       for(j=0; j<3; j++)
@@ -1122,7 +1128,7 @@ void update_type_2(int ngal,int halonr, int prog,int mostmassive)
 	  Gal[ngal].Pos_notupdated[j] = Gal[ngal].Pos[j];
 	  Gal[ngal].Vel_notupdated[j] = Gal[ngal].Vel[j];
 	}
-    }
+    }*/
 
   Gal[ngal].Type = 2;
 
@@ -1157,8 +1163,8 @@ void update_type_2(int ngal,int halonr, int prog,int mostmassive)
   	Gal[ngal].MergTime -= NumToTime(Halo[halonr].SnapNum) - NumToTime(Halo[prog].SnapNum);
   	//to calculate the position of type 2
   	Gal[ngal].OriMergTime=Gal[ngal].MergTime;
-  	Gal[ngal].OriMvir = get_virial_mass(prog);
-  	Gal[ngal].OriRvir = get_virial_radius(prog);
+  	//Gal[ngal].OriMvir = get_virial_mass(prog);
+  	//Gal[ngal].OriRvir = get_virial_radius(prog);
 #else
   	Gal[ngal].MergRadius = get_merging_radius (prog, mostmassive, ngal);
   	Gal[ngal].OriMergRadius = Gal[ngal].MergRadius;

@@ -909,7 +909,7 @@ void evolve_galaxies(int halonr, int ngal, int treenr)
 		    Gal[p].BlackHoleMass += AGNaccreted;
 		    Gal[p].BlackHoleGas -= AGNaccreted;
 		    // Instantaneous accretion rate.  This will get overwritten on each mini-step but that's OK
-		    Gal[p].QuasarAccretionRate = AGNaccreted*STEPS/deltaT;
+		    //Gal[p].QuasarAccretionRate = AGNaccreted*STEPS/deltaT;
 		}
 	    }
 

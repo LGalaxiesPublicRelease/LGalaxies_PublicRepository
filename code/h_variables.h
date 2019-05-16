@@ -338,7 +338,7 @@ double AGBRate2[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
 #define IMF_SLOPE 2.3 //2.15 //High-mass slope of Chabrier IMF. (2.3 = normal Chabrier IMF. <2.3 = top-heavy, >2.3 = bottom-heavy.)
 
 //SNIa parameters:
-#define A_FACTOR 0.028 //0.028 //Fraction of mass from all objects between SNIa_MIN_MASS and SNIA_MAX_MASS that comes from SN-Ia. //0.028 preferred in Yates+13.
+#define A_FACTOR 0.04 //0.028 //Fraction of mass from all objects between SNIa_MIN_MASS and SNIA_MAX_MASS that comes from SN-Ia. //0.028 preferred in Yates+13.
 //#define FRAC2HOT 0.9 //Fraction of material released by disk stars that goes straight into the HotGas. Res goes in ColdGas.
 #ifdef DTD
 //#define KALPHA 1.4765 //1.59203 //Now set in yield_integrals.c

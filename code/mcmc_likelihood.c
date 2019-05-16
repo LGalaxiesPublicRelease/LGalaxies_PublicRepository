@@ -281,25 +281,29 @@ double get_likelihood()
 
 		      //DISCRETE
 		      if(strcmp(MCMC_Obs[ObsNr].Name,"RedFraction")==0)
-			{
-			  if((double)((int)((MCMCConstraintsZZ[snap]*10)+0.5)/10.)<0.2)
-			    {
-			      double color;
-			      color=MCMC_GAL[kk].Magu[snap]-MCMC_GAL[kk].Magr[snap];
-			      if(color > (offset_color_cut[snap]-slope_color_cut[snap]*tanh((MCMC_GAL[kk].Magr[snap]+20.07)/1.09)))
-				PropertyToBin[kk]=1.;
-			    }
-			  //U-V vs V-J at higher redshift
-			  else
-			    {
-			      double color_UV, color_VJ;
-			      color_UV=(MCMC_GAL[kk].MagU[snap]-MCMC_GAL[kk].MagV[snap]);
-			      color_VJ=(MCMC_GAL[kk].MagV[snap]-MCMC_GAL[kk].MagJ[snap]);
-			      if( (color_VJ < (1.3-offset_color_cut[snap])/slope_color_cut[snap] && color_UV > 1.3 ) ||
-				  (color_VJ > (1.3-offset_color_cut[snap])/slope_color_cut[snap] && color_UV > color_VJ*slope_color_cut[snap]+offset_color_cut[snap]) )
-				PropertyToBin[kk]=1.;
-			    }
-			}
+			  {
+				  if((double)((int)((MCMCConstraintsZZ[snap]*10)+0.5)/10.)<0.2)
+				    {
+				      double color;
+				      color=MCMC_GAL[kk].Magu[snap]-MCMC_GAL[kk].Magr[snap];
+				      if(color > (offset_color_cut[snap]-slope_color_cut[snap]*tanh((MCMC_GAL[kk].Magr[snap]+20.07)/1.09)))
+					PropertyToBin[kk]=1.;
+				    }
+				  //U-V vs V-J at higher redshift
+				  else
+				    if(MCMC_GAL[kk].StellarMass[snap]>0.)
+				    {
+				      /*double color_UV, color_VJ;
+				      color_UV=(MCMC_GAL[kk].MagU[snap]-MCMC_GAL[kk].MagV[snap]);
+				      color_VJ=(MCMC_GAL[kk].MagV[snap]-MCMC_GAL[kk].MagJ[snap]);
+				      if( (color_VJ < (1.3-offset_color_cut[snap])/slope_color_cut[snap] && color_UV > 1.3 ) ||
+				      (color_VJ > (1.3-offset_color_cut[snap])/slope_color_cut[snap] && color_UV > color_VJ*slope_color_cut[snap]+offset_color_cut[snap]) )*/
+				      if(MCMC_GAL[kk].Sfr[snap] / MCMC_GAL[kk].StellarMass[snap]/(Hubble_h*Hubble_h) < (1+MCMCConstraintsZZ[snap])/(1.0*1.37e10))
+					PropertyToBin[kk]=1.;
+				    }
+				}
+
+
 
 		      if(strcmp(MCMC_Obs[ObsNr].Name,"HI_over_LrvsHI_MassBins_7.75_8.25")==0 ||
 			  strcmp(MCMC_Obs[ObsNr].Name,"HI_over_LrvsHI_MassBins_8.25_8.75")==0 ||

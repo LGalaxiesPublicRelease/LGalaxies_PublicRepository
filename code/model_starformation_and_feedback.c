@@ -269,8 +269,8 @@ void starformation(int p, int centralgal, double time, double dt, int nstep)
 
   if(DiskInstabilityModel==0)
     {
-   if(Gal[p].ColdGas > 0.0)
-         check_disk_instability_gas(p,dt);
+   //if(Gal[p].ColdGas > 0.0)
+    //     check_disk_instability_gas(p,dt);
     if(Gal[p].DiskMass > 0.0)
          check_disk_instability(p,dt);
     }

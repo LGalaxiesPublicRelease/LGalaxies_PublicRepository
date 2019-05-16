@@ -134,7 +134,7 @@ struct GALAXY_OUTPUT {
     float BulgeMassRings[RNUM]; // 1e10 Msun/h // Mass of stars within each annular ring
 #endif     //H2_AND_RINGS
     float HotGas; // 10^10/h Msun // Mass in hot gas
-    float ReheatedGas; // 10^10/h Msun // Mass in reheated gas
+    /*float ReheatedGas; // 10^10/h Msun // Mass in reheated gas*/
     float EjectedMass; // 10^10/h Msun // Mass in ejected gas
 #ifdef     EXCESS_MASS
     float ExcessMass; // 10^10/h Msun // Mass in excess of universal baryon fraction

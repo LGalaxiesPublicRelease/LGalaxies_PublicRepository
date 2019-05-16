@@ -281,8 +281,8 @@ void deal_with_galaxy_merger(int p, double time, double deltaT, int nstep)
    * is completely destroyed in major mergers)*/
   if(DiskInstabilityModel==0)
     {
-    if(mass_ratio < ThreshMajorMerger && (Gal[merger_centralgal].ColdGas) > 0.0)
-      check_disk_instability_gas(merger_centralgal, deltaT/STEPS);
+    //if(mass_ratio < ThreshMajorMerger && (Gal[merger_centralgal].ColdGas) > 0.0)
+    //  check_disk_instability_gas(merger_centralgal, deltaT/STEPS);
     if(mass_ratio < ThreshMajorMerger && (Gal[merger_centralgal].DiskMass+Gal[merger_centralgal].BulgeMass) > 0.0)
          check_disk_instability(merger_centralgal, deltaT/STEPS);
     }
@@ -395,7 +395,7 @@ void grow_black_hole(int merger_centralgal, double mass_ratio, double deltaT)
       if (BlackHoleGrowth == 0)
       	{
 	  transfer_material(merger_centralgal,"BlackHoleMass",merger_centralgal,"ColdGas",fraction,"model_mergers.c", __LINE__);
-      	  Gal[merger_centralgal].QuasarAccretionRate += BHaccrete / deltaT;
+      	  //Gal[merger_centralgal].QuasarAccretionRate += BHaccrete / deltaT;
       	}
       else if (BlackHoleGrowth == 1)
 	  transfer_material(merger_centralgal,"BlackHoleGas",merger_centralgal,"ColdGas",fraction,"model_mergers.c", __LINE__);
@@ -437,8 +437,8 @@ void add_galaxies_together(int t, int p, double deltaT)
   tmass= Gal[t].ColdGas;
   pmass= Gal[p].ColdGas;
 
-  Gal[t].MergeSat +=(Gal[p].DiskMass+Gal[p].BulgeMass);
-  Gal[p].MergeSat=0.;
+  //Gal[t].MergeSat +=(Gal[p].DiskMass+Gal[p].BulgeMass);
+  //Gal[p].MergeSat=0.;
 
 #ifdef TRACK_NMERGERS
   tmass_total = Gal[t].DiskMass+Gal[t].BulgeMass+Gal[t].ColdGas;
@@ -553,8 +553,8 @@ void add_galaxies_together(int t, int p, double deltaT)
   Gal[p].BlackHoleMass=0.;
   Gal[t].BlackHoleGas += Gal[p].BlackHoleGas;
   Gal[p].BlackHoleGas=0.;
-  Gal[t].StarMerge += Gal[p].StarMerge;
-  Gal[p].StarMerge=0.;
+  //Gal[t].StarMerge += Gal[p].StarMerge;
+  //Gal[p].StarMerge=0.;
 
   mass_checks(p,"model_mergers.c",__LINE__);
   mass_checks(t,"model_mergers.c",__LINE__);
