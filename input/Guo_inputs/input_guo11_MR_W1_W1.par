@@ -3,14 +3,14 @@
 %------------------------------------------
 
 FileNameGalaxies          SA
-FirstFile         5
-LastFile          5
+FirstFile         40
+LastFile          79
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               /net/bootes/export/data1/Workspace/SpecPhotTables/
+SpecPhotDir               /scratch-ssd/SpecPhotTables/
 PhotPrefix                WMAP1
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/Filter_Names.txt
@@ -20,12 +20,12 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        /net/bootes/export/data1/Millennium/modified_trees/
+SimulationDir	        /scratch-ssd/Millennium/modified_trees/
 
 LastDarkMatterSnapShot  63
 Hashbits                8     ; needed for Peano hilbert key output with the GALAXYTREE option
 
-OutputDir               /net/bootes/scratch-ssd/SAM/test0/MR/
+OutputDir               /scratch-ssd/SAM/test2/MR/
 
 MaxMemSize              3000
 
@@ -245,7 +245,8 @@ ReincVelocitypower          3.26
 %-------------------------------------------
 %%Fraction of Metals returned to Hot component
 %-------------------------------------------
-FracZtoHot                  0.0	    
+FracZSNIItoHot                  0.0	 
+FracZSNIatoHot                  0.0	    
 
 %-------------------------------------------
 %%Hot Gas stripping
