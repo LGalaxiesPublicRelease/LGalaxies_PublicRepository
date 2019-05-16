@@ -1,1 +1,0 @@
-model_cooling_new.c
