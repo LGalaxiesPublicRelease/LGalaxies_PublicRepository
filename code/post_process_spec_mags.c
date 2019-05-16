@@ -61,7 +61,7 @@ void post_process_spec_mags(struct GALAXY_OUTPUT *o, struct SFH_BIN *sfh_bins)
   //used for dust corrections
   for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
     Zg += o->MetalsColdGas[ii];
-  Zg /= o->ColdGas/0.02;
+  Zg /= (o->ColdGas/0.02);
 
   o->rbandWeightAge=0.0;
 
