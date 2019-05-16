@@ -30,7 +30,7 @@ ObsConstraintsDir                ./MCMC/ObsConstraints/
 CosmologyTablesDir               ./CosmologyTables/
 MCMCHaloModelDir                 ./MCMC/HaloModel/ 
                                      
-ChainLength                      1000  ;length of MCMC chains
+ChainLength                      1      ;length of MCMC chains
 Sample_Physical_Parameters       1      ;set to zero to keep physical parameters at initial values
 Sample_Cosmological_Parameters   0      ;set to zero to keep cosmological parameters at initial values
 Time_Dependant_PhysPar           0      ;set to zero to have the same physical parameters at all z 
@@ -38,8 +38,8 @@ MCMCMode                         0      ;acceptance rate option
                                            %*0 for normal MCMC -> AcceptanceLogic = (ran < AcceptanceProbability) 
                                            % 1 find a high likelihood -> AcceptanceLogic = (lhood2 > lhood1)
                                           
-MCMC_LogStep_Size                0.05   ;size of log_normal step when proposing new parameters
-MCMC_Initial_Par_Displacement    0.2    ;size of log_normal displacement for the initial parameters in each chain
+MCMC_LogStep_Size                0.0   ;size of log_normal step when proposing new parameters
+MCMC_Initial_Par_Displacement    0.0    ;size of log_normal displacement for the initial parameters in each chain
 MCMC_Minimum_Obs_Error           0.3   ;minimum value allowed for observation error bars (maximum level of agreement required)
 AddedErrOnMass                   0.08  ;observational scatter on masses with which theoretical masses are convolved to compensate for Eddignton bias
 
@@ -63,7 +63,7 @@ LastDarkMatterSnapShot_MRII  67
 Hashbits                     8     ; needed for Peano hilbert key output with the GALAXYTREE option
 OutputDir                    ./output/
 
-MaxMemSize                16000
+MaxMemSize                30000
 
 MachineTimeOut            71.5        ;time out for the computer cluster in hours
 JobSubmitCommand          qsub        ;qsub or bsub
