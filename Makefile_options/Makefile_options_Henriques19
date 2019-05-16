@@ -3,12 +3,12 @@
 
 # Options that control output
 OPT += -DOVERWRITE_OUTPUT    # overwrite output files if they exist (otherwise will quit without overwriting)
-OPT += -DNOUT=28             # This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
-#OPT += -DNOUT=1             # This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
+#OPT += -DNOUT=28             # This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
+OPT += -DNOUT=18             # This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
 
 OPT += -DPARALLEL
 #OPT += -DGALAXYTREE         # This will enable output of full galaxy merger trees, implicitly sets NOUT to maximum value
-#OPT += -DLOADIDS            # Load dbids files
+OPT += -DLOADIDS            # Load dbids files
 OPT += -DUPDATETYPETWO       # This updates the positions of type 2 galaxies when the galaxies are written to file (requires aux files to be read)
 OPT += -DTRACK_MASSGROWTH_CHANNELS
 #OPT += -DTRACK_SFH_MASSGROWTH_CHANNELS
@@ -19,9 +19,9 @@ OPT += -DTRACK_MASSGROWTH_CHANNELS
 #OPT += -DCATERPILLAR
 
 
+
 #OPT += -DFAST_TESTING_MODE
-#OPT += -DCHECK_SFH_AND_RINGS
-#OPT += -DCHECK_NO_NEGATIVE_VALUES
+
 #OPT += -DTRACK_SPLASHBACKS
 #OPT += -DTRACK_NMERGERS
 
@@ -51,7 +51,6 @@ OPT += -DH2_AND_RINGS
 ifeq (H2_AND_RINGS,$(findstring H2_AND_RINGS,$(OPT)))
 OBJS  += ./code/model_radial_flow.o
 OPT += -DOUTPUT_RINGS
-OPT += -DRINGS_IN_BULGES
 endif
 
 
