@@ -8,14 +8,14 @@
 %------------------------------------------
 
 FileNameGalaxies          SA
-FirstFile         40
-LastFile          79
+FirstFile         0
+LastFile          99
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
-McFile			  ./input/Mc.txt
+McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               ./SpecPhotTables/
+SpecPhotDir               /scratch-ssd/SpecPhotTables/
 PhotPrefix                PLANCK ; WMAP7 ;WMAP7
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/Filter_Names.txt
@@ -25,16 +25,20 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        ./MergerTrees/MR
+SimulationDir	        /scratch-ssd/Millennium/modified_trees/
 
 LastDarkMatterSnapShot  63
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
 
-OutputDir               ./output/
+%OutputDir               ./output/
+%OutputDir               /scratch-ssd/SAM/test3/NoFeedback_NoInflow/MR/
+OutputDir                /scratch-ssd/SAM/test0/MR/
+%OutputDir               /scratch3/SAM/Henriques2019/Snaps/MR/
+%OutputDir               /scratch3/SAM/Henriques2019/GalTree/MR/
 MinGalOutputMass	0.01
 
-MaxMemSize              6000
+MaxMemSize              20000
 
 %-------------------------------------------------
 %----- Scaling options  ------------
@@ -184,8 +188,7 @@ Reionization_zr	            7.0  ;using the analytic fit of Kravtsov et al. 2004
 %% Star formation
 %-------------------------------------------
 %1e7 larger when using tdyn tdyn 
-%SfrEfficiency               2.e-9    ;(eq. S14 in Doc)
-SfrEfficiency                0.034    ;(eq. S14 in Doc)
+SfrEfficiency                0.06    ;(eq. S14 in Doc)
 
 SfrColdCrit                 0.14     ;(eq. S15 in Doc) In units of 10^10Msun  
 									   % there is a factor 3 difference between the eq in Hen15 and in Guo10 because 
@@ -197,36 +200,36 @@ Clumpingfactor              1.0      ;clumping factor in Krumholz' H2 fraction r
 									   % instead concentrated in spiral arms
 									   % for KMT09 H2 formation there is an additional pow((1.0/metallicityr),0.7)
 									   % dependence to solve issues with low-metallicity galaxies
-%GasInflowVel                1500.      ;km/s/Mpc
+
 GasInflowVel                900.      ;km/s/Mpc
 
 %-------------------------------------------
 %% Star formation bursts during mergers
 %-------------------------------------------
-SfrBurstEfficiency          0.15     ;(eq. S33 in Doc)
-SfrBurstSlope               0.5      ;(eq. S33 in Doc)
+SfrBurstEfficiency          0.5      ;(eq. S33 in Doc)
+SfrBurstSlope               0.38     ;(eq. S33 in Doc)
 
 %-------------------------------------------
 % BH growth and AGN feedback
 %-------------------------------------------
-AgnEfficiency               0.0035   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
-BlackHoleGrowthRate	    0.063    ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers 
-BlackHoleCutoffVelocity     1500.    ;(eq. S23 in Henriques15)
+AgnEfficiency               0.0025   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
+BlackHoleGrowthRate	        0.066    ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                       
+BlackHoleCutoffVelocity     700.     ;(eq. S23 in Henriques15)
 BlackHoleSeedMass           1e-7     ;10^10 Msun/h
 
 %-------------------------------------------
 %% SN feedback
 %-------------------------------------------
 % Heating of cold gas to hot
-FeedbackReheatingEpsilon    1.7    ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
-ReheatPreVelocity	        300.     ;(eq. S19 in Henriques15) Normalization of SN feedback
-ReheatSlope		            1.4     ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
+FeedbackReheatingEpsilon    5.6     ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
+ReheatPreVelocity	        110.    ;(eq. S19 in Henriques15) Normalization of SN feedback
+ReheatSlope		            2.9     ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
 % Ejection of gas from halo
-FeedbackEjectionEfficiency  3.5      ;(eq. S16 in Henriques15) Fraction SN energy used in reheat and eject 
-EjectPreVelocity	        260.     ;(eq. S17 in Henriques15) Normalization of total SN 
-EjectSlope		            1.2     ;(eq. S17 in Henriques15) Slope of total SN
+FeedbackEjectionEfficiency  5.5     ;(eq. S16 in Henriques15) Fraction SN energy used in reheat and eject 
+EjectPreVelocity	        220.    ;(eq. S17 in Henriques15) Normalization of total SN 
+EjectSlope		            2.0     ;(eq. S17 in Henriques15) Slope of total SN
 
-ReIncorporationFactor	    1.5e+10  ;(eq. S22 in Henriques15) Fraction of ejected mass reincorporated per dynamical time to hot
+ReIncorporationFactor	    1.2e+10  ;(eq. S22 in Henriques15) Fraction of ejected mass reincorporated per dynamical time to hot
 
 %-------------------------------------------
 %%Fraction of Metals returned to Hot component
@@ -240,19 +243,19 @@ FracZSNIatoHot				0.3  	;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fracti
 %% IMF
 %-------------------------------------------
 Yield			            0.03    ;(section 1.9 in Henriques15) Fraction of metals instantaneously returned after SF (produced by short lived massive stars)
-RecycleFraction             0.43     ;(section 1.6 in Henriques15) Fraction of SF mass instantaneously recycled back to cold - IMF dependent
+RecycleFraction             0.43    ;(section 1.6 in Henriques15) Fraction of SF mass instantaneously recycled back to cold - IMF dependent
 
 
 %-------------------------------------------
 %% Mergers
 %-------------------------------------------
-ThreshMajorMerger	        0.42      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
-MergerTimeMultiplier         1.2      ;(eq. S32 in Henriques15) Adjust the dynamical friction merging time
+ThreshMajorMerger	        0.33      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
+MergerTimeMultiplier        1.8       ;(eq. S32 in Henriques15) Adjust the dynamical friction merging time
 
 %-------------------------------------------
 %%Hot Gas stripping
 %-------------------------------------------
-RamPressureStrip_CutOffMass  5.7e+3  ;(section 1.11.1 in Henriques15) In code Units of 10^10 (mass above which there is stripping)
+RamPressureStrip_CutOffMass  5.1e+4  ;(section 1.11.1 in Henriques15) In code Units of 10^10 (mass above which there is stripping)
 
 %-------------------------------------------
 %% Total SN energy available
