@@ -847,10 +847,10 @@ void read_mcmc_par (int snapnum)
 	      }
 	  }
 
+#ifdef H2_AND_RINGS
 	else if(strcmp(MCMC_PAR[i].Name,"GasInflowVel")==0)
 	  GasInflowVel = MCMC_PAR[i].PropValue[snap];
-
-
+#endif
 
 	//printf("EjectSlope=%g\n",EjectSlope);
       }
