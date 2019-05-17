@@ -7,6 +7,7 @@
 #ifdef MCMC
 #include "mcmc_vars.h"
 #include "mcmc_proto.h"
+#include <string.h>
 #endif
 
 
