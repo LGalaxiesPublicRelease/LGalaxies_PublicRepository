@@ -9,7 +9,7 @@
 
 FileNameGalaxies          SA
 FirstFile         0
-LastFile          99
+LastFile          511
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
 McFile				      ./input/Mc.txt
@@ -33,8 +33,8 @@ Hashbits                8    ;needed for Peano hilbert key output with the GALAX
 
 %OutputDir               ./output/
 %OutputDir               /scratch-ssd/SAM/test3/NoFeedback_NoInflow/MR/
-OutputDir                /scratch-ssd/SAM/test0/MR/
-%OutputDir               /scratch3/SAM/Henriques2019/Snaps/MR/
+%OutputDir                /scratch-ssd/SAM/test0/MR/
+OutputDir               /scratch3/SAM/Henriques2019/Snaps/MR/
 %OutputDir               /scratch3/SAM/Henriques2019/GalTree/MR/
 MinGalOutputMass	0.01
 
@@ -139,7 +139,7 @@ DiskInstabilityModel		      0  ;allow bulges to form when the stellar disks beco
                                       %*0 -- stability criteria of the stellar disk from Mo, Mao & White (1998)
                                       % 1 -- no disk instabilities
 
-BHGrowthInDiskInstabilityModel    1  ;accretion of gas into the BH due to disk instabilities
+BHGrowthInDiskInstabilityModel    0  ;accretion of gas into the BH due to disk instabilities
                                       %*0 -- no BH growth in disk instabilities
                                       % 1 -- cold gas moved into the BH in the same fraction as disk stars moved to bulge
 
@@ -225,7 +225,7 @@ FeedbackReheatingEpsilon    5.6     ;(eq. S18 in Henriques15) Mass of cold gas r
 ReheatPreVelocity	        110.    ;(eq. S19 in Henriques15) Normalization of SN feedback
 ReheatSlope		            2.9     ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
 % Ejection of gas from halo
-FeedbackEjectionEfficiency  5.5     ;(eq. S16 in Henriques15) Fraction SN energy used in reheat and eject 
+FeedbackEjectionEfficiency  5.5    ;(eq. S16 in Henriques15) Fraction SN energy used in reheat and eject 
 EjectPreVelocity	        220.    ;(eq. S17 in Henriques15) Normalization of total SN 
 EjectSlope		            2.0     ;(eq. S17 in Henriques15) Slope of total SN
 
@@ -249,7 +249,7 @@ RecycleFraction             0.43    ;(section 1.6 in Henriques15) Fraction of SF
 %-------------------------------------------
 %% Mergers
 %-------------------------------------------
-ThreshMajorMerger	        0.33      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
+ThreshMajorMerger	        0.1      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
 MergerTimeMultiplier        1.8       ;(eq. S32 in Henriques15) Adjust the dynamical friction merging time
 
 %-------------------------------------------
