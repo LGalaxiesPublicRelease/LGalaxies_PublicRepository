@@ -240,6 +240,11 @@ void add_infall_to_hot(double infallingGas) {
 	    // Top up ExcessMass if required to reach infallingGas; no new elements are needed (except H, He done above)
 	    Gal[FOF_centralgal].ExcessMass = max(Gal[FOF_centralgal].ExcessMass,infallingGas);
 	    // We are going to transfer to the HotGas and Ejected phases in the same proportion as already exists
+	    // This can cause problems if both components are zero (or close to zero) hence the following
+	    if (Gal[FOF_centralgal].EjectedMass<TINY_MASS && Gal[FOF_centralgal].HotGas<TINY_MASS) {
+		Gal[FOF_centralgal].EjectedMass=TINY_MASS;
+		Gal[FOF_centralgal].HotGas=TINY_MASS;
+	    }
       	    M_infalltoHot = (Gal[FOF_centralgal].HotGas/(Gal[FOF_centralgal].HotGas + Gal[FOF_centralgal].EjectedMass)) * infallingGas;
 	    // To minimise mixing, first transfer as much of M_infalltoHot as possible from Ejected to Hot
 	    if (Gal[FOF_centralgal].EjectedMass > 0.) {
@@ -255,6 +260,14 @@ void add_infall_to_hot(double infallingGas) {
 		fraction = M_infalltoHot/Gal[FOF_centralgal].EjectedMass;
 		// Fix for rounding error whilst still catching genuine bugs.
 		if (fraction>1. && fraction<1.0001) fraction=1.;
+		// DEBUG
+		if (fraction>=1.0001) {
+		    printf("infallingGas=%.3g\n",infallingGas);
+		    printf("M_infalltoHot=%.3g\n",M_infalltoHot);
+		    printf("Gal[FOF_centralgal].ExcessMass=%.3g\n",Gal[FOF_centralgal].ExcessMass);
+		    printf("Gal[FOF_centralgal].EjectedMass=%.3g\n",Gal[FOF_centralgal].EjectedMass);
+		    printf("Gal[FOF_centralgal].HotGas=%.3g\n",Gal[FOF_centralgal].HotGas);
+		}
 		transfer_material(FOF_centralgal,"HotGas",FOF_centralgal,"EjectedMass",fraction,"add_infall_to_hot", __LINE__);
 	    }
 	} else {  // infallingGas <= 0.
