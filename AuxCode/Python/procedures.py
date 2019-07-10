@@ -57,9 +57,9 @@ def read_snap(folder,FirstFile,LastFile,
                 filename = folder+'/'+'SA_z'+char_redshift+"_"+"%d"%(ifile)               
                 f = open(filename,"rb")
                 
-                this_nTrees =  np.fromfile(f,np.int32,1)
+                this_nTrees =  np.fromfile(f,np.int32,1)[0]
                 nTrees += this_nTrees
-                this_nGals = np.fromfile(f,np.int32,1)
+                this_nGals = np.fromfile(f,np.int32,1)[0]
                 nGals += this_nGals
                 
             print ("z=", char_redshift," nGals = ",nGals)  
@@ -77,9 +77,9 @@ def read_snap(folder,FirstFile,LastFile,
                 #print(filename)
                 f = open(filename,"rb")
                 
-                this_nTrees =  np.fromfile(f,np.int32,1)
+                this_nTrees =  np.fromfile(f,np.int32,1)[0]
                 nTrees += this_nTrees
-                this_nGals = np.fromfile(f,np.int32,1)
+                this_nGals = np.fromfile(f,np.int32,1)[0]
                 nGals += this_nGals
                 print ("File ", ifile," nGals = ",this_nGals)  
                 

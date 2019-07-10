@@ -1,4 +1,4 @@
-%create symbolic links to other directories if you don't ahve then in the code folder
+%create symbolic links to other directories if you don't have then in the code folder
 %e.g. ln -s /export/Workspace/SpecPhotTables/ ./SpecPhotTables
 %ln -sfn to change the link
 
@@ -9,7 +9,7 @@
 FileNameGalaxies          SA
 
 FileWithOutputRedshifts   ./input/MCMC_inputs/desired_output_redshifts_for_MCMC.txt
-McFile				      ./input/Mc.txt
+McFile			  ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
 SpecPhotDir               ./SpecPhotTables/
@@ -34,7 +34,7 @@ MCMCMode                         0    ;acceptance rate option
                                          %*0 for normal MCMC -> AcceptanceLogic = (ran < AcceptanceProbability) 
                                          % 1 find a high likelihood -> AcceptanceLogic = (lhood2 > lhood1)
                                           
-MCMC_LogStep_Size                0.05   ;size of log_normal step when proposing new parameters
+MCMC_LogStep_Size                0.05  ;size of log_normal step when proposing new parameters
 MCMC_Initial_Par_Displacement    0.1   ;size of log_normal displacement for the initial parameters in each chain
 MCMC_Minimum_Obs_Error           0.05  ;minimum value allowed for observation error bars (maximum level of agreement required)
 AddedErrOnMass                   0.08  ;observational scatter on masses with which theoretical masses are convolved to compensate for Eddignton bias
@@ -43,7 +43,6 @@ AddedErrOnMass                   0.08  ;observational scatter on masses with whi
 MCMCSampleDir                    ./MCMC/Samples/
 MCMCSampleFilePrefix             cut_optimal  ; %*cut_optimal (MCMCSampleFileType = 2)                                                  
 MCMCSampleFile                   100          ;File with IDs of sample of Dark matter trees to use as input 
-                          
 MCMCTreeSampleFile               2100         ;Sample of Dark Matter trees
  
 
@@ -62,7 +61,7 @@ MaxMemSize                5000
 
 MachineTimeOut            71.5            ;time out for the computer cluster in hours
 JobSubmitCommand          qsub            ;qsub or bsub
-JobSubmitPipe             >               ; > for COSMA, blank for others
+JobSubmitPipe                             ; > for COSMA, blank for others
 JobSubmitFile             L-Galaxies.bash ; L-Galaxies.bash, odin.bash or cosma.bash
 
 %-------------------------------------------------

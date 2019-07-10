@@ -1,0 +1,147 @@
+#MCMCNConstraints //Nr of Observational Constraints
+36
+#Number of snaps where there will be constraints
+#corresponding redshifts
+5
+0.0
+0.4
+1.0
+2.0
+3.0
+#ObservationalTestName              TestType   ObsTest_Switch_z0  ObsTest_Switch_z0.4  ObsTest_Switch_z1  ObsTest_Switch_z2  ObsTest_Switch_z3
+StellarMassFunction                  chi_sq            1                  0                  1                  1                  1
+KBandLF                              chi_sq            0                  0                  0                  0                  0
+BBandLF                              chi_sq            0                  0                  0                  0                  0
+uBandLF                              chi_sq            0                  0                  0                  0                  0
+gBandLF                              chi_sq            0                  0                  0                  0                  0
+rBandLF                              chi_sq            0                  0                  0                  0                  0
+iBandLF                              chi_sq            0                  0                  0                  0                  0
+zBandLF                              chi_sq            0                  0                  0                  0                  0
+StellarMassFunctionRed               chi_sq            0                  0                  0                  0                  0
+StellarMassFunctionBlue              chi_sq            0                  0                  0                  0                  0
+RedFraction                          maxlike           1                  1                  1                  1                  1
+StellarMassFunctionPassive           chi_sq            0                  0                  0                  0                  0
+StellarMassFunctionActive            chi_sq            0                  0                  0                  0                  0
+PassiveFraction                      maxlike           0                  0                  0                  0                  0
+BulgeFraction                        maxlike           1                  0                  0                  0                  0
+ColdGasMassFunction                  chi_sq            0                  0                  0                  0                  0
+ColdGasFractionvsStellarMass         maxlike           0                  0                  0                  0                  0
+StellarMetallicityvsStellarMass      maxlike           0                  0                  0                  0                  0    
+ColdGasMetallicityvsStellarMass      maxlike           0                  0                  0                  0                  0    
+SFRF                                 chi_sq            0                  0                  0                  0                  0
+SFRD                                 chi_sq            0                  0                  0                  0                  0
+BlackHoleBulgeMass                   binomial          0                  0                  0                  0                  0
+SizevsStellarMass_Discs              maxlike           0                  0                  0                  0                  0
+SizevsStellarMass_Bulges             maxlike           0                  0                  0                  0                  0
+HI_over_LrvsHI_MassBins_7.75_8.25    maxlike           0                  0                  0                  0                  0
+HI_over_LrvsHI_MassBins_8.25_8.75    maxlike           0                  0                  0                  0                  0
+HI_over_LrvsHI_MassBins_8.75_9.25    maxlike           0                  0                  0                  0                  0
+HI_over_LrvsHI_MassBins_9.25_9.75    maxlike           0                  0                  0                  0                  0
+HI_over_LrvsHI_MassBins_9.75_10.25   maxlike           0                  0                  0                  0                  0
+HI_over_LrvsHI_MassBins_10.25_10.75  maxlike           0                  0                  0                  0                  0
+Clustering_MassBins_8.77_9.27        chi_sq            0                  0                  0                  0                  0
+Clustering_MassBins_9.27_9.77        chi_sq            0                  0                  0                  0                  0
+Clustering_MassBins_9.77_10.27       chi_sq            0                  0                  0                  0                  0
+Clustering_MassBins_10.27_10.77      chi_sq            0                  0                  0                  0                  0
+Clustering_MassBins_10.77_11.27      chi_sq            0                  0                  0                  0                  0
+Clustering_MassBins_11.27_11.77      chi_sq            0                  0                  0                  0                  0
+
+
+ 
+
+
+#MCMCNConstraints //Nr of Observational Constraints
+27
+#Number of snaps where there will be constraints
+#corresponding redshifts
+2
+0.0
+2.0
+#ObservationalTestName          TestType  ObsTest_Switch_z0  ObsTest_Switch_z2  
+StellarMassFunction              chi_sq           1                  1        
+KBandLF                          chi_sq           0                  0     
+BBandLF                          chi_sq           0                  0          
+uBandLF                          chi_sq           0                  0    
+gBandLF                          chi_sq           0                  0    
+rBandLF                          chi_sq           0                  0      
+iBandLF                          chi_sq           0                  0       
+zBandLF                          chi_sq           0                  0       
+StellarMassFunctionRed           chi_sq           0                  0        
+StellarMassFunctionBlue          chi_sq           0                  0        
+RedFraction                     maxlike           1                  1         
+StellarMassFunctionPassive       chi_sq           0                  0          
+StellarMassFunctionActive        chi_sq           0                  0           
+PassiveFraction                 maxlike           0                  0            
+BulgeFraction                   maxlike           1                  0             
+ColdGasMassFunction              chi_sq           1                  0            
+ColdGasFractionvsStellarMass    maxlike           1                  0   
+StellarMetallicityvsStellarMass maxlike           1                  0              
+SFRF                             chi_sq           1                  0             
+SFRD                             chi_sq           0                  0              
+BlackHoleBulgeMass              binomial          0                  0                
+Clustering_MassBins_8.77_9.27    chi_sq           0                  0               
+Clustering_MassBins_9.27_9.77    chi_sq           0                  0              
+Clustering_MassBins_9.77_10.27   chi_sq           0                  0              
+Clustering_MassBins_10.27_10.77  chi_sq           0                  0                
+Clustering_MassBins_10.77_11.27  chi_sq           0                  0             
+Clustering_MassBins_11.27_11.77  chi_sq           0                  0          
+
+
+
+
+#MCMCNConstraints //Nr of Observational Constraints
+25
+#Number of snaps where there will be constraints
+#corresponding redshifts
+1
+0.0
+#ObservationalTestName          TestType  ObsTest_Switch_z0  
+StellarMassFunction              chi_sq           1           
+KBandLF                          chi_sq           0            
+BBandLF                          chi_sq           0             
+uBandLF                          chi_sq           0          
+gBandLF                          chi_sq           0             
+rBandLF                          chi_sq           0              
+iBandLF                          chi_sq           0               
+zBandLF                          chi_sq           0            
+StellarMassFunctionRed           chi_sq           0             
+StellarMassFunctionBlue          chi_sq           0           
+RedFraction                     maxlike           0        
+StellarMassFunctionPassive       chi_sq           0              
+StellarMassFunctionActive        chi_sq           0               
+PassiveFraction                 maxlike           0              
+BulgeFraction                   maxlike           0              
+ColdGasMassFunction              chi_sq           0              
+SFRD                             chi_sq           0               
+BlackHoleBulgeMass              binomial          0              
+Clustering_MassBins_8.77_9.27    chi_sq           0             
+Clustering_MassBins_9.27_9.77    chi_sq           0             
+Clustering_MassBins_9.77_10.27   chi_sq           0             
+Clustering_MassBins_10.27_10.77  chi_sq           0              
+Clustering_MassBins_10.77_11.27  chi_sq           0               
+Clustering_MassBins_11.27_11.77  chi_sq           0                
+
+
+
+
+
+
+
+
+
+
+#ObservationalTestName    TestType  ObsTest_Switch_z0 ObsTest_Switch_z1  ObsTest_Switch_z2  ObsTest_Switch_z3
+StellarMassFunction        chi_sq           1               1                  1                  1
+KBandLF                    chi_sq           1               1                  1                  1
+BBandLF                    chi_sq           1               1                  1                  1
+uBandLF                    chi_sq           0               0                  0                  0
+gBandLF                    chi_sq           0               0                  0                  0
+rBandLF                    chi_sq           0               0                  0                  0
+iBandLF                    chi_sq           0               0                  0                  0
+zBandLF                    chi_sq           0               0                  0                  0
+RedFraction               maxlike           0               1                  1                  0
+StellarMassFunctionPassive chi_sq           0               1                  1                  0
+StellarMassFunctionActive  chi_sq           0               1                  1                  0
+ColdGasMassFunction        chi_sq           0               0                  0                  0
+SFRD                       chi_sq           0               0                  0                  0
+BlackHoleBulgeMass        binomial          0               0                  0                  0
