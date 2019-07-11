@@ -433,7 +433,7 @@ void create_bestfit_files()
 
 /* initialize MCMC_PAR.Value and MCMC_PAR.PropValue with the same values
  *
- * the number of parameters, limits and switches (whitch to sample) are
+ * the number of parameters, limits and switches (which to sample) are
  * read from MCMCParameterPriorsAndSwitches while the actual values are read from
  * previous output or MCMCStartingParFile
  *  */
@@ -566,6 +566,7 @@ void initialize_mcmc_par_and_lhood (FILE *fmcmc)
 		    if(MCMC_PAR[i].Sampling_Switch==1)
 		      {
 			aux_p=MCMC_PAR[i].Value[0];
+			// Note that this is not symmetric at boundaries so not proper MCMC (but we don't care).
 			do
 			  MCMC_PAR[i].Value[snap] = aux_p * exp(MCMC_Initial_Par_Displacement * gassdev(&MCMCseed));
 			while(MCMC_PAR[i].Value[snap] < MCMC_PAR[i].PriorMin
