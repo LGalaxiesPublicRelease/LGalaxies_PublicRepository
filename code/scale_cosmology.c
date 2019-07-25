@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "allvars.h"
 #include "proto.h"
@@ -7,7 +8,6 @@
 #ifdef MCMC
 #include "mcmc_vars.h"
 #include "mcmc_proto.h"
-#include <string.h>
 #endif
 
 
