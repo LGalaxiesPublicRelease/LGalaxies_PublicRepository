@@ -49,7 +49,7 @@ BEGIN{
     if(type[n] == "float") {type[n]= "f"} 
     else if(type[n] == "int"){type[n]= "i"}
     else if(type[n] == "long" && name[n] == "long") {
-    	type[n]="'l"
+    	type[n]="l"
     	name[n]=fields[3]
     }
 # Is this a metal struct?
