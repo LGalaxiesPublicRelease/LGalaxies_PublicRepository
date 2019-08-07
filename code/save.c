@@ -82,8 +82,10 @@ void close_galaxy_files(void)
   int n;
 
 #ifdef HDF5_OUTPUT
-  for(n=0;n < NOUT; n++)
+  for(n=0;n < NOUT; n++) {
       hdf5_append_data(n,galaxy_output_hdf5[n],b[n]); // Output the final galaxies
+      b[n]=0; // Needed if more than one file to be processed
+  }
   hdf5_close();
 #else //HDF5_OUTPUT
   for(n = 0; n < NOUT; n++) {
@@ -162,6 +164,11 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
 
 #ifndef NO_PROPS_OUTPUTS
   o->Type = g->Type;
+#ifdef DEBUG
+  o->FileNr = g->FileNr;
+  o->TreeNr = g->TreeNr;
+  o->HaloNr = g->halonr;
+#endif
   o->SnapNum = g->SnapNum;
   o->CentralMvir = get_virial_mass(Halo[g->HaloNr].FirstHaloInFOFgroup);
   o->CentralRvir = get_virial_radius(Halo[g->HaloNr].FirstHaloInFOFgroup);
@@ -185,7 +192,7 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
 #ifdef EXCESS_MASS
   o->ExcessMass = g->ExcessMass;
 #endif
-  //o->BlackHoleGas = g->BlackHoleGas;
+  o->BlackHoleGas = g->BlackHoleGas;
   o->BlackHoleMass = g->BlackHoleMass;
    
 #ifdef OUTPUT_RINGS
@@ -756,6 +763,7 @@ void fix_units_for_ouput(struct GALAXY_OUTPUT *o)
   o->DiskMass /= Hubble_h;
   o->BulgeMass /= Hubble_h;
   o->HotGas /= Hubble_h;
+  o->BlackHoleGas /= Hubble_h;
   o->BlackHoleMass /= Hubble_h;
 
 }
@@ -797,6 +805,7 @@ void fix_units_for_ouput(struct GALAXY_OUTPUT *o)
   o->BulgeMass /= Hubble_h;
   o->HotGas /= Hubble_h;
   o->EjectedMass /= Hubble_h;
+  o->BlackHoleGas /= Hubble_h;
   o->BlackHoleMass /= Hubble_h;
   o->ICM /= Hubble_h;
   o->BulgeSize /= Hubble_h;
