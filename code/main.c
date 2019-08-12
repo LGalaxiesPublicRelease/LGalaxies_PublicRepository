@@ -488,6 +488,11 @@ void construct_galaxies(int filenr, int treenr, int halonr)
      * FirstHaloInFOFgroup.  Safer to do it here in case that should change. */
     for (p=0;p<ngal;p++) Gal[p].FOFCentralGal=FOF_centralgal;
 
+#ifdef SAVE_FOFHALO
+    for (p=0;p<ngal;p++) Gal[p].FileNr=filenr;
+    for (p=0;p<ngal;p++) Gal[p].TreeNr=treenr;
+#endif
+
     /*Evolve the Galaxies -> SAM! */
     evolve_galaxies(Halo[halonr].FirstHaloInFOFgroup, ngal, treenr);
 
@@ -725,8 +730,7 @@ int join_galaxies_of_progenitors(int halonr, int ngalstart, int *FOF_centralgal)
  */
  
 /* Note: halonr is here the FOF-background subhalo (i.e. main halo) */
-void evolve_galaxies(int halonr, int ngal, int treenr) 
-  {
+void evolve_galaxies(int halonr, int ngal, int treenr) {
     int p, q, nstep, centralgal, FOF_centralgal, merger_centralgal, currenthalo, prevgal, start, i;
     double infallingGas, deltaT;
     double time, previoustime, newtime;
@@ -764,6 +768,11 @@ void evolve_galaxies(int halonr, int ngal, int treenr)
     if(Gal[FOF_centralgal].Type != 0 || Gal[FOF_centralgal].HaloNr != halonr)
 	terminate("Something wrong here ..... \n");
     
+#ifdef SAVE_FOFHALO
+   for (p =0;p<ngal;p++)
+       Gal[p].FoFHaloNr=halonr;
+#endif
+
     for (p =0;p<ngal;p++) mass_checks(p,"main.c",__LINE__);
 
   /* Update all galaxies to same star-formation history time-bins.
@@ -791,8 +800,7 @@ void evolve_galaxies(int halonr, int ngal, int treenr)
     
     /* All the physics are computed in a number of intervals between snapshots
      * equal to STEPS */
-    for (nstep = 0; nstep < STEPS; nstep++)
-      {
+    for (nstep = 0; nstep < STEPS; nstep++) {
 	/* time to present of the current step */
 	time = previoustime - (nstep + 0.5) * (deltaT / STEPS);
 
@@ -932,9 +940,7 @@ void evolve_galaxies(int halonr, int ngal, int treenr)
 #endif
 
 
-	    }/* end move forward in interval STEPS */
-
-
+    }/* end move forward in interval STEPS */
 
     /* Location and disruption of type 2 galaxies. Type 1 galaxies are not
      * disrupted since usually bayonic component is more compact than dark
@@ -969,7 +975,6 @@ void evolve_galaxies(int halonr, int ngal, int treenr)
 
         }
     }
-
 
     for (p =0;p<ngal;p++)
       if(Gal[p].DiskMass+Gal[p].BulgeMass>0.)

@@ -8,6 +8,11 @@ struct GALAXY			/* Galaxy data */
   int FirstProgGal;
 #endif
   int Type;
+#ifdef SAVE_FOFHALO
+  int   FileNr;
+  int   TreeNr;
+  int   FoFHaloNr;
+#endif
   int HaloNr;
   long long MostBoundID;
   int SnapNum;
@@ -68,7 +73,6 @@ struct GALAXY			/* Galaxy data */
   double BlackHoleMass;
   double BlackHoleGas;
   double ICM;
-
   double MetalsColdGas[NUM_METAL_CHANNELS];
 #ifdef H2_AND_RINGS
   double MetalsColdGasRings[RNUM][NUM_METAL_CHANNELS];

@@ -198,9 +198,6 @@ void deal_with_galaxy_merger(int p, double time, double deltaT, int nstep)
 #endif
 
 
-  /* flag galaxy as finished */
-  Gal[p].Type = 3;
-
   /*  calculate mass ratio of merging galaxies */
   mi = Gal[p].DiskMass+Gal[p].BulgeMass+Gal[p].ColdGas;
   ma = Gal[merger_centralgal].DiskMass+Gal[merger_centralgal].BulgeMass+Gal[merger_centralgal].ColdGas;
@@ -319,6 +316,9 @@ void deal_with_galaxy_merger(int p, double time, double deltaT, int nstep)
 	  Gal[FOF_centralgal].DiskRadius = get_stellar_disk_radius(FOF_centralgal);
 	}
     }
+
+  /* flag galaxy as finished */
+  Gal[p].Type = 3;
 
   mass_checks(p,"model_mergers.c",__LINE__);
   mass_checks(merger_centralgal,"model_mergers.c",__LINE__);

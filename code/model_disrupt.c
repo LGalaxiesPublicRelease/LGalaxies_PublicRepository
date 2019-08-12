@@ -92,9 +92,8 @@ void disrupt(int p, int centralgal)
   /* If density of the main halo is larger than that of the satellite baryonic
    * component, complete and instantaneous disruption is assumed. Galaxy becomes
    * a type 3 and all its material is transferred to the central galaxy. */
-  if (rho_cen > rho_sat)
-  {
-  	Gal[p].Type = 3;
+  if (rho_cen > rho_sat) {
+    Gal[p].Type = 3;
 #ifdef GALAXYTREE
     int q;
     q = Gal[Gal[p].CentralGal].FirstProgGal;
@@ -175,6 +174,11 @@ void disrupt(int p, int centralgal)
 #endif
     transfer_material(centralgal,"HotGas",p,"HotGas",1.,"disrupt.c", __LINE__);
     //transfer_material(centralgal,"ReheatedGas",p,"ReheatedGas",1.,"disrupt.c", __LINE__);
+
+    /* Merge BH with that of the central galaxy.
+       Note that in future might be interesting to follow spiralling in and merger of BHs. */
+    transfer_material(centralgal,"BlackHoleGas",p,"BlackHoleGas",1.,"disrupt.c", __LINE__);
+    transfer_material(centralgal,"BlackHoleMass",p,"BlackHoleMass",1.,"disrupt.c", __LINE__);
 
   } //if (rho_cen > rho_sat)
   mass_checks(centralgal,"model_disrupt.c",__LINE__);

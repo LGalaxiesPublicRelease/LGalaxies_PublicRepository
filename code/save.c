@@ -164,10 +164,10 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
 
 #ifndef NO_PROPS_OUTPUTS
   o->Type = g->Type;
-#ifdef DEBUG
+#ifdef SAVE_FOFHALO
   o->FileNr = g->FileNr;
   o->TreeNr = g->TreeNr;
-  o->HaloNr = g->halonr;
+  o->FoFHaloNr = g->FoFHaloNr;
 #endif
   o->SnapNum = g->SnapNum;
   o->CentralMvir = get_virial_mass(Halo[g->HaloNr].FirstHaloInFOFgroup);

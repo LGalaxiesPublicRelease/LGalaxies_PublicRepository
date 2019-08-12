@@ -72,7 +72,7 @@ all: metadata $(EXEC)
 $(EXEC): $(OBJS) 
 	$(CC) $(OPTIMIZE) $(OBJS) $(LIBS) -o $(EXEC)
 
-$(OBJS): $(INCL) Makefile Makefile_options My_Makefile_options My_Makefile_options_MCMC My_Makefile_options_MCMC_Halo_Model Makefile_compilers My_Makefile_compilers
+$(OBJS): $(INCL) Makefile Makefile_options My_Makefile_options My_Makefile_options_MCMC My_Makefile_compilers
 
 clean:
 	rm -f $(OBJS)

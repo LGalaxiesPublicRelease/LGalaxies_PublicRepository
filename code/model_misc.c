@@ -437,7 +437,6 @@ void init_galaxy(int p, int halonr)
     }
 
   Gal[p].Type = 0;
-
   Gal[p].HaloNr = halonr;
   Gal[p].MostBoundID = Halo[halonr].MostBoundID;
   Gal[p].SnapNum = Halo[halonr].SnapNum - 1;
@@ -1526,6 +1525,16 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
 #endif //COMPUTE_SPECPHOT_PROPERTIES
     }
 
+   else if (strcmp(cq,"BlackHoleMass")==0)
+     {
+       Mass = Gal[q].BlackHoleMass;
+     }
+
+   else if (strcmp(cq,"BlackHoleGas")==0)
+     {
+       Mass = Gal[q].BlackHoleGas;
+     }
+
 #ifdef TRACK_BURST
   else if (strcmp(cq,"BurstMass")==0)
     {
@@ -1605,28 +1614,6 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
   #endif
     }
 #endif
-
-  else if (strcmp(cp,"BlackHoleMass")==0)
-    {
-      Gal[p].BlackHoleMass += Mass;
-   /*    for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
-    *  Gal[p].MetalsBlackHoleMass[mm] += Metals[mm];
-  #ifdef INDIVIDUAL_ELEMENTS
-  for(ee=0;ee<NUM_ELEMENTS;ee++)
-      Gal[p].BlackHoleMass_elements[ee] += Yield[ee];
-  #endif*/
-    }
-
-  else if (strcmp(cp,"BlackHoleGas")==0)
-    {
-      Gal[p].BlackHoleGas += Mass;
-   /*   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
-    * Gal[p].MetalsBlackHoleGas[mm] += Metals[mm];
-  #ifdef INDIVIDUAL_ELEMENTS
-  for(ee=0;ee<NUM_ELEMENTS;ee++)
-        Gal[p].BlackHoleMass_elements[ee] += Yield[ee];
-  #endif*/
-    }
 
   else if (strcmp(cp,"DiskMass")==0)
     {
@@ -1773,6 +1760,16 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
 #endif //POST_PROCESS_MAGS
 #endif //COMPUTE_SPECPHOT_PROPERTIES
   }
+
+  else if (strcmp(cp,"BlackHoleMass")==0)
+    {
+      Gal[p].BlackHoleMass += Mass;
+    }
+
+  else if (strcmp(cp,"BlackHoleGas")==0)
+    {
+      Gal[p].BlackHoleGas += Mass;
+    }
 
 #ifdef TRACK_BURST
   else if (strcmp(cp,"BurstMass")==0)
@@ -1997,6 +1994,16 @@ void transfer_material(int p, char cp[], int q, char cq[], double fraction, char
 #endif //COMPUTE_SPECPHOT_PROPERTIES
     }
 
+  else if (strcmp(cp,"BlackHoleMass")==0)
+    {
+      Gal[q].BlackHoleMass -= Mass;
+    }
+
+  else if (strcmp(cp,"BlackHoleGas")==0)
+    {
+      Gal[q].BlackHoleGas -= Mass;
+    }
+
 #ifdef TRACK_BURST
   else if (strcmp(cq,"BurstMass")==0)
     {
@@ -2070,7 +2077,6 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 #endif //POST_PROCESS_MAGS
 #endif //COMPUTE_SPECPHOT_PROPERTIES
 
-
   //Variables for RINGS
   int jj;
   double MassRings[RNUM];
@@ -2080,9 +2086,6 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
   double YieldRings[RNUM][NUM_ELEMENTS];
 #endif
 #endif //DETAILED_METALS_AND_MASS_RETURN
-
-
-
 
   //Initialize arrays to contain mass to transfer
    Mass = 0.;
@@ -2139,9 +2142,6 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
      }
 #endif //POST_PROCESS_MAGS
 #endif //COMPUTE_SPECPHOT_PROPERTIES
-
-
-
 
    //MASS AND METALS TO BE TRANSFERED
    if (strcmp(cq,"ColdGas")==0)
@@ -2321,7 +2321,6 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 
      }
 
-
    else if (strcmp(cq,"BulgeMass")==0)
      {
        for (jj=0;jj<RNUM;jj++)
@@ -2401,9 +2400,6 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
        exit(1);
      }
 
-
-
-
   //Add to galaxy p
    if (strcmp(cp,"ColdGas")==0)
      {
@@ -2453,28 +2449,6 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
            Gal[p].ReheatedGas_elements[ee] += Yield[ee];
   #endif
        }*/
-
-   else if (strcmp(cp,"BlackHoleMass")==0)
-     {
-       Gal[p].BlackHoleMass += Mass;
-       /* for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
-        *  Gal[p].MetalsBlackHoleMass[mm] += Metals[mm];
-    #ifdef INDIVIDUAL_ELEMENTS
-      for(ee=0;ee<NUM_ELEMENTS;ee++)
-        Gal[p].BlackHoleMass_elements[ee] += Yield[ee];
-    #endif*/
-     }
-
-   else if (strcmp(cp,"BlackHoleGas")==0)
-     {
-       Gal[p].BlackHoleGas += Mass;
-       /*  for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
-        *  Gal[p].MetalsBlackHoleGas[mm] += Metals[mm];
-    #ifdef INDIVIDUAL_ELEMENTS
-    for(ee=0;ee<NUM_ELEMENTS;ee++)
-          Gal[p].BlackHoleMass_elements[ee] += Yield[ee];
-    #endif*/
-     }
 
    else if (strcmp(cp,"DiskMass")==0)
      {
@@ -2671,8 +2645,6 @@ void transfer_material_with_rings(int p, char cp[], int q, char cq[], double fra
 #endif //POST_PROCESS_MAGS
 #endif //COMPUTE_SPECPHOT_PROPERTIES
      }
-
-
 
 
   //Subtract from galaxy q;
@@ -2916,9 +2888,77 @@ void mass_checks(int igal, char call_function[], int call_line) {
   int ee;
 #endif
 
+  // Do Type 3 galaxies separately - they should have no mass components left
+  if (Gal[igal].Type == 3) {
+      if (fabs(Gal[igal].ColdGas) < TINY_MASS) 
+	  Gal[igal].ColdGas=0.;
+      else {
+	  printf("\n*** Mass check error, called from: %s, line: %d, Type 3: ColdGas != 0. ***\n",call_function, call_line);
+	  printf("                Gal[%d].ColdGas = %g\n",igal,Gal[igal].ColdGas);
+	  terminate("");
+      }
+      if (fabs(Gal[igal].HotGas) < TINY_MASS) 
+	  Gal[igal].HotGas=0.;
+      else {
+	  printf("\n*** Mass check error, called from: %s, line: %d, Type 3: HotGas != 0. ***\n",call_function, call_line);
+	  printf("                Gal[%d].HotGas = %g\n",igal,Gal[igal].HotGas);
+	  terminate("");
+      }
+      if (fabs(Gal[igal].EjectedMass) < TINY_MASS) 
+	  Gal[igal].EjectedMass=0.;
+      else {
+	  printf("\n*** Mass check error, called from: %s, line: %d, Type 3: EjectedMass != 0. ***\n",call_function, call_line);
+	  printf("                Gal[%d].EjectedMass = %g\n",igal,Gal[igal].EjectedMass);
+	  terminate("");
+      }
+      if (fabs(Gal[igal].ExcessMass) < TINY_MASS) 
+	  Gal[igal].ExcessMass=0.;
+      else {
+	  printf("\n*** Mass check error, called from: %s, line: %d, Type 3: ExcessMass != 0. ***\n",call_function, call_line);
+	  printf("                Gal[%d].ExcessMass = %g\n",igal,Gal[igal].ExcessMass);
+	  terminate("");
+      }
+      if (fabs(Gal[igal].DiskMass) < TINY_MASS) 
+	  Gal[igal].DiskMass=0.;
+      else {
+	  printf("\n*** Mass check error, called from: %s, line: %d, Type 3: DiskMass != 0. ***\n",call_function, call_line);
+	  printf("                Gal[%d].DiskMass = %g\n",igal,Gal[igal].DiskMass);
+	  terminate("");
+      }
+      if (fabs(Gal[igal].BulgeMass) < TINY_MASS) 
+	  Gal[igal].BulgeMass=0.;
+      else {
+	  printf("\n*** Mass check error, called from: %s, line: %d, Type 3: BulgeMass != 0. ***\n",call_function, call_line);
+	  printf("                Gal[%d].BulgeMass = %g\n",igal,Gal[igal].BulgeMass);
+	  terminate("");
+      }
+      if (fabs(Gal[igal].ICM) < TINY_MASS) 
+	  Gal[igal].ICM=0.;
+      else {
+	  printf("\n*** Mass check error, called from: %s, line: %d, Type 3: ICM != 0. ***\n",call_function, call_line);
+	  printf("                Gal[%d].ICM = %g\n",igal,Gal[igal].ICM);
+	  terminate("");
+      }
+      if (fabs(Gal[igal].BlackHoleGas) < TINY_MASS) 
+	  Gal[igal].BlackHoleGas=0.;
+      else {
+	  printf("\n*** Mass check error, called from: %s, line: %d, Type 3: BlackHoleGas != 0. ***\n",call_function, call_line);
+	  printf("                Gal[%d].BlackHoleGas = %g\n",igal,Gal[igal].BlackHoleGas);
+	  terminate("");
+      }
+      if (fabs(Gal[igal].BlackHoleMass) < TINY_MASS) 
+	  Gal[igal].BlackHoleMass=0.;
+      else {
+	  printf("\n*** Mass check error, called from: %s, line: %d, Type 3: BlackHoleMass != 0. ***\n",call_function, call_line);
+	  printf("                Gal[%d].BlackHoleMass = %g\n",igal,Gal[igal].BlackHoleMass);
+	  terminate("");
+      }
+      return;
+  }
+
   //check if the gas mass is less than 0
   if(Gal[igal].ColdGas < 0.0) {
-    if (Gal[igal].ColdGas > -1e-10)
+    if (Gal[igal].ColdGas > -TINY_MASS)
       Gal[igal].ColdGas = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, ColdGas < 0. ***\n",call_function, call_line);
@@ -2934,7 +2974,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
   for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
     totmetals+= Gal[igal].MetalsColdGas[mm];
   if(totmetals < 0.0) {
-    if (totmetals > -1e-5)
+    if (totmetals > -TINY_MASS)
       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
 	Gal[igal].MetalsColdGas[mm] = 0.;
     else {
@@ -2952,7 +2992,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 
   //check if the mass in metals is greater than the gas mass
   if(totmetals > Gal[igal].ColdGas) {
-    if (totmetals < 1e-8)
+    if (totmetals < TINY_MASS)
       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
 	Gal[igal].MetalsColdGas[mm] = (Gal[igal].MetalsColdGas[mm] * Gal[igal].ColdGas/totmetals);
     else {
@@ -2964,7 +3004,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
   }
 
   if(Gal[igal].HotGas < 0.0) {
-    if (Gal[igal].HotGas > -1e-8)
+    if (Gal[igal].HotGas > -TINY_MASS)
       Gal[igal].HotGas = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, HotGas < 0. ***\n",call_function, call_line);
@@ -2986,7 +3026,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
      totmetals+= Gal[igal].MetalsHotGas[mm];
 
   if(totmetals < 0.0) {
-    if (totmetals > -1e-8)
+    if (totmetals > -TINY_MASS)
       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
 	Gal[igal].MetalsHotGas[mm] = 0.;
     else {
@@ -3003,7 +3043,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
   }
 
   if(totmetals > Gal[igal].HotGas) {
-    if (totmetals < 1e-8)
+    if (totmetals < TINY_MASS)
       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
 	Gal[igal].MetalsHotGas[mm] = (Gal[igal].MetalsHotGas[mm] * Gal[igal].HotGas/totmetals);
    else {
@@ -3023,7 +3063,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
   }
 
   if(Gal[igal].EjectedMass < 0.0) {
-    if (Gal[igal].EjectedMass > -1e-8)
+    if (Gal[igal].EjectedMass > -TINY_MASS)
       Gal[igal].EjectedMass = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, EjectedMass < 0. ***\n",call_function, call_line);
@@ -3037,7 +3077,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
     totmetals+= Gal[igal].MetalsEjectedMass[mm];
 
   if(totmetals < 0.0) {
-    if (totmetals > -1e-8)
+    if (totmetals > -TINY_MASS)
       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
 	Gal[igal].MetalsEjectedMass[mm] = 0.;
     else {
@@ -3048,7 +3088,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
   }
 
   if(totmetals > Gal[igal].EjectedMass) {
-    if (totmetals < 1e-8)
+    if (totmetals < TINY_MASS)
       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
 	Gal[igal].MetalsEjectedMass[mm] = (Gal[igal].MetalsEjectedMass[mm] * Gal[igal].EjectedMass/totmetals);
     else {
@@ -3061,7 +3101,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 
 #ifdef EXCESS_MASS
   if(Gal[igal].ExcessMass < 0.0) {
-    if (Gal[igal].ExcessMass > -1e-10)
+    if (Gal[igal].ExcessMass > -TINY_MASS)
       Gal[igal].ExcessMass = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, ExcessMass < 0. ***\n",call_function, call_line);
@@ -3075,7 +3115,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
     totmetals+= Gal[igal].MetalsExcessMass[mm];
 
   if(totmetals < 0.0) {
-    if (totmetals > -1e-10)
+    if (totmetals > -TINY_MASS)
       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
 	Gal[igal].MetalsExcessMass[mm] = 0.;
     else {
@@ -3086,7 +3126,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
   }
 
   if(totmetals > Gal[igal].ExcessMass) {
-    if (totmetals < 1e-10)
+    if (totmetals < TINY_MASS)
       for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
 	Gal[igal].MetalsExcessMass[mm] = (Gal[igal].MetalsExcessMass[mm] * Gal[igal].ExcessMass/totmetals);
     else {
@@ -3099,7 +3139,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 #endif
 
   if(Gal[igal].DiskMass < 0.0) {
-    if (Gal[igal].DiskMass > -1e-5)
+    if (Gal[igal].DiskMass > -TINY_MASS)
       Gal[igal].DiskMass = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, DiskMass < 0. ***\n",call_function, call_line);
@@ -3109,7 +3149,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
   }
 
   if(Gal[igal].BulgeMass < 0.0) {
-    if (Gal[igal].BulgeMass > -1e-5)
+    if (Gal[igal].BulgeMass > -TINY_MASS)
       Gal[igal].BulgeMass = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, BulgeMass < 0. ***\n",call_function, call_line);
@@ -3119,7 +3159,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
   }
 
   if(Gal[igal].ICM < 0.0) {
-    if (Gal[igal].ICM > -1e-5)
+    if (Gal[igal].ICM > -TINY_MASS)
       Gal[igal].ICM = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, ICM < 0. ***\n",call_function, call_line);
@@ -3127,7 +3167,6 @@ void mass_checks(int igal, char call_function[], int call_line) {
       terminate("");
     }
   }
-
 
 
   //CHECK for NAN
@@ -3176,7 +3215,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 
 #ifdef TRACK_BURST
   if(Gal[igal].BurstMass < 0.0) {
-    if (Gal[igal].BurstMass > -1e-10)
+    if (Gal[igal].BurstMass > -TINY_MASS)
       Gal[igal].BurstMass = 0.;
     else {
       printf("\n*** Mass check error, called from: %s, line: %d, BurstMass < 0. ***\n",call_function, call_line);
@@ -3198,7 +3237,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
       sfh_sum+=Gal[igal].sfh_DiskMass[i];
       if(Gal[igal].sfh_DiskMass[i]<0.0)
 	{
-	  if(Gal[igal].sfh_DiskMass[i]> -1e-10)
+	  if(Gal[igal].sfh_DiskMass[i]> -TINY_MASS)
 	    Gal[igal].sfh_DiskMass[i]=0.0;
 	  else
 	    {
@@ -3209,9 +3248,8 @@ void mass_checks(int igal, char call_function[], int call_line) {
 	  }
     }
 
-  if((sfh_sum < -1e-10 && sfh_sum < -1e-10*Gal[igal].DiskMass) ||
-     (sfh_sum >  1e-10 && sfh_sum >  1e-10*Gal[igal].DiskMass))
- // if((sfh_sum/Gal[igal].DiskMass > 1.0+1.e-3 || sfh_sum/Gal[igal].DiskMass < 1.0-1.e-3) && Gal[igal].DiskMass>1.e-3 )
+  if((sfh_sum < -TINY_MASS && sfh_sum < -TINY_MASS*Gal[igal].DiskMass) ||
+     (sfh_sum >  TINY_MASS && sfh_sum >  TINY_MASS*Gal[igal].DiskMass))
     {
       printf("                     sfh_sum = %g\n",sfh_sum);
       printf("                Gal[%d].DiskMass = %g\n",igal,Gal[igal].DiskMass);
@@ -3225,8 +3263,8 @@ void mass_checks(int igal, char call_function[], int call_line) {
 
   sfh_sum=-Gal[igal].BulgeMass;
   for (i=0; i<=Gal[igal].sfh_ibin; i++) sfh_sum+=Gal[igal].sfh_BulgeMass[i];
-  if((sfh_sum < -1e-10 && sfh_sum < -1e-10*Gal[igal].BulgeMass) ||
-     (sfh_sum >  1e-10 && sfh_sum >  1e-10*Gal[igal].BulgeMass)) {
+  if((sfh_sum < -TINY_MASS && sfh_sum < -TINY_MASS*Gal[igal].BulgeMass) ||
+     (sfh_sum >  TINY_MASS && sfh_sum >  TINY_MASS*Gal[igal].BulgeMass)) {
     printf("                     sfh_sum = %g\n",sfh_sum);
     printf("                Gal[%d].BulgeMass = %g\n",igal,Gal[igal].BulgeMass);
     printf("            Gal[%d].sfh_BulgeMass = %g\n",igal,sfh_sum+Gal[igal].BulgeMass);
@@ -3237,7 +3275,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 
   sfh_sum=-Gal[igal].ICM;
   for (i=0; i<=Gal[igal].sfh_ibin; i++) sfh_sum+=Gal[igal].sfh_ICM[i];
-  if(sfh_sum < -1e-10 || sfh_sum > 1e-10) {
+  if(sfh_sum < -TINY_MASS || sfh_sum > TINY_MASS) {
     printf("                     sfh_sum = %g\n",sfh_sum);
     printf("                Gal[%d].ICM = %g\n",igal,Gal[igal].ICM);
     printf("            Gal[%d].sfh_ICM = %g\n",igal,sfh_sum+Gal[igal].ICM);
@@ -3258,7 +3296,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
       sfh_sum+=Gal[igal].sfh_DiskMass[i];
       if(Gal[igal].sfh_DiskMass[i]<0.0)
 	{
-	  if(Gal[igal].sfh_DiskMass[i]> -1e-10)
+	  if(Gal[igal].sfh_DiskMass[i]> -TINY_MASS)
 	    {
 	      sfh_sum-=Gal[igal].sfh_DiskMass[i];
 	      Gal[igal].sfh_DiskMass[i]=0.0;
@@ -3273,7 +3311,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 	  }
     }
 
-  if((sfh_sum+1.e-10) < Gal[igal].DiskMass && sfh_sum>1e-10)
+  if((sfh_sum+TINY_MASS) < Gal[igal].DiskMass && sfh_sum>TINY_MASS)
     {
       printf("                     sfh_sum = %g\n",sfh_sum);
       printf("                Gal[%d].DiskMass = %g\n",igal,Gal[igal].DiskMass);
@@ -3291,7 +3329,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
         sfh_sum+=Gal[igal].sfh_BulgeMass[i];
         if(Gal[igal].sfh_BulgeMass[i]<0.0)
   	{
-  	  if(Gal[igal].sfh_BulgeMass[i]> -1e-10)
+  	  if(Gal[igal].sfh_BulgeMass[i]> -TINY_MASS)
   	  {
   	      sfh_sum-=Gal[igal].sfh_BulgeMass[i];
   	      Gal[igal].sfh_BulgeMass[i]=0.0;
@@ -3304,7 +3342,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
   	    }
   	  }
       }
-  if((sfh_sum+1.e-10) < Gal[igal].BulgeMass && sfh_sum>1e-10)
+  if((sfh_sum+TINY_MASS) < Gal[igal].BulgeMass && sfh_sum>TINY_MASS)
       {
         printf("                     sfh_Bulge_sum = %g\n", sfh_sum);
         printf("                Gal[%d].BulgeMass = %g\n", igal, Gal[igal].BulgeMass);
@@ -3322,7 +3360,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
           sfh_sum+=Gal[igal].sfh_ICM[i];
           if(Gal[igal].sfh_ICM[i]<0.0)
     	{
-    	  if(Gal[igal].sfh_ICM[i]> -1e-10)
+    	  if(Gal[igal].sfh_ICM[i]> -TINY_MASS)
     	    {
     	      sfh_sum-=Gal[igal].sfh_ICM[i];
     		Gal[igal].sfh_ICM[i]=0.0;
@@ -3335,7 +3373,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
     	    }
     	  }
         }
-  if((sfh_sum+1.e-10) < Gal[igal].ICM && sfh_sum>1e-10)
+  if((sfh_sum+TINY_MASS) < Gal[igal].ICM && sfh_sum>TINY_MASS)
         {
           printf("                     sfh_sum = %g\n",sfh_sum);
           printf("                Gal[%d].ICM = %g\n",igal,Gal[igal].ICM);
@@ -3362,7 +3400,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
       ring_sum_minus_tot+=Gal[igal].DiskMassRings[jj];
       if(Gal[igal].DiskMassRings[jj]<0.0)
 	{
-	  if(Gal[igal].DiskMassRings[jj]> -1e-10)
+	  if(Gal[igal].DiskMassRings[jj]> -TINY_MASS)
 	    {
 	      ring_sum_minus_tot-=Gal[igal].DiskMassRings[jj];
 	      Gal[igal].DiskMassRings[jj]=0.0;
@@ -3375,9 +3413,8 @@ void mass_checks(int igal, char call_function[], int call_line) {
 	    }
 	}
     }
-  if((ring_sum_minus_tot < -1e-10 && ring_sum_minus_tot < -1e-10*Gal[igal].DiskMass) ||
-      (ring_sum_minus_tot >  1e-10 && ring_sum_minus_tot >  1e-10*Gal[igal].DiskMass))
-  // if((sfh_sum/Gal[igal].DiskMass > 1.0+1.e-3 || sfh_sum/Gal[igal].DiskMass < 1.0-1.e-3) && Gal[igal].DiskMass>1.e-3 )
+  if((ring_sum_minus_tot < -TINY_MASS && ring_sum_minus_tot < -TINY_MASS*Gal[igal].DiskMass) ||
+      (ring_sum_minus_tot >  TINY_MASS && ring_sum_minus_tot >  TINY_MASS*Gal[igal].DiskMass))
      {
        printf("            ring_sum_minus_tot = %g\n",ring_sum_minus_tot);
        printf("            Gal[%d].DiskMass = %g\n",igal,Gal[igal].DiskMass);
@@ -3395,7 +3432,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
       ring_sum_minus_tot+=Gal[igal].ColdGasRings[jj];
       if(Gal[igal].ColdGasRings[jj]<0.0)
 	{
-	  if(Gal[igal].ColdGasRings[jj]> -1e-10)
+	  if(Gal[igal].ColdGasRings[jj]> -TINY_MASS)
 	    {
 	      ring_sum_minus_tot-=Gal[igal].ColdGasRings[jj];
 	      Gal[igal].ColdGasRings[jj]=0.0;
@@ -3408,8 +3445,8 @@ void mass_checks(int igal, char call_function[], int call_line) {
 	    }
 	}
     }
-  if((ring_sum_minus_tot < -1e-10 && ring_sum_minus_tot < -1e-10*Gal[igal].ColdGas) ||
-      (ring_sum_minus_tot >  1e-10 && ring_sum_minus_tot >  1e-10*Gal[igal].ColdGas))
+  if((ring_sum_minus_tot < -TINY_MASS && ring_sum_minus_tot < -TINY_MASS*Gal[igal].ColdGas) ||
+      (ring_sum_minus_tot >  TINY_MASS && ring_sum_minus_tot >  TINY_MASS*Gal[igal].ColdGas))
     {
       printf("            ring_sum_minus_tot = %g\n",ring_sum_minus_tot);
       printf("            Gal[%d].ColdGas = %g\n",igal,Gal[igal].ColdGas);
@@ -3441,7 +3478,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 		  sfh_sum_ring+=Gal[igal].sfh_DiskMassRings[jj][ii];
       		if(Gal[igal].sfh_DiskMassRings[jj][ii]<0.0)
       		  {
-      			if(Gal[igal].sfh_DiskMassRings[jj][ii]> -1e-15)
+      			if(Gal[igal].sfh_DiskMassRings[jj][ii]> -TINY_MASS)
       			  {
       				//sfh_sum_ring-=Gal[igal].sfh_DiskMassRings[jj][ii];
       				Gal[igal].sfh_DiskMassRings[jj][ii]=0.0;
@@ -3458,7 +3495,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 
   //printf("metals_sum[%d]=%0.5e\n",ii,aux_sum);
 
-		  if((sfh_sum_ring+1.e-15) < Gal[igal].DiskMassRings[jj] && sfh_sum_ring>1e-15)
+		  if((sfh_sum_ring+TINY_MASS) < Gal[igal].DiskMassRings[jj] && sfh_sum_ring>TINY_MASS)
 	  {
 		  printf("            Gal[%d].DiskMassRings[%d] = %g\n",igal,jj,Gal[igal].DiskMassRings[jj]);
 		  printf("            Gal[%d].sfh_DiskMassRings[%d] = %g\n",igal,jj,sfh_sum_ring);
@@ -3483,7 +3520,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 			  sfh_sum_ring+=Gal[igal].sfh_MetalsDiskMassRings[jj][ii][mm];
 			  if(Gal[igal].sfh_MetalsDiskMassRings[jj][ii][mm]<0.0)
 			    {
-				  if(Gal[igal].sfh_MetalsDiskMassRings[jj][ii][mm]> -1e-15)
+				  if(Gal[igal].sfh_MetalsDiskMassRings[jj][ii][mm]> -TINY_MASS)
 				    {
 					  //sfh_sum_ring-=Gal[igal].sfh_DiskMassRings[jj][ii];
 					  Gal[igal].sfh_MetalsDiskMassRings[jj][ii][mm]=0.0;
@@ -3501,7 +3538,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 
     //printf("metals_sum[%d]=%0.5e\n",ii,aux_sum);
 
-		  if((sfh_sum_ring+1.e-15) < Gal[igal].MetalsDiskMassRings[jj][mm] && sfh_sum_ring>1e-15)
+		  if((sfh_sum_ring+TINY_MASS) < Gal[igal].MetalsDiskMassRings[jj][mm] && sfh_sum_ring>TINY_MASS)
 		  {
 			  printf("            Gal[%d].Metals[%d]DiskMassRings[%d] = %g\n",igal,mm,jj,Gal[igal].MetalsDiskMassRings[jj][mm]);
 			  printf("            Gal[%d].sfh_Metals[%d]DiskMassRings[%d] = %g\n",igal,mm,jj,sfh_sum_ring);
@@ -3515,10 +3552,6 @@ void mass_checks(int igal, char call_function[], int call_line) {
     }
 
 
-
-
-
-
     //CHECK METALS IN RINGS
   double aux_sum;
   //DISK
@@ -3526,7 +3559,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
       {
     	aux_sum=0.;
     	if(Gal[igal].MetalsDiskMass[mm]<0.0)
-    		if(Gal[igal].MetalsDiskMass[mm]> -1e-10)
+    		if(Gal[igal].MetalsDiskMass[mm]> -TINY_MASS)
     			Gal[igal].MetalsDiskMass[mm]=0.0;
 
     	ring_sum_minus_tot=-Gal[igal].MetalsDiskMass[mm];
@@ -3538,7 +3571,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
     		aux_sum+=Gal[igal].MetalsDiskMassRings[jj][mm];
     		if(Gal[igal].MetalsDiskMassRings[jj][mm]<0.0)
     		  {
-    			if(Gal[igal].MetalsDiskMassRings[jj][mm]> -1e-10)
+    			if(Gal[igal].MetalsDiskMassRings[jj][mm]> -TINY_MASS)
     			  {
     				ring_sum_minus_tot-=Gal[igal].MetalsDiskMassRings[jj][mm];
     				Gal[igal].MetalsDiskMassRings[jj][mm]=0.0;
@@ -3553,8 +3586,8 @@ void mass_checks(int igal, char call_function[], int call_line) {
     		  }
     	  }
 //printf("metals_sum[%d]=%0.5e\n",mm,aux_sum);
-    	if((ring_sum_minus_tot < -1e-10 && ring_sum_minus_tot < -1e-10*Gal[igal].MetalsDiskMass[mm]) ||
-    			(ring_sum_minus_tot >  1e-10 && ring_sum_minus_tot >  1e-10*Gal[igal].MetalsDiskMass[mm]))
+    	if((ring_sum_minus_tot < -TINY_MASS && ring_sum_minus_tot < -TINY_MASS*Gal[igal].MetalsDiskMass[mm]) ||
+    			(ring_sum_minus_tot >  TINY_MASS && ring_sum_minus_tot >  TINY_MASS*Gal[igal].MetalsDiskMass[mm]))
     	  {
     		printf("            ring_sum_minus_tot = %g\n",ring_sum_minus_tot);
     		printf("            Gal[%d].MetalsDiskMass = %g\n",igal,Gal[igal].MetalsDiskMass[mm]);
@@ -3567,10 +3600,6 @@ void mass_checks(int igal, char call_function[], int call_line) {
     	  }
 
       }
-
-
-
-
 
      //COLDGAS
     for(mm=0;mm<NUM_METAL_CHANNELS;mm++)
@@ -3589,7 +3618,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
           {
 
         	if(Gal[igal].MetalsBulgeMass[mm]<0.0)
-        		if(Gal[igal].MetalsBulgeMass[mm]> -1e-6)
+        		if(Gal[igal].MetalsBulgeMass[mm]> -TINY_MASS)
         			Gal[igal].MetalsBulgeMass[mm]=0.0;
 
         	ring_sum_minus_tot=-Gal[igal].MetalsBulgeMass[mm];
@@ -3599,7 +3628,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
         		ring_sum_minus_tot+=Gal[igal].MetalsBulgeMassRings[jj][mm];
         		if(Gal[igal].MetalsBulgeMassRings[jj][mm]<0.0)
         		  {
-        			if(Gal[igal].MetalsBulgeMassRings[jj][mm]> -1e-6)
+        			if(Gal[igal].MetalsBulgeMassRings[jj][mm]> -TINY_MASS)
         			  {
         				ring_sum_minus_tot-=Gal[igal].MetalsBulgeMassRings[jj][mm];
         				Gal[igal].MetalsBulgeMassRings[jj][mm]=0.0;
@@ -3614,8 +3643,8 @@ void mass_checks(int igal, char call_function[], int call_line) {
         		  }
         	  }
 
-        	if((ring_sum_minus_tot < -1e-6 && ring_sum_minus_tot < -1e-6*Gal[igal].MetalsBulgeMass[mm]) ||
-        			(ring_sum_minus_tot >  1e-6 && ring_sum_minus_tot >  1e-6*Gal[igal].MetalsBulgeMass[mm]))
+        	if((ring_sum_minus_tot < -TINY_MASS && ring_sum_minus_tot < -TINY_MASS*Gal[igal].MetalsBulgeMass[mm]) ||
+        			(ring_sum_minus_tot >  TINY_MASS && ring_sum_minus_tot >  TINY_MASS*Gal[igal].MetalsBulgeMass[mm]))
         	  {
         		printf("            ring_sum_minus_tot = %g\n",ring_sum_minus_tot);
         		printf("            Gal[%d].MetalsBulgeMass = %g\n",igal,Gal[igal].MetalsBulgeMass[mm]);
@@ -3642,7 +3671,7 @@ void mass_checks(int igal, char call_function[], int call_line) {
 	  sfh_sum+=Gal[igal].sfh_DiskMassRings[jj][i];
 	  if(Gal[igal].sfh_DiskMassRings[jj][i]<0.0)
 	    {
-	      if(Gal[igal].sfh_DiskMassRings[jj][i]> -1e-10)
+	      if(Gal[igal].sfh_DiskMassRings[jj][i]> -TINY_MASS)
 		{
 		  sfh_sum-=Gal[igal].sfh_DiskMassRings[jj][i];
 		  Gal[igal].sfh_DiskMassRings[jj][i]=0.0;
@@ -3656,9 +3685,9 @@ void mass_checks(int igal, char call_function[], int call_line) {
 	    }
 	}
 
-      if((sfh_sum+1.e-10) < Gal[igal].DiskMassRings[jj] && sfh_sum>1e-10)
-      //if((sfh_sum < -1e-10 && sfh_sum < -1e-10*Gal[igal].DiskMassRings[jj]) ||
-	 //(sfh_sum >  1e-10 && sfh_sum >  1e-10*Gal[igal].DiskMassRings[jj]))
+      if((sfh_sum+TINY_MASS) < Gal[igal].DiskMassRings[jj] && sfh_sum>TINY_MASS)
+      //if((sfh_sum < -TINY_MASS && sfh_sum < -TINY_MASS*Gal[igal].DiskMassRings[jj]) ||
+	 //(sfh_sum >  TINY_MASS && sfh_sum >  TINY_MASS*Gal[igal].DiskMassRings[jj]))
         {
           printf("                     sfh_sum_Ring[%d] = %0.10e\n",jj,sfh_sum);
           printf("              Gal[%d].DiskMassRing[%d] = %0.10e\n",igal,jj,Gal[igal].DiskMassRings[jj]);
@@ -3673,8 +3702,6 @@ void mass_checks(int igal, char call_function[], int call_line) {
 #endif
 #endif //H2_AND_RINGS
 
-
-
 #ifdef BULGESIZE_DEBUG
   if ((Gal[igal].BulgeMass > TINY_MASS && Gal[igal].BulgeSize < TINY_LENGTH) ||
        (Gal[igal].BulgeMass < TINY_MASS && Gal[igal].BulgeSize > TINY_LENGTH)) {
@@ -3687,6 +3714,25 @@ void mass_checks(int igal, char call_function[], int call_line) {
   return;
 }
 
+#ifdef FB_CHECK
+void fb_check(int ngal, int FOF_centralgal, char call_function[], int call_line) {
+    int i;
+    double tot_mass=0.;
+    // Check baryon fraction in halo
+    for(i = 0; i < ngal; i++) {    /* Loop over all galaxies in the FoF-halo */
+	tot_mass += Gal[i].DiskMass + Gal[i].BulgeMass + Gal[i].ICM + Gal[i].BlackHoleMass;
+	tot_mass += Gal[i].ColdGas + Gal[i].HotGas  + Gal[i].EjectedMass + Gal[i].BlackHoleGas;
+    }
+    if (fabs(tot_mass-Gal[FOF_centralgal].MassTot) > TINY_MASS) {
+	printf("ngal=%d\n",ngal);
+	printf("tot_mass=%.3g\n",tot_mass);
+	printf("Gal[FOF_centralgal].MassTot=%.3g\n",Gal[FOF_centralgal].MassTot);
+	char sbuf[1000];
+	sprintf(sbuf, "\n*** fb_check error, called from: %s, line: %d, Total mass has changed.*** \n",call_function, call_line);
+	terminate(sbuf);
+    }
+}
+#endif
 
 double separation_gal(int p, int q) {
 
