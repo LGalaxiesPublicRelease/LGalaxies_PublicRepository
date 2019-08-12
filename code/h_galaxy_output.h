@@ -24,6 +24,7 @@ struct GALAXY_OUTPUT {
     float BulgeMass; // 10^10/h Msun // Mass of stars in the bulge
     float HotGas; // 10^10/h Msun // Mass of hot gas
     /* float ReheatedGas; // 10^10/h Msun // Mass of Reheated gas */
+    float BlackHoleGas; // 10^10/h Msun // Mass of gas surrounding black hole
     float BlackHoleMass; // 10^10/h Msun // Mass of black hole
     /* magnitudes in various bands */
 #ifdef   COMPUTE_SPECPHOT_PROPERTIES
@@ -70,6 +71,11 @@ struct GALAXY_OUTPUT {
     float Redshift; // None // redshift of the snapshot where this galaxy resides
 #endif     //GALAXYTREE
     int   Type; // None //Galaxy type: 0 for central galaxies of a main halo, 1 for central galaxies in sub-halos, 2 for satellites without halo.
+#ifdef SAVE_FOFHALO
+    int   FileNr; // None // File number
+    int   TreeNr; // None // Tree number
+    int   FoFHaloNr; // None // Halo 
+#endif
 #ifndef    GALAXYTREE
     int   HaloIndex; // None // ?Unique ID of MPA halo containing this galaxy
 #endif     //GALAXYTREE
@@ -139,8 +145,8 @@ struct GALAXY_OUTPUT {
 #ifdef     EXCESS_MASS
     float ExcessMass; // 10^10/h Msun // Mass in excess of universal baryon fraction
 #endif     //EXCESS_MASS
+    float BlackHoleGas; // 10^10/h Msun // Mass of gas surrounding central black hole
     float BlackHoleMass; // 10^10/h Msun // Mass of central black hole
-    /* float BlackHoleGas; // 10^10/h Msun // Mass in BH accretion disk */
     /* ICL magnitude and mass*/
     float ICM; //10^10/h Msun //Total mass in metals in intra-cluster stars, for type 0,1
 #ifdef TRACK_MASSGROWTH_CHANNELS
