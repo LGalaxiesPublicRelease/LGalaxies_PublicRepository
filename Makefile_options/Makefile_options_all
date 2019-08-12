@@ -33,6 +33,7 @@ OPT += -DNOUT=1              #  This sets the number of galaxy output times. IGN
 #OPT += -DICL                 # output magnitudes for ICL
 #OPT += -DMBPID               # writes out the most bound particle ID of the halo last occupied by this galaxy
 #OPT += -DHALOPROPERTIES      # Output halo spin and other properties
+#OPT += -DSAVE_FOFHALO        # Saves information to record FoF halo (FileNr, TreeNr, FoFHaloNr)
 #OPT += -DMETALS_SELF         # Keeps track of the fraction of metals that originate in the galaxy (as opposed to being accreted)
 #OPT += -DSPECIFYFILENR       # specify the file numbers from an input file (rather than sequential)
 #OPT += -DCONTINUOUS_TREES    # Make galaxy ids run in continuous stream
