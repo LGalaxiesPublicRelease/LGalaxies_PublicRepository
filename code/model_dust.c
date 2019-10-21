@@ -69,12 +69,11 @@ void dust_model(int p, int snap, int halonr)
       /*redshift dependence */
      // nh = nh * pow(1 + ZZ[Halo[halonr].SnapNum], -0.4);
       nh = nh * pow(1 + ZZ[Halo[halonr].SnapNum], -1.0);
-
-      Gal[p].CosInclination = fabs(Gal[p].DiskSpin[2]) /
-      	                    	 sqrt(Gal[p].DiskSpin[0]*Gal[p].DiskSpin[0]+
-      		                        	Gal[p].DiskSpin[1]*Gal[p].DiskSpin[1]+
-      			                     	  Gal[p].DiskSpin[2]*Gal[p].DiskSpin[2]);
-
+#ifndef H2_AND_RINGS
+      Gal[p].CosInclination = fabs(Gal[p].DiskSpin[2]) / sqrt(Gal[p].DiskSpin[0]*Gal[p].DiskSpin[0] + Gal[p].DiskSpin[1]*Gal[p].DiskSpin[1] + Gal[p].DiskSpin[2]*Gal[p].DiskSpin[2]);
+#else
+      Gal[p].CosInclination = fabs(Gal[p].HaloSpin[2]) / sqrt(Gal[p].HaloSpin[0]*Gal[p].HaloSpin[0] + Gal[p].HaloSpin[1]*Gal[p].HaloSpin[1] + Gal[p].HaloSpin[2]*Gal[p].HaloSpin[2]);
+#endif
       cosinc = Gal[p].CosInclination;
       if(cosinc < 0.2)
     	cosinc = 0.2;		// minimum inclination ~80 degrees

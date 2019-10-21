@@ -32,8 +32,10 @@ struct GALAXY			/* Galaxy data */
   double HaloVmax;
 #endif
   double HaloSpin[3];
+#ifndef H2_AND_RINGS
   double ColdGasSpin[3];
   double DiskSpin[3];
+#endif
   int   Len;   
   double Mvir;
   double Rvir;

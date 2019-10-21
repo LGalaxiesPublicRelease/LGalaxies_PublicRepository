@@ -5,13 +5,15 @@
 OPT += -DOVERWRITE_OUTPUT    # overwrite output files if they exist (otherwise will quit without overwriting)
 #OPT += -DNOUT=28             # This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
 OPT += -DNOUT=18             # This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
+#OPT += -DNOUT=1             # This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
 
 OPT += -DPARALLEL
 #OPT += -DGALAXYTREE         # This will enable output of full galaxy merger trees, implicitly sets NOUT to maximum value
-OPT += -DLOADIDS            # Load dbids files
+#OPT += -DLOADIDS            # Load dbids files
 OPT += -DUPDATETYPETWO       # This updates the positions of type 2 galaxies when the galaxies are written to file (requires aux files to be read)
 OPT += -DTRACK_MASSGROWTH_CHANNELS
 #OPT += -DTRACK_SFH_MASSGROWTH_CHANNELS
+
 
 # To run with different dark matter simulation
 
@@ -50,6 +52,7 @@ OPT += -DINFALL_UPDATE   #search also outside rvir to compute infall mass
 OPT += -DH2_AND_RINGS
 ifeq (H2_AND_RINGS,$(findstring H2_AND_RINGS,$(OPT)))
 OBJS  += ./code/model_radial_flow.o
+OBJS  += ./code/model_h2fraction.o 
 OPT += -DOUTPUT_RINGS
 endif
 
@@ -62,7 +65,7 @@ OPT += -DOUTPUT_SFH
 endif
 
 
-###########################
+################print(10**0.2)###########
 ### SPECPHOT_PROPERTIES ###
 ###########################
 OPT += -DCOMPUTE_SPECPHOT_PROPERTIES
@@ -116,6 +119,7 @@ OPT += -DNMAG=1221
 endif
 else #IF NOT DEFINED FULL_SPECTRA
 OPT += -DNMAG=40
+#OPT += -DNMAG=20
 endif #FULL_SPECTRA
 
 endif ### COMPUTE_SPECPHOT_PROPERTIES
@@ -123,8 +127,6 @@ endif ### COMPUTE_SPECPHOT_PROPERTIES
 # Chemical enrichment of individual element yields
 OPT += -DDETAILED_METALS_AND_MASS_RETURN
 ifeq (DETAILED_METALS_AND_MASS_RETURN,$(findstring DETAILED_METALS_AND_MASS_RETURN,$(OPT)))
-
-
 OPT += -DFEEDBACK_COUPLED_WITH_MASS_RETURN
 OPT += -DINDIVIDUAL_ELEMENTS
 ifeq (INDIVIDUAL_ELEMENTS,$(findstring INDIVIDUAL_ELEMENTS,$(OPT)))

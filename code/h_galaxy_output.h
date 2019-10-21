@@ -81,7 +81,6 @@ struct GALAXY_OUTPUT {
     float HaloVel[3]; // km/s // Mean velocity of halo.
     float HaloVelDisp; // km/s // Velocity dispersion of halo.
     float HaloVmax; // km/s // Maximum circular velocity of halo.
-    float HaloSpin[3]; // km/s Mpc/h // specific spin of the halo.
 #endif     //HALOPROPERTIES
     int   SnapNum; // None //The snapshot number where this galaxy was identified.
     float LookBackTimeToSnap; // yr // The time from a given snapshot to z=0
@@ -96,8 +95,11 @@ struct GALAXY_OUTPUT {
     float Rvir; // Mpc/h // R200 cf critical of the halo last time galaxy was type 0
     float Vvir; // km/s // Virial velocity of the halo last time galaxy was type 0
     float Vmax; // km/s //Maximum rotational velocity of the subhalo, or the last value for type 2's galaxies.
+    float HaloSpin[3]; // Mpc/h km/s // The specific angular momentum of the stellar disk
+#ifndef H2_AND_RINGS
     float ColdGasSpin[3]; // Mpc/h km/s // The specific angular momentum of the cold gas disk
     float DiskSpin[3]; // Mpc/h km/s // The specific angular momentum of the stellar disk
+#endif
     float InfallVmax; // km/s // Maximum rotational velocity of the host halo of this galaxy at infall (ie last time a type 0)
     float InfallVmaxPeak; // km/s // ? Peak Vmax along past history
     int InfallSnap; // None // Most recent (largest) snapnum at which this galaxy's type changed from 0 to 1 or 2

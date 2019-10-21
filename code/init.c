@@ -207,9 +207,6 @@ void init(void)
 #ifdef H2_AND_RINGS
   if(H2FractionRecipe==0)
     init_H2fraction_KMT09();
-  else
-    if(H2FractionRecipe==1)
-      init_H2fraction_KMT08();
 
   init_jump_index_H2Fraction();
 #endif

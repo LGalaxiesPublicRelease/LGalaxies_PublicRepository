@@ -258,16 +258,15 @@ void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o)
   for(j = 0; j < 3; j++)
     {
       o->Vel[j] = g->Vel[j];
-#ifdef HALOSPIN
       o->HaloSpin[j] = g->HaloSpin[j];
-#endif
+#ifndef H2_AND_RINGS
       o->ColdGasSpin[j] = g->ColdGasSpin[j];
       o->DiskSpin[j] = g->DiskSpin[j];
+#endif
 
 #ifdef HALOPROPERTIES
       o->HaloPos[j] = g->HaloPos[j];
       o->HaloVel[j] = g->HaloVel[j];
-      o->HaloSpin[j] = g->HaloSpin[j];
 #endif      
     }
 
@@ -781,16 +780,18 @@ void fix_units_for_ouput(struct GALAXY_OUTPUT *o)
   o->HaloPos[0] /= Hubble_h;
   o->HaloPos[1] /= Hubble_h;
   o->HaloPos[2] /= Hubble_h;
+#endif
   o->HaloSpin[0] /= Hubble_h;
   o->HaloSpin[1] /= Hubble_h;
   o->HaloSpin[2] /= Hubble_h;
-#endif
+#ifndef H2_AND_RINGS
   o->ColdGasSpin[0] /= Hubble_h;
   o->ColdGasSpin[1] /= Hubble_h;
   o->ColdGasSpin[2] /= Hubble_h;
   o->DiskSpin[0] /= Hubble_h;
   o->DiskSpin[1] /= Hubble_h;
   o->DiskSpin[2] /= Hubble_h;
+#endif
   o->HotRadius /= Hubble_h;
   o->ColdGas /= Hubble_h;
   o->DiskMass /= Hubble_h;

@@ -433,7 +433,7 @@ void create_bestfit_files()
 
 /* initialize MCMC_PAR.Value and MCMC_PAR.PropValue with the same values
  *
- * the number of parameters, limits and switches (which to sample) are
+ * the number of parameters, limits and switches (whitch to sample) are
  * read from MCMCParameterPriorsAndSwitches while the actual values are read from
  * previous output or MCMCStartingParFile
  *  */

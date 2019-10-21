@@ -19,7 +19,7 @@ ReIncorporationFactor             0.0       1.e-7     1.e15      Physical       
 FracZSNIItoHot                    0.0       0.0       1.0        Physical         0
 FracZSNIatoHot                    0.0       0.0       1.0        Physical         0
 Yield                             0.0       0.01      0.1        Physical         0
-ThreshMajorMerger                 0.0       0.01      1.0        Physical         1 
+ThreshMajorMerger                 0.0       0.01      1.0        Physical         0 
 MergerTimeMultiplier              0.0       0.1       10.        Physical         1 
 RamPressureStrip_CutOffMass       0.0       0.0       1.e6       Physical         1 
 RamPressureRadiusThreshold        0.0       0.0       1.0        Physical         0 

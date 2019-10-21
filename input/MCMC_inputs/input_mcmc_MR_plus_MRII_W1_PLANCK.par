@@ -147,13 +147,6 @@ FeedbackReheatingModel            0  ;%*0 -- Guo 2010 (ejection scheme used in d
 FeedbackReheatingDeansityScaling  0  ;%*0 -- no scaling with local density
 				                      % 1 -- Scaling with local density as eq. 35 in Fu2010
 	
-FeedbackEjectionModel             0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
-                                      % 1 -- Constant velocity model
-                                      
-FeedbackEagleScaling 	          0  ;%*0 -- no rescaling
-                                      % 1 -- Rescaling as in Eagle - local density and metallicity (eq. 7 in Schaye et al. 2015)	
-	
-	
 FateOfSatellitesGas               0   ;choice of ejection of satellite galaxies. 
                                       %*0 -- ejected gas of satellites distribute between type 1 and type 0, 
                                            % according to the fraction of dark matter retained in subhalos (Guo2010).
@@ -180,7 +173,7 @@ DiskInstabilityModel		      0  ;allow bulges to form when the stellar disks beco
                                       %*0 -- stability criteria of the stellar disk from Mo, Mao & White (1998)
                                       % 1 -- no disk instabilities
 
-BHGrowthInDiskInstabilityModel    1  ;accretion of gas into the BH due to disk instabilities
+BHGrowthInDiskInstabilityModel    0  ;accretion of gas into the BH due to disk instabilities
                                       %*0 -- no BH growth in disk instabilities
                                       % 1 -- cold gas moved into the BH in the same fraction as disk stars moved to bulge
 
@@ -293,7 +286,7 @@ RecycleFraction             0.43     ;(section 1.6 in Henriques15) Fraction of S
 %-------------------------------------------
 %% Mergers
 %-------------------------------------------
-ThreshMajorMerger	        0.37      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
+ThreshMajorMerger	        0.1      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
 MergerTimeMultiplier        1.4      ;(eq. S32 in Henriques15) Adjust the dynamical friction merging time
 
 %-------------------------------------------

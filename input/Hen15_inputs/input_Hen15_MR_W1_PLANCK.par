@@ -3,29 +3,47 @@
 %------------------------------------------
 
 FileNameGalaxies          SA
-FirstFile         	  0
-LastFile          	  9
+FirstFile         40
+LastFile          79
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
-McFile			  ./input/Mc.txt
+McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               ./SpecPhotTables/
+SpecPhotDir               /scratch-ssd/SpecPhotTables/
 PhotPrefix                PLANCK ; WMAP7 
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
-FileWithFilterNames       ./input/Filter_Sloan.txt
+FileWithFilterNames       ./input/Filter_Names.txt
 
 
 %-------------------------------------------------
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir		./MergerTrees/MR/
-OutputDir               ./output/
+SimulationDir	         /scratch-ssd/Millennium/modified_trees/
 
 LastDarkMatterSnapShot  63
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
-MinGalOutputMass	0.01
+
+%OutputDir               /net/bootes/scratch2/SAM/Henriques2015a/snaps/BackSplashFlag/MR/
+OutputDir               /scratch-ssd/SAM/test3/MR/
+%OutputDir               /net/bootes/scratch2/SAM/Henriques2015a/snaps/nmerge_10/MR/
+
+%OutputDir                /net/bootes/scratch2/SAM/Hen15_tests/MR/
+%OutputDir                /net/bootes/scratch2/SAM/Hen15_tests/only_SN/MR/
+%OutputDir                /net/bootes/scratch2/SAM/Hen15_tests/only_AGN/MR/
+%OutputDir                /net/bootes/scratch2/SAM/Hen15_tests/no_feedback/MR/
+%OutputDir                /net/bootes/scratch2/SAM/Hen15_tests/no_disruption/MR
+%OutputDir                 /net/bootes/scratch2/SAM/Hen15_tests/HT09_disruption/MR
+%OutputDir                 /net/bootes/scratch2/SAM/Hen15_tests/bh_in_instabilities/MR/
+%OutputDir                /net/bootes/export/data1/SAM/Hen15_tests/only_ejection/MR/
+%OutputDir                 /net/bootes/scratch2/SAM/Hen15_tests/ejection_cut_high_mass/MR/
+%OutputDir                 /net/bootes/scratch2/SAM/Hen15_tests/ejection_cut_very_low_mass/MR/
+%OutputDir                 /net/bootes/scratch2/SAM/Hen15_tests/ejection_cut_very_high_mass/MR/
+
+
+MinGalOutputMass	    0.01
+
 MaxMemSize              3000
 
 %-------------------------------------------------
@@ -89,10 +107,7 @@ StarFormationModel                0  ;%*0 -- Croton2006, Delucia2007, Guo2011, H
 		
 FeedbackReheatingModel            0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
 				                      % 1 -- Alternative reheating model	
-	
-FeedbackEjectionModel             0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
-                                      % 1 -- Constant velocity model
-	
+		
 FateOfSatellitesGas               0   ;choice of ejection of satellite galaxies. 
                                       %*0 -- ejected gas of satellites distribute between type 1 and type 0, 
                                            % according to the fraction of dark matter retained in subhalos (Guo2010).
@@ -279,9 +294,8 @@ ReincVelocitypower          3.26
 %-------------------------------------------
 %%Fraction of Metals returned to Hot component
 %-------------------------------------------
-%FracZtoHot                  0.0	    
-FracZSNIItoHot               0.0	    
-FracZSNIatoHot               0.0	    
+FracZSNIItoHot                  0.0	 
+FracZSNIatoHot                  0.0	    
 
 %-------------------------------------------
 %%Hot Gas stripping

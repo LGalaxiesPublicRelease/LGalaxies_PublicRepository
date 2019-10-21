@@ -647,9 +647,11 @@ void update_yields_and_return_mass(int p, int centralgal, double dt, int nstep)
         for(ii=0;ii<3;ii++)
           Gal[p].ColdGasSpin[ii]=((Gal[p].ColdGasSpin[ii])*(Gal[p].ColdGas)+1./sqrt(3)*diskspinpar*TotalMassReturnedToColdDiskGas)/(Gal[p].ColdGas+TotalMassReturnedToColdDiskGas);*/
 
+#ifndef H2_AND_RINGS
       if (Gal[p].ColdGas+TotalMassReturnedToColdDiskGas > 1.e-8)
 	for (ii = 0; ii < 3; ii++)
 	  Gal[p].ColdGasSpin[ii]=((Gal[p].ColdGasSpin[ii])*(Gal[p].ColdGas)+TotalMassReturnedToColdDiskGas*Gal[p].DiskSpin[ii])/(Gal[p].ColdGas+TotalMassReturnedToColdDiskGas);
+#endif
 
       if (DiskRadiusModel == 0)
 	{

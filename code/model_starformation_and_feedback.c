@@ -371,10 +371,11 @@ void update_from_star_formation(int p, double stars, double starsRings[], char t
     }
 #endif //H2_AND_RINGS
 
+#ifndef H2_AND_RINGS
   if (Gal[p].DiskMass+stars_to_add > 1.e-8)
     for (ii = 0; ii < 3; ii++)
       Gal[p].DiskSpin[ii]=((Gal[p].DiskSpin[ii])*(Gal[p].DiskMass)+stars_to_add*Gal[p].ColdGasSpin[ii])/(Gal[p].DiskMass+stars_to_add);
-
+#endif
   mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 
 
@@ -494,7 +495,7 @@ void SN_feedback(int p, int centralgal, double stars, char feedback_location[])
 void SN_feedback(int p, int centralgal, double stars, double starsRings[], char feedback_location[])
 #endif
 {
-  double EjectVmax, EjectVvir, SN_Energy, Reheat_Energy, ReScaled_EnergySNcode;
+  double EjectVmax, EjectVvir, SN_Energy, Reheat_Energy;
   double reheated_mass=0., ejected_mass=0., totmetals;
   double Radius_low;
   int ii;
@@ -546,27 +547,6 @@ void SN_feedback(int p, int centralgal, double stars, double starsRings[], char 
 
 #endif
 
-
-  // Determine ejection (for FeedbackEjectionModel 0 we have the dependence on Vmax) Guo2010 - eq 22
-  //EJECT
-  if(FeedbackEagleScaling == 1)
-     {
-       //ReScaled_EnergySNcode=EnergySNcode*EAGLE2015_rescale_of_EnergySN (ColdGas, MetalsColdGas, Radius_low, Radius_high);
-       //ReScaled_EnergySNcode=EnergySNcode/pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),4.0);
-       double SigmaGas;
-       SigmaGas = Gal[p].ColdGas / (M_PI*(Gal[p].ColdGasRadius*Gal[p].ColdGasRadius-Radius_low*Gal[p].ColdGasRadius));
-       // convert from 10^10 M_sun/h / (Mpc/h)^2 to (M_sun/pc^2)
-       SigmaGas=SigmaGas*0.01*Hubble_h;
-
-       ReScaled_EnergySNcode=EnergySNcode*SigmaGas;
-
-       if(ReScaled_EnergySNcode>EnergySNcode)
-          ReScaled_EnergySNcode=EnergySNcode;
-     }
-   else
-     ReScaled_EnergySNcode=EnergySNcode;
-
-
   if (Gal[Gal[p].CentralGal].Type == 0)
     {
       EjectVmax=Gal[centralgal].Vmax;
@@ -578,24 +558,7 @@ void SN_feedback(int p, int centralgal, double stars, double starsRings[], char 
       EjectVvir=Gal[Gal[p].CentralGal].Vvir; //central subhalo Vvir
     }
 
-  if(FeedbackEjectionModel == 0)
-    {
-      ejected_mass = (FeedbackEjectionEfficiency* (EtaSNcode * ReScaled_EnergySNcode) * stars *
-	  min(1./FeedbackEjectionEfficiency, .5+1/pow(EjectVmax/EjectPreVelocity,EjectSlope)) -
-	  reheated_mass*EjectVvir*EjectVvir) /(EjectVvir*EjectVvir);
-      //ejected_mass = EtaSNcode * ReScaled_EnergySNcode;
-    }
-  else if(FeedbackEjectionModel == 1)//the ejected material is assumed to have V_SN
-    {
-      SN_Energy = .5 * stars * (EtaSNcode * ReScaled_EnergySNcode);
-      Reheat_Energy = .5 * reheated_mass * EjectVvir * EjectVvir;
-
-      ejected_mass = (SN_Energy - Reheat_Energy)/(0.5 * FeedbackEjectionEfficiency*(EtaSNcode * ReScaled_EnergySNcode));
-
-      //if VSN^2<Vvir^2 nothing is ejected
-      if(FeedbackEjectionEfficiency*(EtaSNcode * ReScaled_EnergySNcode)<EjectVvir*EjectVvir)
-	  ejected_mass =0.0;
-    }
+  ejected_mass = (FeedbackEjectionEfficiency* (EtaSNcode * EnergySNcode) * stars * min(1./FeedbackEjectionEfficiency, .5+1/pow(EjectVmax/EjectPreVelocity,EjectSlope)) - reheated_mass*EjectVvir*EjectVvir) / (EjectVvir*EjectVvir);
 
   // Finished calculating mass exchanges, so just check that none are negative
   if (reheated_mass < 0.0) reheated_mass = 0.0;
@@ -635,7 +598,6 @@ double compute_SN_reheat(int p, int centralgal, double stars, double ColdGas)
 double compute_SN_reheat(int p, int centralgal, double stars, double ColdGas, double MetalsColdGas, double Radius_low, double Radius_high)
 {
   double reheated_mass=0.;
-  double ReScaled_EnergySNcode;
   double MergeCentralVvir=0.;
 
   /* In Guo2010 type 1s can eject, reincorporate gas and get gas from their
@@ -643,28 +605,6 @@ double compute_SN_reheat(int p, int centralgal, double stars, double ColdGas, do
    * for gas flow computations:
    * If satellite is inside Rvir of main halo, Vvir of main halo used
    * If it is outside, the Vvir of its central subhalo is used. */
-
-  if(FeedbackEagleScaling == 1)
-    {
-      //ReScaled_EnergySNcode=EnergySNcode*EAGLE2015_rescale_of_EnergySN (ColdGas, MetalsColdGas, Radius_low, Radius_high);
-      //ReScaled_EnergySNcode=EnergySNcode/pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),4.0);
-
-      double SigmaGas;
-#ifdef H2_AND_RINGS
-      SigmaGas = ColdGas/(M_PI *(Radius_high*Radius_high-Radius_low*Radius_low))/WARM_PHASE_FACTOR*Clumpingfactor;
-#else
-      SigmaGas = ColdGas / (M_PI*(Radius_high*Radius_high-Radius_low*Radius_low));
-#endif
-      // convert from 10^10 M_sun/h / (Mpc/h)^2 to (M_sun/pc^2)
-      SigmaGas=SigmaGas*0.01*Hubble_h;
-
-      ReScaled_EnergySNcode=EnergySNcode*SigmaGas;
-
-      if(ReScaled_EnergySNcode>EnergySNcode)
-         ReScaled_EnergySNcode=EnergySNcode;
-    }
-  else
-    ReScaled_EnergySNcode=EnergySNcode;
 
   //REHEAT
   if(ColdGas>0.)
@@ -695,8 +635,8 @@ double compute_SN_reheat(int p, int centralgal, double stars, double ColdGas, do
 	     // reheated_mass*=pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),2.0); // much higher reheating, much lower stellar metals, gas metals high-z unnafected
 	    }
 
-	  if (reheated_mass * Gal[Gal[p].CentralGal].Vvir * Gal[Gal[p].CentralGal].Vvir > stars * (EtaSNcode * ReScaled_EnergySNcode))
-	    reheated_mass = stars * (EtaSNcode * ReScaled_EnergySNcode) / (Gal[Gal[p].CentralGal].Vvir * Gal[Gal[p].CentralGal].Vvir);
+	  if (reheated_mass * Gal[Gal[p].CentralGal].Vvir * Gal[Gal[p].CentralGal].Vvir > stars * (EtaSNcode * EnergySNcode))
+	    reheated_mass = stars * (EtaSNcode * EnergySNcode) / (Gal[Gal[p].CentralGal].Vvir * Gal[Gal[p].CentralGal].Vvir);
 	}
     }
   else
@@ -1268,6 +1208,7 @@ void update_bulgesize_from_disk_instability(int p, double stars)
 
   diskmass=Gal[p].DiskMass;
   massfrac=stars/diskmass;
+#ifndef H2_AND_RINGS
   for (j = 0; j <3 ; j++)
     {
       if(massfrac==1) //everything transferred to the bulge
@@ -1275,6 +1216,7 @@ void update_bulgesize_from_disk_instability(int p, double stars)
       else
 	Gal[p].DiskSpin[j]=Gal[p].DiskSpin[j]/(1-massfrac);
     }
+#endif
   if (DiskRadiusModel == 0)
     Gal[p].DiskRadius = get_stellar_disk_radius(p);
 

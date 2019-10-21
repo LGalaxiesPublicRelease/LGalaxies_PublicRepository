@@ -127,10 +127,7 @@ void update_massweightage(int p, double stars, double time);
 #ifdef H2_AND_RINGS
 void update_h2fraction(int p);
 void gas_inflow(int p, double time);
-//only used if H2FractionRecipe=1
-void init_H2fraction_KMT08(void);
 void init_H2fraction_KMT09(void);
-double update_H2fraction_KMT08(double logsigmah, double metallicity);
 double update_H2fraction_KMT09(double logsigmah, double metallicity);
 void init_jump_index_H2Fraction(void);
 int get_jump_index_H2Fraction(double sigmaH);

@@ -52,8 +52,8 @@ include My_Makefile_options
 # Choose your system type (copy an entry from Makefile_compilers)
 include My_Makefile_compilers
 
-#LIBS   =   -g $(LDFLAGS) -lm  $(GSL_LIBS)  $(RLIBS) -lgsl -lgslcblas $(HDF5_LIBS) -lhdf5_serial -lhdf5_serial_hl
-LIBS   =   -g $(LDFLAGS) -lm  $(GSL_LIBS)  $(RLIBS) -lgsl -lgslcblas $(HDF5_LIBS) -lhdf5 -lhdf5_hl
+LIBS   =   -g $(LDFLAGS) -lm  $(GSL_LIBS)  $(RLIBS) -lgsl -lgslcblas $(HDF5_LIBS) -lhdf5_serial -lhdf5_serial_hl
+#LIBS   =   -g $(LDFLAGS) -lm  $(GSL_LIBS)  $(RLIBS) -lgsl -lgslcblas $(HDF5_LIBS) -lhdf5 -lhdf5_hl
 
 CFLAGS =   -g $(OPTIONS) $(OPT) -DCOMPILETIMESETTINGS=\""$(OPT)"\" $(OPTIMIZE) $(GSL_INCL) $(HDF5_INCL)
 

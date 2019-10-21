@@ -119,9 +119,6 @@ StarFormationModel                0  ;%*0 -- Croton2006, Delucia2007, Guo2011, H
 FeedbackReheatingModel            0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
 				                      % 1 -- Alternative reheating model	
 	
-FeedbackEjectionModel             0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
-                                      % 1 -- Constant velocity model
-	
 FateOfSatellitesGas               0   ;choice of ejection of satellite galaxies. 
                                       %*0 -- ejected gas of satellites distribute between type 1 and type 0, 
                                            % according to the fraction of dark matter retained in subhalos (Guo2010).

@@ -3,14 +3,14 @@
 %------------------------------------------
 
 FileNameGalaxies          SA
-FirstFile         40
-LastFile          40
+FirstFile         0
+LastFile          0
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               /net/bootes/export/data1/Workspace/SpecPhotTables/
+SpecPhotDir               /scratch-ssd/SpecPhotTables/
 PhotPrefix                PLANCK ; WMAP7 
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/Filter_Names.txt
@@ -20,20 +20,28 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        /net/bootes/export/data1/Millennium2/BigRun/modified_trees/
+%SimulationDir	        /scratch-ssd/Millennium2/BigRun/modified_trees/
+SimulationDir	       /scratch-ssd/test_trees/fof_0.28_200/
+
+%SimulationDir	        /scratch-ssd/test_trees/first_bush_original/  
+%SimulationDir	        /scratch-ssd/test_trees/ori_results/ 
+%SimulationDir	       /scratch-ssd/test_trees/reorder/ 
+%SimulationDir	       /scratch-ssd/test_trees/forceful01/ 
+
 
 LastDarkMatterSnapShot  67
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
-%OutputDir               /net/bootes/scratch-ssd/SAM/test3/MRII/
+%OutputDir                 /scratch-ssd/SAM/test_tree_ori/MRII/
+OutputDir                 /scratch-ssd/SAM/test_tree_1/MRII/
 %OutputDir                /net/bootes/scratch2/SAM/HWL18/MRII/
 %OutputDir                /net/bootes/scratch2/SAM/HWL18/only_SN/MRII/
-OutputDir                 /net/bootes/scratch2/SAM/HWL18/only_AGN/MRII/
+%OutputDir                 /net/bootes/scratch2/SAM/HWL18/only_AGN/MRII/
 %OutputDir                /net/bootes/scratch2/SAM/HWL18/no_feedback/MRII/
 %OutputDir                /net/bootes/scratch2/SAM/HWL18/no_disruption/MRII
 %OutputDir                 /net/bootes/scratch2/SAM/HWL18/HT09_disruption/MRII/
 
-MaxMemSize           5000   85000 ; 18000 ; 100000 galtree
+MaxMemSize           200000   85000 ; 18000 ; 100000 galtree
 
 %-------------------------------------------------
 %----- Scaling options  ------------
@@ -95,10 +103,7 @@ StarFormationModel                0  ;%*0 -- Croton2006, Delucia2007, Guo2011, H
 		
 FeedbackReheatingModel            0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
 				                      % 1 -- Alternative reheating model	
-	
-FeedbackEjectionModel             0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
-                                      % 1 -- Constant velocity model
-	
+		
 FateOfSatellitesGas               0   ;choice of ejection of satellite galaxies. 
                                       %*0 -- ejected gas of satellites distribute between type 1 and type 0, 
                                            % according to the fraction of dark matter retained in subhalos (Guo2010).
@@ -279,7 +284,8 @@ ReincVelocitypower          3.26
 %-------------------------------------------
 %%Fraction of Metals returned to Hot component
 %-------------------------------------------
-FracZtoHot                  0.0	    
+FracZSNIItoHot                  0.0	 
+FracZSNIatoHot                  0.0	    
 
 %-------------------------------------------
 %%Hot Gas stripping

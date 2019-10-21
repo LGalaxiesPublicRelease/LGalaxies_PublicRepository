@@ -453,9 +453,10 @@ void init_galaxy(int p, int halonr)
     {
       Gal[p].Pos[j] = Halo[halonr].Pos[j];
       Gal[p].Vel[j] = Halo[halonr].Vel[j];
-
+#ifndef H2_AND_RINGS
       Gal[p].ColdGasSpin[j] = Halo[halonr].Spin[j];
       Gal[p].DiskSpin[j] = Halo[halonr].Spin[j];
+#endif
       Gal[p].HaloSpin[j] = Halo[halonr].Spin[j];
       Gal[p].MergCentralPos[j] = Gal[p].Pos[j];
       Gal[p].DistanceToCentralGal[j]=0.0;
@@ -976,7 +977,7 @@ void update_centralgal(int ngal,int halonr)
   Gal[ngal].HotRadius = Gal[ngal].Rvir;
   Gal[ngal].MergeOn= 0;
   for (j=0;j<3;j++)
-  Gal[ngal].HaloSpin[j] = Halo[halonr].Spin[j];
+    Gal[ngal].HaloSpin[j] = Halo[halonr].Spin[j];
 
 #ifdef TRACK_SPLASHBACKS
   if(Gal[ngal].flagSplashBack==1)

@@ -1,7 +1,7 @@
 #MCMCNConstraints //Nr of Observational Constraints
 36
 #ObservationalTestName               TestType   ObsTest_Weight_z0  ObsTest_Weight_z0.4  ObsTest_Weight_z1  ObsTest_Weight_z2  ObsTest_Weight_z3
-StellarMassFunction                   chi_sq            10.0                 1.0                 1.0                 1.0                 1.0
+StellarMassFunction                   chi_sq            5.0                1.0                 1.0                 1.0                 1.0
 KBandLF                               chi_sq            1.                  1.                  1.                  1.                  1.
 BBandLF                               chi_sq            1.                  1.                  1.                  1.                  1.
 uBandLF                               chi_sq            1.                  1.                  1.                  1.                  1.
@@ -11,15 +11,15 @@ iBandLF                               chi_sq            1.                  1.  
 zBandLF                               chi_sq            1.                  1.                  1.                  1.                  1.
 StellarMassFunctionRed                chi_sq            1.                  1.                  1.                  1.                  1.
 StellarMassFunctionBlue               chi_sq            1.                  1.                  1.                  1.                  1.
-RedFraction                           maxlike           1.0                 1.                  1.0                 1.                  1.
+RedFraction                           maxlike           10.0                 1.                 1.0                 20.                  1.
 StellarMassFunctionPassive            chi_sq            1.                  1.                  1.                  1.                  1.
 StellarMassFunctionActive             chi_sq            1.                  1.                  1.                  1.                  1.
 PassiveFraction                       maxlike           1.                  1.                  1.                  1.                  1.
 BulgeFraction                         maxlike           1.                  1.                  1.                  1.                  1.
 ColdGasMassFunction                   chi_sq            1.                  1.                  1.                  1.                  1.
 ColdGasFractionvsStellarMass          maxlike           1                   1.                  1.                  1.                  1.
-StellarMetallicityvsStellarMass       maxlike           10.                  1.                  1.                  1.                  1.    
-ColdGasMetallicityvsStellarMass       maxlike           10.                  1.                  1.                  1.                  1.                    
+StellarMetallicityvsStellarMass       maxlike           1.                  1.                  1.                  1.                  1.    
+ColdGasMetallicityvsStellarMass       maxlike           1.                  1.                  1.                  1.                  1.                    
 SFRF                                  chi_sq            1                   1.                  1.                  1.                  1.
 SFRD                                  chi_sq            1.                  1.                  1.                  1.                  1.
 BlackHoleBulgeMass                    binomial          1.                  1.                  1.                  1.                  1.

@@ -463,15 +463,19 @@ void cool_gas_onto_galaxy(int p, double dt)
 	  int ii;
 	  if (Gal[p].ColdGas > 0.0)
     	    {
-    	      for (ii=0;ii<3;ii++)
+#ifndef H2_AND_RINGS
+	      for (ii=0;ii<3;ii++)
     		Gal[p].ColdGasSpin[ii]=(Gal[p].ColdGasSpin[ii]*Mdisk+Halo[Gal[p].HaloNr].Spin[ii]*Mcool)/(Gal[p].ColdGas);
 	      //Gal[p].ColdGasSpin[ii]=(Gal[p].ColdGasSpin[ii]*Mdisk+1./sqrt(3)*halospinpar*Mcool)/(Gal[p].ColdGas);
+#endif
     	      Gal[p].ColdGasRadius=get_gas_disk_radius(p);
     	    }
     	   else
     	     {
+#ifndef H2_AND_RINGS
     	       for (ii=0; ii<3; ii++)
     		 Gal[p].ColdGasSpin[ii]=0.0;
+#endif
     	       Gal[p].ColdGasRadius = 0.;
     	     }
     	}

@@ -559,19 +559,15 @@ void add_galaxies_together(int t, int p, double deltaT)
   mass_checks(p,"model_mergers.c",__LINE__);
   mass_checks(t,"model_mergers.c",__LINE__);
 
+#ifndef H2_AND_RINGS
   /*update the gas spin - gasdiskradius updated in the end of deal_with_galaxy_mergers*/
   for(ii=0;ii<3;ii++)
     tspin[ii]=Gal[t].ColdGasSpin[ii]*tmass+Gal[t].HaloSpin[ii]*pmass;
 
-  /*double halospinpar=sqrt(Halo[GaRStellarDiskSatl[t].HaloNr].Spin[0] * Halo[Gal[t].HaloNr].Spin[0] +
-			   Halo[Gal[t].HaloNr].Spin[1] * Halo[Gal[t].HaloNr].Spin[1] +
-			   Halo[Gal[t].HaloNr].Spin[2] * Halo[Gal[t].HaloNr].Spin[2] );
-  for(ii=0;ii<3;ii++)
-      tspin[ii]=Gal[t].ColdGasSpin[ii]*tmass+1./sqrt(3)*halospinpar*pmass;*/
   if (Gal[t].ColdGas != 0)
     for (ii=0;ii<3;ii++)
 	  Gal[t].ColdGasSpin[ii]=tspin[ii]/(Gal[t].ColdGas);
-
+#endif
 
   Gal[t].Sfr += Gal[p].Sfr;
   if(BulgeFormationInMinorMergersOn)
@@ -659,9 +655,6 @@ double collisional_starburst_recipe(double mass_ratio, int merger_centralgal, in
 
   if(mstars < 0.0)
     mstars = 0.0;
-  /*double halospinpar=sqrt(Halo[GaRStellarDiskSatl[t].HaloNr].Spin[0] * Halo[Gal[t].HaloNr].Spin[0] +
-			   Halo[Gal[t].HaloNr].Spin[1] * Halo[Gal[t].HaloNr].Spin[1] +
-			   Halo[Gal[t].HaloNr].Spin[2] * Halo[Gal[t].HaloNr].Spin[2] );*/
 
 #ifdef H2_AND_RINGS
   for(j=0;j<RNUM;j++)
@@ -702,10 +695,7 @@ double collisional_starburst_recipe(double mass_ratio, int merger_centralgal, in
     update_stars_due_to_reheat(merger_centralgal, centralgal, &mstars, mstarsRings);
 #endif
 #endif //FEEDBACK_COUPLED_WITH_MASS_RETURN
-  /*double halospinpar=sqrt(Halo[GaRStellarDiskSatl[t].HaloNr].Spin[0] * Halo[Gal[t].HaloNr].Spin[0] +
-			   Halo[Gal[t].HaloNr].Spin[1] * Halo[Gal[t].HaloNr].Spin[1] +
-			   Halo[Gal[t].HaloNr].Spin[2] * Halo[Gal[t].HaloNr].Spin[2] );*/
- 
+
   /*  update the star formation rate */
   Gal[merger_centralgal].Sfr += mstars / deltaT;
 #ifdef H2_AND_RINGS

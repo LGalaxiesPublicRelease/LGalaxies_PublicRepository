@@ -131,10 +131,7 @@ FeedbackReheatingModel            0  ;%*0 -- Guo 2010 (ejection scheme used in d
 				                      
 FeedbackReheatingDeansityScaling  0  ;%*0 -- no scaling with local density
 				                      % 1 -- Scaling with local density as eq. 35 in Fu2010				                      
-	
-FeedbackEjectionModel             0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
-                                      % 1 -- Constant velocity model
-	
+		
 FateOfSatellitesGas               0   ;choice of ejection of satellite galaxies. 
                                       %*0 -- ejected gas of satellites distribute between type 1 and type 0, 
                                            % according to the fraction of dark matter retained in subhalos (Guo2010).

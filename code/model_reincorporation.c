@@ -68,13 +68,6 @@ void reincorporate_gas(int p, double dt)
 	reincorporated = ReIncorporationFactor * Gal[p].EjectedMass / (Gal[p].Rvir / Gal[p].Vvir) * dt;
 
 
-  if(FeedbackEjectionModel == 1)
-    {
-      reincorporated = ReIncorporationFactor * Gal[p].EjectedMass /
-	  (Gal[p].Rvir * min(FeedbackEjectionEfficiency,1.)*sqrt(EtaSNcode * EnergySNcode)/(Gal[p].Vvir*Gal[p].Vvir))
-	  * Gal[p].Vvir/220. * 1.e-6* dt ;
-    }
-
   if (reincorporated > Gal[p].EjectedMass)
     reincorporated = Gal[p].EjectedMass;
 	

@@ -126,8 +126,6 @@ extern int SFRtdyn;
 #endif
 extern int FeedbackReheatingModel;
 extern int FeedbackReheatingDeansityScaling;
-extern int FeedbackEjectionModel;
-extern int FeedbackEagleScaling;
 extern int FateOfSatellitesGas;
 extern int ReIncorporationModel;
 #ifdef EXCESS_MASS

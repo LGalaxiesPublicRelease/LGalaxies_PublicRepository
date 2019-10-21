@@ -60,8 +60,8 @@ void post_process_spec_mags(struct GALAXY_OUTPUT *o, struct SFH_BIN *sfh_bins)
 
   //used for dust corrections
   for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
-    Zg += o->MetalsColdGas[ii];
-  Zg /= o->ColdGas/0.02;
+    Zg += o->MetalsColdGas[ii] / o->ColdGas / 0.02;
+
 
   o->rbandWeightAge=0.0;
 
@@ -257,11 +257,11 @@ void post_process_spec_mags(struct GALAXY_OUTPUT *o, struct SFH_BIN *sfh_bins)
 
 #endif //FULL_SPECTRA
 
-      o->CosInclination = fabs(o->DiskSpin[2]) /
-	  sqrt(o->DiskSpin[0]*o->DiskSpin[0]+
-	       o->DiskSpin[1]*o->DiskSpin[1]+
-	       o->DiskSpin[2]*o->DiskSpin[2]);
-
+#ifdef H2_AND_RINGS
+      o->CosInclination = fabs(o->HaloSpin[2]) / sqrt(o->HaloSpin[0]*o->HaloSpin[0] + o->HaloSpin[1]*o->HaloSpin[1] + o->HaloSpin[2]*o->HaloSpin[2]);
+#else
+      o->CosInclination = fabs(o->DiskSpin[2]) / sqrt(o->DiskSpin[0]*o->DiskSpin[0] + o->DiskSpin[1]*o->DiskSpin[1] + o->DiskSpin[2]*o->DiskSpin[2]);
+#endif
       //Dust correction for disks (Inter-stellar Medium  + birth clouds)
       if(o->ColdGas > 0.0)
 	dust_correction_for_post_processing(nlum, o->SnapNum, Zg, o->ColdGas, o->ColdGasRadius, o->CosInclination,

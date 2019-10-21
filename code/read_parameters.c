@@ -387,18 +387,9 @@ void read_parameter_file(char *fname)
   addr[nt] = &FeedbackReheatingModel;
   id[nt++] = INT;
 
-  strcpy(tag[nt], "FeedbackEjectionModel");
-  addr[nt] = &FeedbackEjectionModel;
-  id[nt++] = INT;
-
-  strcpy(tag[nt], "FeedbackEagleScaling");
-  addr[nt] = &FeedbackEagleScaling;
-  id[nt++] = INT;
-
   strcpy(tag[nt], "FeedbackReheatingDeansityScaling");
   addr[nt] = &FeedbackReheatingDeansityScaling;
   id[nt++] = INT;
-
 
   strcpy(tag[nt], "FateOfSatellitesGas");
   addr[nt] = &FateOfSatellitesGas;
@@ -680,8 +671,6 @@ void read_parameter_file(char *fname)
       else if (strcmp("InfallModel", tag[i]) == 0)
 	InfallModel=1;
 #endif
-      else if (strcmp("FeedbackEagleScaling", tag[i]) == 0)
-      	FeedbackEagleScaling=0;
       else if (strcmp("FeedbackReheatingDeansityScaling", tag[i]) == 0)
 	FeedbackReheatingDeansityScaling=0;
 

@@ -140,8 +140,6 @@ int InfallModel;
 #endif
 int FeedbackReheatingModel;
 int FeedbackReheatingDeansityScaling;
-int FeedbackEjectionModel;
-int FeedbackEagleScaling;
 int FateOfSatellitesGas;
 int ReIncorporationModel;
 int ReionizationModel;

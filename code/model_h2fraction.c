@@ -19,8 +19,8 @@ void update_h2fraction(int p)
 
   for(j=0;j<RNUM;j++)
     {
-      //KMT09 or Krumholz et al. 2008
-      if(H2FractionRecipe==0 || H2FractionRecipe==1)
+      //KMT09
+      if(H2FractionRecipe==0)
   	{
 	  double metallicityr=0.;;
 
@@ -42,42 +42,11 @@ void update_h2fraction(int p)
 	  //update to clumping factor, as in Fu2013, to solve problems with low-z galaxies
 	  if(metallicityr<1.0)
 	    SigmaHRings=SigmaHRings*Clumpingfactor*pow(metallicityr,-0.7);
-	    //SigmaHRings=SigmaHRings*Clumpingfactor;
 
-	 // printf("metallicity=%0.10f, SigmaHRings=%0.10f\n", metallicityr, SigmaHRings);
-
-	  //KMT09 - updated in Fu2013 (eq 11 and 12)
-	  if(H2FractionRecipe==0)
-	    {
-	      /*double tau, khi, s;
-	      khi = 3.1*(1.+3.1*pow(metallicityr,0.365))/4.1;
-	      tau=0.066*SigmaHRings*metallicityr;
-	      s=log(1.+0.6*khi+0.01*khi*khi)/(0.6*tau);
-
-	      if(s<2.0)
-		Gal[p].H2fractionRings[j]=(1-0.75*s/(1+0.25*s));///pow((1 + ZZ[Halo[Gal[p].HaloNr].SnapNum]),0.75);
-	      else
-		Gal[p].H2fractionRings[j]=0.0;
-
-	      //Gal[p].H2fractionRings[j]=max(4-2.*s,0.)/(4.+s);
-
-	      printf("%0.5f %0.5f\n", Gal[p].H2fractionRings[j], update_H2fraction_KMT09(log10(SigmaHRings), metallicityr));*/
-	      Gal[p].H2fractionRings[j] = update_H2fraction_KMT09(log10(SigmaHRings), metallicityr);
-
-
-
-	    }
-	  //Krumholz et al. 2008
-	  else if(H2FractionRecipe==1)
-	    {
-	      /*convert to log10*/
-	      metallicityr = log10(metallicityr);
-	      SigmaHRings=log10(SigmaHRings);
-	      Gal[p].H2fractionRings[j]=update_H2fraction_KMT08(SigmaHRings,metallicityr);
-	    }
-  	  }
+	  Gal[p].H2fractionRings[j] = update_H2fraction_KMT09(log10(SigmaHRings), metallicityr);
+  	}
       //Blitz & Rosolowsky 2006, pressure recipe
-      else if(H2FractionRecipe==2)
+      else if(H2FractionRecipe==1)
 	{
 	  double SigmaStarRings, alpha_p=0.92;
 	  double SigmaStar0 = (Gal[p].DiskMassRings[0]/RingArea[0])*0.01*Hubble_h;
@@ -106,63 +75,6 @@ void update_h2fraction(int p)
 
 }
 
-//THIS FUNCTION DOESN"T WORK ANYMORE
-void init_H2fraction_KMT08()
-{
-  FILE *fd;
-  char buf[200], sbuf[1000];
-  int i=LENSIGMAH,j=LENZ;
-
-  sprintf ( buf, "%s/%s","./H2frac","mh2frac.dat" );
-  if ( ! ( fd = fopen ( buf, "r" ) ) )
-    {
-      sprintf(sbuf, "can't open file `%s'\n", buf);
-      terminate(sbuf);
-    }
-
-  for ( i = 0; i < LENSIGMAH; i++ )
-    {
-      for ( j=0;j<LENZ;j++ )
-	{
-	  fscanf ( fd,"%lf",&H2Fraction[i][j] );
-	  printf("%0.2e\n",H2Fraction[i][j]);
-	}
-
-    }
-
-  fclose ( fd );
-#ifdef PARALLEL
-  if ( ThisTask == 0 )
-#endif
-    printf ( "molecular fractions read.\n\n" );
-}
-
-
-//only used if H2FractionRecipe=1
-double update_H2fraction_KMT08(double logsigmah, double metallicity )
-{
-	int i,j;
-	double logNHtot[LENSIGMAH],lgZ[LENZ],mf,mf1,mf2;
-	for ( i=0,logNHtot[0]=-1;i<(LENSIGMAH-1);i++ ) logNHtot[i+1]=logNHtot[i]+0.05;
-	for ( j=0,lgZ[0]=-2;j<(LENZ-1);j++ ) lgZ[j+1]=lgZ[j]+0.25;
-
-	if ( logsigmah<logNHtot[0] )
-	  logsigmah=logNHtot[0];
-	if ( logsigmah>logNHtot[i-1] )
-	  logsigmah=logNHtot[i-1];
-
-	for ( i=0;logsigmah > logNHtot[i + 1];i++ );
-
-	if ( metallicity<lgZ[0] ) metallicity=lgZ[0];
-	if ( metallicity>lgZ[j-1] ) metallicity=lgZ[j-1];
-	for ( j=0;metallicity>lgZ[j+1];j++ );
-
-	mf1=H2Fraction[i][j]+ ( H2Fraction[i][j+1]-H2Fraction[i][j] ) * ( metallicity-lgZ[j] ) / ( lgZ[j+1]-lgZ[j] );
-	mf2=H2Fraction[i+1][j]+ ( H2Fraction[i+1][j+1]-H2Fraction[i+1][j] ) * ( metallicity-lgZ[j] ) / ( lgZ[j+1]-lgZ[j] );
-	mf=mf1+ ( mf2-mf1 ) * ( logsigmah-logNHtot[i] ) / ( logNHtot[i+1]-logNHtot[i] );
-
-	return ( mf );
-}
 
 
 
@@ -225,8 +137,6 @@ int get_jump_index_H2Fraction(double sigmaH)
 }
 
 
-
-//only used if H2FractionRecipe=1
 double update_H2fraction_KMT09(double logsigmah, double metallicity )
 {
   int ii, jj;
