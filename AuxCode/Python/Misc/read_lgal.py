@@ -1,6 +1,7 @@
+from __future__ import print_function
 import numpy as np
 import os
-
+#from IPython import embed
 
 ###############################################
 # Code to read the INPUT trees for L-Galaxies #
@@ -72,11 +73,11 @@ def read_tree(folder,file_prefix,firstfile,lastfile,props,template):
         one =  np.fromfile(f,np.int32,1)
         structsize = np.fromfile(f,np.int32,1)
         if(structsize != template.itemsize):
-            print "size mismatch:",structsize,template.itemsize
+            print("size mismatch:",structsize,template.itemsize)
         this_nHalos = np.fromfile(f,np.int32,1)
         nHalos += this_nHalos
         f.seek(structsize, os.SEEK_SET) 
-        print "File ", ifile," nGals = ",this_nHalos
+        print("File ", ifile," nGals = ",this_nHalos)
         this_addedGalaxy = np.fromfile(f,template,this_nHalos)
         addedGalaxy = np.zeros(this_nHalos,dtype=filter_dtype)
         for prop in template.names:
@@ -92,15 +93,14 @@ def read_snap(folder,file_prefix,firstfile,lastfile,props,template):
     Inputs: (folder,file_prefix,firstfile,lastfile,props,template)
     props - list of properties to return
     template - structure dtype definition for database """
-    nTrees = 0
-    nHalos = 0
-    nTreeHalos = np.array([],dtype=np.int32)
     filter_list = []
     for prop in props:
         if props[prop]:
             filter_list.append((prop,template[prop]))
     filter_dtype = np.dtype(filter_list)
-    gals = np.array([],dtype=filter_dtype)
+    # First loop to determine how many galaxies there are:
+    nTrees = 0
+    nHalos = 0
     for ifile in range(firstfile,lastfile+1):
         filename = folder+'/'+file_prefix+"_"+"%d"%(ifile)
         f = open(filename,"rb")
@@ -108,15 +108,29 @@ def read_snap(folder,file_prefix,firstfile,lastfile,props,template):
         nTrees += this_nTrees
         this_nHalos = np.fromfile(f,np.int32,1)
         nHalos += this_nHalos
-        print "File ", ifile," nGals = ",this_nHalos
+        f.close()
+    # Allocate arrays
+    print("Total nGals = ",nHalos)
+    nTreeHalos = np.empty(nTrees,dtype=np.int32)
+    gals = np.empty(nHalos,dtype=filter_dtype)
+    # Second loop to populate arrays
+    nTrees = 0
+    nHalos = 0
+    for ifile in range(firstfile,lastfile+1):
+        filename = folder+'/'+file_prefix+"_"+"%d"%(ifile)
+        f = open(filename,"rb")
+        this_nTrees =  np.fromfile(f,np.int32,1)
+        this_nHalos = np.fromfile(f,np.int32,1)
+        print("File ", ifile," nGals = ",this_nHalos)
         addednTreeHalos = np.fromfile(f,np.int32,this_nTrees)
-        nTreeHalos = np.append(nTreeHalos,addednTreeHalos)
+        nTreeHalos[nTrees:nTrees+this_nTrees]=addednTreeHalos
         this_addedGalaxy = np.fromfile(f,template,this_nHalos) # all properties
-        addedGalaxy = np.zeros(this_nHalos,dtype=filter_dtype) # selected props
+        addedGalaxy = np.empty(this_nHalos,dtype=filter_dtype) # selected props
         for prop in template.names:
             if props[prop]:
                 addedGalaxy[prop] = this_addedGalaxy[prop]
-        gals = np.append(gals,addedGalaxy)      
+        gals[nHalos:nHalos+this_nHalos] = addedGalaxy
+        nTrees += this_nTrees
+        nHalos += this_nHalos
         f.close()
     return (nTrees,nHalos,nTreeHalos,gals)
-

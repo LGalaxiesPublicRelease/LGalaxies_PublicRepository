@@ -24,11 +24,11 @@ WMAP1=0
 PLANCK=1
 CATERPILLAR_PLANCK=0
 
-DirName_MR = '/Users/BrunoHenriques/Desktop/OneDrive/Workspace/GitHub_PR_Hen15/output/'
+DirName_MR = '../../output/'
 
-Datadir = '/Users/BrunoHenriques/Desktop/OneDrive/Workspace/GitHub_PR_Hen15/AuxCode/Python/data/'
-MCMCdir = '/Users/BrunoHenriques/Desktop/OneDrive/Workspace/GitHub_PR_Hen15/MCMC/'
-MCMCSampledir = '/Users/BrunoHenriques/Desktop/OneDrive/Workspace/GitHub_PR_Hen15/output/'
+Datadir = '../../../obsdata/'
+MCMCdir = '../../MCMC/'
+MCMCSampledir = '../../output/bestfit/final_'
 
 prefix_this_model='This Work - PLANCK1'
 file_this_model='ThisWork'

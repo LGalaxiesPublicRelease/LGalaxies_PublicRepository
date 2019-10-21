@@ -1,0 +1,56 @@
+#! /bin/csh
+
+# set base_output_dir = "./output/$1"
+set base_output_dir = "/ptmp/darren/results/$1"
+# set base_output_dir = "/u/darren/results/$1"
+
+
+if !( { test $1 } ) then
+    echo wrong input - check the batch file!
+    echo use: "go <output_directory> <processors>"
+    exit
+endif
+
+
+if !( { test $2 } ) then
+    echo wrong input - specify number of processors!
+    echo use: "go <output_directory> <processors>"
+    exit
+endif
+
+
+if ( { test $1 } ) then
+
+
+    if !( { test $3 } ) then
+	if ( { test -d $base_output_dir } ) then
+	    rm -rf $base_output_dir
+	endif
+	mkdir $base_output_dir
+    endif
+    
+
+    switch ($HOSTTYPE)
+
+	case 'i386-linux':
+
+	    echo running SA model: $1
+	    ./L-Galaxies ./input/input.par | tee $base_output_dir/$1.out
+	    breaksw
+
+	case 'rs6000':
+
+	    set processors=$2
+	    if ($processors > 32) then
+		set processors=32
+	    endif
+
+	    echo running SA model: $1 on $processors processors
+	    poe ./L-Galaxies ./input/input.par -procs $processors -hostfile ./input/machines.txt | tee $base_output_dir/$1.out
+
+    endsw
+
+endif
+
+
+echo finished $1
