@@ -1,18 +1,3 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -206,8 +191,11 @@ void load_tree_table(int filenr)
   MPI_Bcast(HaloIDs_Data,totNHalos* sizeof(struct halo_ids_data), MPI_BYTE, 0, MPI_COMM_WORLD);
 
   size_t bytes=totNHalos* sizeof(struct halo_data);
-  int ii, Nmessages=10000;
-  int HaloChunks=1000000;
+  int ii, Nmessages;
+   //Number of haloes in each chunck (around 1Gb at the moment)
+  long long HaloChunks=10000000;
+
+  Nmessages=(int)((double)(bytes)/(double)(HaloChunks* sizeof(struct halo_data)))+1;
 
   //MPI_BCast has a limit of 2Gb so everything needs to be passed in smaller chunks
   for(ii=0;ii<Nmessages;ii++)

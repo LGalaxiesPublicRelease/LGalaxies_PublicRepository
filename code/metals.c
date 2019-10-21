@@ -1,18 +1,3 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
 /*
  * metals.c
  *
@@ -50,80 +35,40 @@
 #include "allvars.h"
 #include "proto.h"
 
+/* Code for metals array.
+ * For simplicity, did away with non-array version. */
 
-
-#ifdef DETAILED_METALS_AND_MASS_RETURN
-
-/* Defined in allvars.h
- * struct metals
- * {
- *  float type1a;
- *  float type2;
- *  float agb;
- * };
- */
-
-struct metals metals_add(struct metals m1,
-			 struct metals m2,
-			 float fraction)
+void metals_add(double *m1,
+		double *m2,
+		double fraction)
 {
-  struct metals m;
-  m.type1a=m1.type1a+fraction*m2.type1a;
-  m.type2=m1.type2+fraction*m2.type2;
-  m.agb=m1.agb+fraction*m2.agb;
-
-  return(m);
-}
-
-struct metals metals_init()
-{
-  struct metals m;
-  m.type1a=0.;
-  m.type2=0.;
-  m.agb=0.;
-  return(m);
-}
-
-void metals_print(char s[],struct metals m)
-{
-  printf("%s.type1a [Msun] = %.2f\n",s,m.type1a*1.0e10/Hubble_h);
-  printf("%s.type2 [Msun]  = %.2f\n",s,m.type2*1.0e10/Hubble_h);
-  printf("%s.agb  [Msun]   = %.2f\n",s,m.agb*1.0e10/Hubble_h);
+  int ii;
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+      m1[ii]=m1[ii]+fraction*m2[ii];
   return;
 }
 
-float metals_total(struct metals m)
+void metals_init(double *m)
 {
-  return(m.type1a+m.type2+m.agb);
-}
-
-#else
-
-// The following mimics the original code with a single metallicity
-
-float metals_add(float m1,
-		 float m2,
-		 float fraction)
-{
-  return(m1+fraction*m2);
-}
-
-float metals_init()
-{
-  return(0.);
-}
-
-void metals_print(char s[],float m)
-{
-  printf("%s=%f\n",s,m);
+  int ii;
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+      m[ii]=0.;
   return;
 }
 
-float metals_total(float m)
+void metals_print(char s[],double *m)
 {
-  return(m);
+  printf("%s.type1a [Msun] = %.2f\n",s,m[0]*1.0e10/Hubble_h);
+  printf("%s.type2 [Msun]  = %.2f\n",s,m[1]*1.0e10/Hubble_h);
+  printf("%s.agb  [Msun]   = %.2f\n",s,m[2]*1.0e10/Hubble_h);
+  return;
 }
 
-#endif
-
-
+double metals_total(double *m)
+{
+  int ii;
+  double mTotal=0.;
+  for(ii=0;ii<NUM_METAL_CHANNELS;ii++)
+      mTotal+=m[ii];
+  return(mTotal);
+}

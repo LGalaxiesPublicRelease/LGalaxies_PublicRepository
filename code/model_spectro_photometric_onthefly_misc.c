@@ -1,23 +1,3 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
-/*
- *  Created in: 2009
- *      Author: Chiara Tonini & Bruno Henriques
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,6 +22,10 @@
  * double integrate(double *flux, int Grid_Length)
  * void polint(double xa[], double ya[], int n, double x, double *y, double *dy)
  */
+
+
+
+
 double get_AbsAB_magnitude(double FluxInputSSPInt, double FluxFilterInt, double redshift)
 {
   double zeropoint, distance_cm;
@@ -63,8 +47,8 @@ double get_AbsAB_magnitude(double FluxInputSSPInt, double FluxFilterInt, double 
   zeropoint=-2.5*log10(4.0*M_PI*distance_cm*distance_cm*3631.0*1.0e-23);
 #endif
 
-  AbsAB=-2.5*(log10(FluxInputSSPInt)
-      -log10(FluxFilterInt))-zeropoint;
+      AbsAB=-2.5*(log10(FluxInputSSPInt)
+			   -log10(FluxFilterInt))-zeropoint;
 
   return AbsAB;
 }
@@ -155,37 +139,43 @@ double* create_grid (double WaveMin, double WaveMax,int AgeLoop, double redshift
 
   //get minimum of grid
   for(i=0;i<SSP_NLambda;i++)
-    if((1+redshift)*LambdaInputSSP[AgeLoop][i]>=min)
-      {
-	*Min_Wave_Grid=i;
-	break;
-      }
+  	if((1+redshift)*LambdaInputSSP[AgeLoop][i]>=min)
+  	{
+  		*Min_Wave_Grid=i;
+  		break;
+  	}
 
   for(i=0;i<SSP_NLambda;i++)
-    if((1+redshift)*LambdaInputSSP[AgeLoop][i]>=min)
-      {
-	*Grid_Length+=1;
+  	if((1+redshift)*LambdaInputSSP[AgeLoop][i]>=min)
+  	{
+  		*Grid_Length+=1;
 
-	//point at maximum range or out of it, set maximum
-	if((1+redshift)*LambdaInputSSP[AgeLoop][i]>=max)
-	  {
-	    if((1+redshift)*LambdaInputSSP[AgeLoop][i]==max)
-	      *Max_Wave_Grid=i;
-	    else //if point out of range, set max to previous
-	      {
-		*Max_Wave_Grid=i-1;
-		*Grid_Length-=1;
-	      }
-	    break;
-	  }
-      }
+  		//point at maximum range or out of it, set maximum
+  		if((1+redshift)*LambdaInputSSP[AgeLoop][i]>=max)
+  		{
+  			if((1+redshift)*LambdaInputSSP[AgeLoop][i]==max)
+  				*Max_Wave_Grid=i;
+  			else //if point out of range, set max to previous
+  			{
+  			*Max_Wave_Grid=i-1;
+  			*Grid_Length-=1;
+  			}
+  			break;
+  		}
+  	}
 
-  grid = malloc(sizeof(double) * *Grid_Length);
-  for(i=0;i<*Grid_Length;i++)
-    grid[i]=(1+redshift)*LambdaInputSSP[AgeLoop][*Min_Wave_Grid+i];
+		grid = malloc(sizeof(double) * *Grid_Length);
+		for(i=0;i<*Grid_Length;i++)
+			grid[i]=(1+redshift)*LambdaInputSSP[AgeLoop][*Min_Wave_Grid+i];
 
-  return grid;
+	/*	for(i=0;i<*Grid_Length;i++)
+       printf("Wave Min=%f Wave Max=%f Grid Min=%d Grid Max=%d Grid_Length=%d lgrid=%f\n",
+       WaveMin, WaveMax, *Min_Wave_Grid, *Max_Wave_Grid, *Grid_Length, (1+redshift)*LambdaInputSSP[AgeLoop][*Min_Wave_Grid+i]);
+		exit(0);*/
+
+		return grid;
 }
+
 
 
 //*****************************************************
@@ -197,16 +187,16 @@ void interpolate(double *lgrid, int Grid_Length, double *lambda, int nlambda, do
   int kk=0, nn=0, m=2, i;
 
   for(i=0;i<Grid_Length;i++)
-    {
-      if (lgrid[i] < lambda[0] || lgrid[i] > lambda[nlambda-1]) FluxOnGrid[i]=0;
-      //outside filter range, transmission is 0
-      else
-	{
-	  //finds where wavelenght is in respect to the grid
-	  locate(lambda,nlambda-1,lgrid[i],&nn);
-	  kk=min(max(nn-(m-1)/2,1),nlambda+1-m);
-	  FluxOnGrid[i]=flux[kk];
-	}
-    }
+	 {
+  	if (lgrid[i] < lambda[0] || lgrid[i] > lambda[nlambda-1]) FluxOnGrid[i]=0;
+  	//outside filter range, transmission is 0
+  	else
+  	{
+  		//finds where wavelenght is in respect to the grid
+  		locate(lambda,nlambda-1,lgrid[i],&nn);
+  		kk=min(max(nn-(m-1)/2,1),nlambda+1-m);
+  		FluxOnGrid[i]=flux[kk];
+	   }
+	 }
 }
 

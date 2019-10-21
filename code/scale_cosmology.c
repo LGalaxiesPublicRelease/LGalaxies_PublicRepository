@@ -1,23 +1,3 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
-/*
- *  Created in: 2010
- *      Author: Qi Guo
- */
-
 #include <math.h>
 #include <stdlib.h>
 
@@ -58,27 +38,27 @@
 
   sprintf(buf, "/galformod/scratch/bmh20/Workspace/CosmologyTables/fit_%04d_%04d.txt", om_Nbin, s8_Nbin);
   if(!(fd = fopen(buf, "r")))
-    {
-      char sbuf[1000];
-      sprintf(sbuf, "file `%s' not found.\n", buf);
-      terminate(sbuf);
-    }
+  {
+  	char sbuf[1000];
+  	sprintf(sbuf, "file `%s' not found.\n", buf);
+  	terminate(sbuf);
+  }
 
   fgets(buf1, 300, fd);
   fgets(buf1, 300, fd);
   fgets(buf1, 300, fd);
 
   if(fscanf(fd, "%lf %lf %lf %lf", &ScaleMass, &dummy_growth, &ScalePos, &dummy_snap63)!=4)
-    {
-      char sbuf[1000];
-      sprintf(sbuf, "Wrong format of values in %s.\n", buf);
-      terminate(sbuf);
-    }
+  {
+  	char sbuf[1000];
+  	sprintf(sbuf, "Wrong format of values in %s.\n", buf);
+  	terminate(sbuf);
+  }
 
   fclose(fd);
 
-  ScaleMass=1./ScaleMass;
-  ScalePos=1./ScalePos;
+	ScaleMass=1./ScaleMass;
+	ScalePos=1./ScalePos;
 
   PartMass = 	PartMass_OriginalCosm * ScaleMass;
   BoxSize  =  BoxSize_OriginalCosm * ScalePos;
@@ -93,6 +73,78 @@
   *
   *  Add by Qi Guo adapted by Bruno Henriques */
 
+#ifdef MCMC
+void reset_cosmology()
+{
+	double om_min=0.1, om_max=0.6, s8_min=0.5, s8_max=1.0;
+	double om_binsize, s8_binsize;
+	int om_Nbin, s8_Nbin, i;
+	double dummy_growth, dummy_snap63, dummy1, dummy2;
+	char buf[1000], buf1[1000];
+	FILE *fd;
+
+	om_binsize=(om_max-om_min)/NgridCosm;
+	s8_binsize=(s8_max-s8_min)/NgridCosm;
+
+	for(i=0;i<MCMCNpar;i++)
+	{
+
+		if(strcmp(MCMC_PAR[i].Name,"Omega_m")==0)
+		{
+			Omega=MCMC_PAR[i].PropValue[0];
+			om_Nbin=(int)((MCMC_PAR[i].PropValue[0]-om_min)/om_binsize);
+		}
+			Sigma8=MCMC_PAR[i].PropValue[0];
+			if(strcmp(MCMC_PAR[i].Name,"Sigma_8")==0)
+		{
+			s8_Nbin=(int)((MCMC_PAR[i].PropValue[0]-s8_min)/s8_binsize);
+		}
+
+		if(strcmp(MCMC_PAR[i].Name,"BaryonFrac")==0)
+			BaryonFrac=MCMC_PAR[i].PropValue[0];
+	}
+
+
+	sprintf(FileWithZList, "%s/zlist_%04d_%04d.txt", CosmologyTablesDir, om_Nbin, s8_Nbin);
+	//printf("%s\n",FileWithZList);
+	read_zlist_new();
+	//int i;
+	//for(i=0;i<(LastDarkMatterSnapShot+1);i++)
+	//printf("ZZ[%d]=%g Age[%d]=%g\n",i, ZZ[i], i, Age[i]);
+	read_output_snaps();
+  //printf("outsnap=%d\n",ListOutputSnaps[0]);
+
+	sprintf(buf, "%s/fit_%04d_%04d.txt", CosmologyTablesDir, om_Nbin, s8_Nbin);
+	if(!(fd = fopen(buf, "r")))
+	{
+		char sbuf[1000];
+		sprintf(sbuf, "file `%s' not found.\n", buf);
+		terminate(sbuf);
+	}
+
+    fgets(buf1, 300, fd);
+    fgets(buf1, 300, fd);
+    fgets(buf1, 300, fd);
+
+	if(fscanf(fd, "%lf %lf %lf %lf", &ScaleMass, &dummy_growth, &ScalePos, &dummy_snap63)!=4)
+	{
+		char sbuf[1000];
+		sprintf(sbuf, "Wrong format of values in %s.\n", buf);
+		terminate(sbuf);
+	}
+
+	fclose(fd);
+	//printf("om=%f s8=%f\n",par_cosm[0],par_cosm[1]);
+
+	ScaleMass=1./ScaleMass;
+	ScalePos=1./ScalePos;
+
+	PartMass = 	PartMass_OriginalCosm * ScaleMass;
+	BoxSize  =  BoxSize_OriginalCosm * ScalePos;
+	//printf("PartMass=%g BoxSize=%g\n",PartMass,BoxSize);
+
+}
+#endif
 
 void scale_cosmology(int nhalos)
 {
@@ -102,75 +154,76 @@ void scale_cosmology(int nhalos)
 
   //Save unscaled properties
   for(i = 0; i < nhalos ; i++)
-    {
-      //will make sure haloes in the future are not scaled/un_scaled
-      if(Halo[i].SnapNum<=LastSnapShotNr)
-	{
-	  HaloAux[i].M_Crit200_Unscaled = Halo[i].M_Crit200;
-	  HaloAux[i].M_Mean200_Unscaled = Halo[i].M_Mean200;
-	  HaloAux[i].Vmax_Unscaled = Halo[i].Vmax;
-	  for (j = 0; j < 3 ; j++)
-	    {
-	      HaloAux[i].Pos_Unscaled[j] = Halo[i].Pos[j];
-	      HaloAux[i].Vel_Unscaled[j] = Halo[i].Vel[j];
-	      HaloAux[i].Spin_Unscaled[j] = Halo[i].Spin[j];
-	    }
-	}
-    }
+  {
+  	//will make sure haloes in the future are not scaled/un_scaled
+  	if(Halo[i].SnapNum<=LastSnapShotNr)
+  	{
+  		HaloAux[i].M_Crit200_Unscaled = Halo[i].M_Crit200;
+  		HaloAux[i].M_Mean200_Unscaled = Halo[i].M_Mean200;
+  		HaloAux[i].Vmax_Unscaled = Halo[i].Vmax;
+  		for (j = 0; j < 3 ; j++)
+  		{
+  			HaloAux[i].Pos_Unscaled[j] = Halo[i].Pos[j];
+  			HaloAux[i].Vel_Unscaled[j] = Halo[i].Vel[j];
+  			HaloAux[i].Spin_Unscaled[j] = Halo[i].Spin[j];
+  		}
+  	}
+  }
 
   for (i = 0; i < nhalos ; i++)
-    {
-      Scale_V = scale_v_cen(Halo[Halo[i].FirstHaloInFOFgroup].SnapNum);
+  {
+  	Scale_V = scale_v_cen(Halo[Halo[i].FirstHaloInFOFgroup].SnapNum);
 
-      //will make sure haloes in the future are not scaled/un_scaled
-      if(Halo[i].SnapNum<=LastSnapShotNr)
-	{
-	  if(Halo[i].M_Crit200 > 1.e-8)
-	    Halo[i].M_Crit200 = Halo[i].M_Crit200 * ScaleMass * c_correction(Halo[i].M_Crit200,Halo[i].SnapNum);
-	  if(Halo[i].M_Mean200 > 1.e-8)
-	    Halo[i].M_Mean200 = Halo[i].M_Mean200 * ScaleMass * c_correction(Halo[i].M_Mean200,Halo[i].SnapNum);
-	  Halo[i].Vmax = Halo[i].Vmax * sqrt(ScaleMass/ScalePos) * sqrt(AA_OriginalCosm[Halo[i].SnapNum]/AA[Halo[i].SnapNum]);
+  	//will make sure haloes in the future are not scaled/un_scaled
+  	if(Halo[i].SnapNum<=LastSnapShotNr)
+  	{
+  		if(Halo[i].M_Crit200 > 1.e-8)
+  			Halo[i].M_Crit200 = Halo[i].M_Crit200 * ScaleMass * c_correction(Halo[i].M_Crit200,Halo[i].SnapNum);
+  		if(Halo[i].M_Mean200 > 1.e-8)
+  			Halo[i].M_Mean200 = Halo[i].M_Mean200 * ScaleMass * c_correction(Halo[i].M_Mean200,Halo[i].SnapNum);
+  		Halo[i].Vmax = Halo[i].Vmax * sqrt(ScaleMass/ScalePos) * sqrt(AA_OriginalCosm[Halo[i].SnapNum]/AA[Halo[i].SnapNum]);
 
-	  for (j = 0; j < 3 ; j++)
-	    {
-	      Halo[i].Pos[j] = Halo[i].Pos[j] * ScalePos;
-	      Halo[i].Spin[j] *= ScalePos * sqrt(ScaleMass/ScalePos) * sqrt(AA[Halo[i].SnapNum]/AA_OriginalCosm[Halo[i].SnapNum]);
+  		for (j = 0; j < 3 ; j++)
+  		{
+  			Halo[i].Pos[j] = Halo[i].Pos[j] * ScalePos;
+  			Halo[i].Spin[j] *= ScalePos * sqrt(ScaleMass/ScalePos) * sqrt(AA[Halo[i].SnapNum]/AA_OriginalCosm[Halo[i].SnapNum]);
 
-	      CenVel[j] = Halo[Halo[i].FirstHaloInFOFgroup].Vel[j] * Scale_V ;
-	      if(i !=  Halo[i].FirstHaloInFOFgroup) // subhalos
-		{
-		  dv = Halo[i].Vel[j] - Halo[Halo[i].FirstHaloInFOFgroup].Vel[j];
-		  dv *=sqrt(ScaleMass/ScalePos) * sqrt(AA_OriginalCosm[Halo[i].SnapNum]/AA[Halo[i].SnapNum]);
-		  Halo[i].Vel[j] = CenVel[j] + dv;
-		}
-	      else //central halos
-		Halo[i].Vel[j] = Halo[i].Vel[j] * Scale_V  ;
-	    }
-	}
-    }
+  			CenVel[j] = Halo[Halo[i].FirstHaloInFOFgroup].Vel[j] * Scale_V ;
+  			if(i !=  Halo[i].FirstHaloInFOFgroup) // subhalos
+  			{
+  				dv = Halo[i].Vel[j] - Halo[Halo[i].FirstHaloInFOFgroup].Vel[j];
+  				dv *=sqrt(ScaleMass/ScalePos) * sqrt(AA_OriginalCosm[Halo[i].SnapNum]/AA[Halo[i].SnapNum]);
+  				Halo[i].Vel[j] = CenVel[j] + dv;
+  			}
+  			else //central halos
+  				Halo[i].Vel[j] = Halo[i].Vel[j] * Scale_V  ;
+  		}
+  	}
+  }
+
 }
 
 void un_scale_cosmology(int nhalos)
 {
-  int i, j;
+	int i, j;
 
-  for(i = 0; i < nhalos ; i++)
-    {
-      //will make sure haloes in the future are not scaled/un_scaled
-      if(Halo[i].SnapNum<=LastSnapShotNr)
+	for(i = 0; i < nhalos ; i++)
 	{
-	  Halo[i].M_Crit200 = HaloAux[i].M_Crit200_Unscaled;
-	  Halo[i].M_Mean200 = HaloAux[i].M_Mean200_Unscaled;
-	  Halo[i].Vmax = HaloAux[i].Vmax_Unscaled;
+		//will make sure haloes in the future are not scaled/un_scaled
+		if(Halo[i].SnapNum<=LastSnapShotNr)
+		{
+			Halo[i].M_Crit200 = HaloAux[i].M_Crit200_Unscaled;
+			Halo[i].M_Mean200 = HaloAux[i].M_Mean200_Unscaled;
+			Halo[i].Vmax = HaloAux[i].Vmax_Unscaled;
 
-	  for (j = 0; j < 3 ; j++)
-	    {
-	      Halo[i].Pos[j] = HaloAux[i].Pos_Unscaled[j];
-	      Halo[i].Vel[j] = HaloAux[i].Vel_Unscaled[j];
-	      Halo[i].Spin[j] = HaloAux[i].Spin_Unscaled[j];
-	    }
+			for (j = 0; j < 3 ; j++)
+			{
+				Halo[i].Pos[j] = HaloAux[i].Pos_Unscaled[j];
+				Halo[i].Vel[j] = HaloAux[i].Vel_Unscaled[j];
+				Halo[i].Spin[j] = HaloAux[i].Spin_Unscaled[j];
+			}
+		}
 	}
-    }
 }
 
 

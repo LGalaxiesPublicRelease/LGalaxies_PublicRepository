@@ -1,18 +1,3 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,37 +12,63 @@
 
 void create_galaxy_tree_file(int filenr)
 {
-  char buf[1000];
 
+#ifdef HDF5_OUTPUT
+
+  open_hdf5_file(filenr);
+  create_hdf5_table(0);
+
+#else //HDF5_OUTPUT
+
+  char buf[1000];
   sprintf(buf, "%s/%s_galtree_%d", OutputDir, FileNameGalaxies, filenr);
-  if(!(FdGalTree = fopen(buf, "w+")))
-    {
+  if (!(FdGalTree = fopen(buf, "w+"))) {
       char sbuf[1000];
       sprintf(sbuf, "can't open file `%s'\n", buf);
       terminate(sbuf);
-    }
-
-
+  }
   /* skip one block to make room for header */
+  //the header is only 3 ints, the rest is empty space written in the file
   myfseek(FdGalTree, sizeof(struct GALAXY_OUTPUT), SEEK_SET);
   TotGalCount = 0;
+
+#ifdef NORMALIZEDDB
+  TotGalSFHBinCount = 0;
+  sprintf(buf, "%s/%s_galtree_SFH_%d", OutputDir, FileNameGalaxies, filenr);
+  if(!(FdGalTreeSFH = fopen(buf, "w+"))) {
+      char sbuf[1000];
+      sprintf(sbuf, "can't open file `%s'\n", buf);
+      terminate(sbuf);
+  }
+#endif //NORMALIZEDDB
+
+#endif //HDF5_OUTPUT
 
 }
 
 
 void close_galaxy_tree_file(void)
 {
+#ifdef HDF5_OUTPUT
+
+  hdf5_append_data(0,galaxy_output_hdf5[0],b[0]); // Output the final galaxies 
+  hdf5_close();
+
+#else //HDF5_OUTPUT
+
   int one = 1;
   int size_of_struct = sizeof(struct GALAXY_OUTPUT);
-
   /* write header information  */
   myfseek(FdGalTree, 0, SEEK_SET);
   myfwrite(&one, sizeof(int), 1, FdGalTree);	// write 1
   myfwrite(&size_of_struct, sizeof(int), 1, FdGalTree);	// size of an output structure (Galaxy_Output)
   myfwrite(&TotGalCount, sizeof(int), 1, FdGalTree);	// the total number of galaxies
-
   fclose(FdGalTree);
+#ifdef NORMALIZEDDB
+  fclose(FdGalTreeSFH);
+#endif //NORMALIZEDDB
 
+#endif //HDF5_OUTPUT
 }
 
 
@@ -67,16 +78,47 @@ void close_galaxy_tree_file(void)
  */
 void save_galaxy_tree_append(int i)
 {
-	int ibin,numbins;
+  int ibin,numbins;
   struct GALAXY_OUTPUT galaxy_output;
-
+#ifdef NORMALIZEDDB
+  struct SFH_BIN sfh_bin[SFH_NBIN];
+  prepare_galaxy_for_output(HaloGal[i].SnapNum, &HaloGal[i], &galaxy_output, &(sfh_bin[0]));
+#else
   prepare_galaxy_for_output(HaloGal[i].SnapNum, &HaloGal[i], &galaxy_output);
-
-#ifdef STAR_FORMATION_HISTORY
-  galaxy_output.sfh_numbins = galaxy_output.sfh_ibin;
 #endif
 
+#ifdef OUTPUT_SFH
+#ifdef NORMALIZEDDB
+  galaxy_output.sfh_numbins = 0;
+  for(ibin=0; ibin<SFH_NBIN; ibin++)
+  {
+	  if(sfh_bin[ibin].sfh_DiskMass > 0 || sfh_bin[ibin].sfh_BulgeMass > 0 ||sfh_bin[ibin].sfh_ICM > 0 )
+	  {
+		  myfwrite(&(sfh_bin[ibin]), sizeof(struct SFH_BIN), 1, FdGalTreeSFH);
+		  galaxy_output.sfh_numbins++;
+	  }
+  }
+#else
+  galaxy_output.sfh_numbins = galaxy_output.sfh_ibin;
+#endif
+#endif
+
+#ifdef HDF5_OUTPUT
+
+  if(b[0]<NRECORDS_APP ){
+      galaxy_output_hdf5[0][b[0]]=galaxy_output;
+      b[0]++;
+  }
+  else {
+      hdf5_append_data(0,galaxy_output_hdf5[0],NRECORDS_APP);
+      b[0]=0;
+  }
+
+#else //HDF5_OUTPUT
+
   myfwrite(&galaxy_output, sizeof(struct GALAXY_OUTPUT), 1, FdGalTree);
+
+#endif //HDF5_OUTPUT
 
 }
 
@@ -86,6 +128,12 @@ void save_galaxy_tree_finalize(int filenr, int tree)
 {
   int i, p, num;
   struct GALAXY_OUTPUT galaxy_output;
+
+#ifdef NORMALIZEDDB
+  int NumSFHBins = 0; // counts number of SFHBins written for tree in NORMALIZEDDB mode
+  int ibin;
+  struct SFH_BIN sfhbin;
+#endif
 
   for(i = 0; i < NGalTree; i++)
     {
@@ -144,6 +192,7 @@ void save_galaxy_tree_finalize(int filenr, int tree)
   // order GalTree by current order of storage in file (IndexStored)
   qsort(GalTree, NGalTree, sizeof(struct galaxy_tree_data), save_galaxy_tree_compare);
    
+#ifndef HDF5_OUTPUT
 
   /* Before, the header was a simple integer for number of galaxies. So, the
      code had to jump over an int (used to store the number of galaxies) and
@@ -156,21 +205,35 @@ void save_galaxy_tree_finalize(int filenr, int tree)
       myfread(&galaxy_output, sizeof(struct GALAXY_OUTPUT), 1, FdGalTree);
 
       prepare_galaxy_tree_info_for_output(filenr, tree, &GalTree[i], &galaxy_output);
-
       myfseek(FdGalTree, (1 + TotGalCount + i) * sizeof(struct GALAXY_OUTPUT), SEEK_SET);
       myfwrite(&galaxy_output, sizeof(struct GALAXY_OUTPUT), 1, FdGalTree);
 
-    }
+#ifdef NORMALIZEDDB
+      for(ibin = 0; ibin < galaxy_output.sfh_numbins; ibin++){
+          myfseek(FdGalTreeSFH, (TotGalSFHBinCount + NumSFHBins) * sizeof(struct SFH_BIN), SEEK_SET);
+          myfread(&sfhbin, sizeof(struct SFH_BIN), 1, FdGalTreeSFH);
 
-  // GL: propose to only reorder file on disk based on input (or Makefile) parameter
-  // if DB is fast in ordering, eg using SSDs, we could leave it out here.
-  // BTW it is BETTER not to reorder galaxies if SFHBins are not also reordered,
-  // if at least both are to be used in light cone post processing.
-  // for easier to read
+          sfhbin.GalID = galaxy_output.GalID;
+          myfseek(FdGalTreeSFH, (TotGalSFHBinCount + NumSFHBins) * sizeof(struct SFH_BIN), SEEK_SET);
+          myfwrite(&sfhbin, sizeof(struct SFH_BIN), 1, FdGalTreeSFH);
+          NumSFHBins++;
+      }
+#endif
+    }
+// GL: propose to only reorder file on disk based on input (or Makefile) parameter
+// if DB is fast in ordering, eg using SSDs, we could leave it out here.
+// BTW it is BETTER not to reorder galaxies if SFHBins are not also reordered,
+// if at least both are to be used in light cone post processing.
+// for easier to read
   save_galaxy_tree_reorder_on_disk();
+
+#endif //HDF5_OUTPUT
 
   TotGalCount += NGalTree;
 
+#ifdef NORMALIZEDDB
+  TotGalSFHBinCount += NumSFHBins;
+#endif
 }
 
 
@@ -226,7 +289,10 @@ void prepare_galaxy_tree_info_for_output(int filenr, int tree, struct galaxy_tre
 }
 
 
+ 
 
+/**@brief Walks up the main leaf of a tree
+ * TODO - is that what it actually does?*/
 int walk_galaxy_tree(int nr)
 {
   int last;

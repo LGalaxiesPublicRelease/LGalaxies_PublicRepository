@@ -1,23 +1,3 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
-/*
- *  Created in: 2012
- *      Author: robyates
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -106,7 +86,10 @@ void read_yield_tables(void)
         }
 	fclose(fd3);
 	//printf("Lifetimes read.\n");
-	printf("Lifetime tables read.\n");
+#ifdef PARALLEL
+	if ( ThisTask == 0 )
+#endif
+	  printf("Lifetime tables read.\n");
 
 	//------------------------------------------
 	//READ AGB MASS LIST:
@@ -251,7 +234,10 @@ void read_yield_tables(void)
           }
     }
 
-	printf("AGB yield tables read.\n");
+#ifdef PARALLEL
+	if ( ThisTask == 0 )
+#endif
+	  printf("AGB yield tables read.\n");
 
 	//------------------------------------------
 	//READ SN-II MASS LIST:
@@ -456,7 +442,10 @@ void read_yield_tables(void)
 	  }
 	}
 
-	printf("SN-II yield tables read.\n");
+#ifdef PARALLEL
+	if ( ThisTask == 0 )
+#endif
+	  printf("SN-II yield tables read.\n");
 
 #ifndef DTD
 	//------------------------------------------
@@ -555,7 +544,11 @@ void read_yield_tables(void)
 		    }
 		  }
 
-		printf("SN-Ia yield tables read.\n");
+#ifdef PARALLEL
+		 if ( ThisTask == 0 )
+#endif
+		   printf("SN-Ia yield tables read.\n");
+
 #else
 		//------------------------------------------
 		//READ SN-Ia YIELD TABLES:
@@ -580,8 +573,10 @@ void read_yield_tables(void)
 			      SNIaYields[i14] = m14;
 			      //printf("%f, \n", SNIaYields[i14]);
 			  }
-
-			printf("SN-Ia yield tables read.\n");
+#ifdef PARALLEL
+			 if ( ThisTask == 0 )
+#endif
+			   printf("SN-Ia yield tables read.\n");
 
 #endif
 }

@@ -1,23 +1,3 @@
-/*  Copyright (C) <2016>  <L-Galaxies>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/> */
-
-/*
- *  Created in: 2013
- *      Author: Marcel van Daalen
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -678,7 +658,7 @@ void init_power() {
   NPowerTable=0;
   do { //k and Delta
     if (fscanf(fd," %lg %lg ",&k,&p)==2) {
-      kPowerTable[NPowerTable]=k-log10(ScalePos);
+      kPowerTable[NPowerTable]=k;
       PowerTable[NPowerTable]=p;
       NPowerTable++;
     } //if
@@ -758,9 +738,9 @@ MCMC_FOF2[j].M_Mean200[snap]<minfofmass+(mbin+1)*(maxfofmass-minfofmass)/(double
 {
         i=MCMC_FOF2[j].IndexOfCentralGal[snap];
         if (i>=0) {
-          if (MCMC_GAL[HashTable[i]].StellarMass[snap]>masslimit_low && MCMC_GAL[HashTable[i]].StellarMass[snap]<=masslimit_high) ncen=1;
+          if (MCMC_GAL[HashTable[i]].log10_StellarMass[snap]>masslimit_low && MCMC_GAL[HashTable[i]].log10_StellarMass[snap]<=masslimit_high) ncen=1;
           for (k=1; k<MCMC_GAL[HashTable[i]].ngal[snap]; ++k) {
-            if (MCMC_GAL[HashTable[i+k]].StellarMass[snap]>masslimit_low && MCMC_GAL[HashTable[i+k]].StellarMass[snap]<=masslimit_high) nsat++;
+            if (MCMC_GAL[HashTable[i+k]].log10_StellarMass[snap]>masslimit_low && MCMC_GAL[HashTable[i+k]].log10_StellarMass[snap]<=masslimit_high) nsat++;
           } //for
         } //if
         MassTable[mbin]+=MCMC_FOF2[j].M_Mean200[snap];
@@ -833,7 +813,7 @@ MCMC_FOF2[j].M_Mean200[snap]<minfofmass+(mbin+1)*(maxfofmass-minfofmass)/(double
         found=0;
         rvir=pow(10.,(MCMC_GAL[HashTable[i]].M_Mean200[snap]+massoffset)/3.);
         for (jj=1; jj<MCMC_GAL[HashTable[i]].ngal[snap]; ++jj) {
-          if (MCMC_GAL[HashTable[i+jj]].StellarMass[snap]>masslimit_low && MCMC_GAL[HashTable[i+jj]].StellarMass[snap]<=masslimit_high) {
+          if (MCMC_GAL[HashTable[i+jj]].log10_StellarMass[snap]>masslimit_low && MCMC_GAL[HashTable[i+jj]].log10_StellarMass[snap]<=masslimit_high) {
             found++;
             relx=min(fabs(MCMC_GAL[HashTable[i+jj]].x[snap]-MCMC_GAL[HashTable[i]].x[snap]),fabs(boxsize-fabs(MCMC_GAL[HashTable[i+jj]].x[snap]-MCMC_GAL[HashTable[i]].x[snap])));
             rely=min(fabs(MCMC_GAL[HashTable[i+jj]].y[snap]-MCMC_GAL[HashTable[i]].y[snap]),fabs(boxsize-fabs(MCMC_GAL[HashTable[i+jj]].y[snap]-MCMC_GAL[HashTable[i]].y[snap])));
@@ -882,8 +862,8 @@ MCMC_FOF2[j].M_Mean200[snap]<minfofmass+(mbin+1)*(maxfofmass-minfofmass)/(double
 				  MCMC_GAL[HashTable[i]].ngal[snap]>1) {
             rvir=pow(10.,(MCMC_GAL[HashTable[i]].M_Mean200[snap]+massoffset)/3.);
             for (jj=1; jj<MCMC_GAL[HashTable[i]].ngal[snap]; ++jj) {
-              if (MCMC_GAL[HashTable[i+jj]].StellarMass[snap]>masslimit_low &&
-            		  MCMC_GAL[HashTable[i+jj]].StellarMass[snap]<=masslimit_high) {
+              if (MCMC_GAL[HashTable[i+jj]].log10_StellarMass[snap]>masslimit_low &&
+            		  MCMC_GAL[HashTable[i+jj]].log10_StellarMass[snap]<=masslimit_high) {
                 relx=min(fabs(MCMC_GAL[HashTable[i+jj]].x[snap]-MCMC_GAL[HashTable[i]].x[snap]),fabs(boxsize-fabs(MCMC_GAL[HashTable[i+jj]].x[snap]-MCMC_GAL[HashTable[i]].x[snap])));
                 rely=min(fabs(MCMC_GAL[HashTable[i+jj]].y[snap]-MCMC_GAL[HashTable[i]].y[snap]),fabs(boxsize-fabs(MCMC_GAL[HashTable[i+jj]].y[snap]-MCMC_GAL[HashTable[i]].y[snap])));
                 relz=min(fabs(MCMC_GAL[HashTable[i+jj]].z[snap]-MCMC_GAL[HashTable[i]].z[snap]),fabs(boxsize-fabs(MCMC_GAL[HashTable[i+jj]].z[snap]-MCMC_GAL[HashTable[i]].z[snap])));
