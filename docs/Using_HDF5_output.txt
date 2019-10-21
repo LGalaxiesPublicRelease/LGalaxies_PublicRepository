@@ -1,0 +1,78 @@
+====================================================================
+
+Small guide how to use the hdf5 format
+
+=====================================================================
+
+To first use this the hdf5 libs must be installed on your system. 
+This can be downloaded and information to install can be found here:
+
+https://www.hdfgroup.org/HDF5/release/obtain5.html
+
+Once this is done you can now impliment this into L-Galaxies, to do this
+you need to add HDF5LIB and HDF5INCL under yoursystem in
+Makefile_compilers. For my mac which is a "Darwin" system this is:
+
+		HDF5_LIBS = -L/usr/local/hdf5/lib
+		HDF5_INCL = -I/usr/local/hdf5/include 
+
+But this may be different depending on your system. Now to compile
+L-Galaxies with HDF5 you need to make sure the option HDF5_OUTPUT is
+uncommented in My_Makefile_options. 
+
+You can also set compression on (1) or off (0) to decrease the size 
+of the file. It is also possible to change the number of records 
+appended at a time, this shouldn't change the I/O time if compression 
+is off. But you may experience a slower I/O time with much larger 
+records appended, it should decrease the size of the output file but
+it does not change by much.
+
+This creates the header file for hdf5 which gives it information about
+the data being stored.
+
+An example routine of how to read out the data (in python) is in:
+
+	AuxCode/Python/HDF5/read_lgal_hdf5.py
+	AuxCode/Python/HDF5/read_lgal_hdf5.ipynb
+
+If you have any problem with this please contact Peter Thomas:
+
+	p.a.thomas@sussex.ac.uk
+
+====================================================================
+
+Small guide on how HDF5 is implemented
+
+=====================================================================
+
+All the magic happens in io_hdf5.c and GALAXY_OUTPUT_3_HDF5.awk.  The file
+io_hdf5.h is DYNAMICALLY GENERATED and so editing it is a complete waste of
+effort - it will get over-written the next time that the code is compiled.
+
+Information about the variables to be saved is extracted from h_galaxy_output.h.
+Each variable declared in that header file should be followed by comments on the
+same line in the following format:
+<type> <variable> // Units // Description
+struct <type> <variable> // Units Description
+Note: do not use commas in the units or description because I think that might
+break things!  Also, don't start a line with //.
+
+For variables that are arrays, write the array dimensions thus:
+<type> <variable>[RNUM][SFH_NBIN][NUM_ELEMENTS][3][NMAG] // Units // Desc.
+Any of these array dimensions can be omitted, but if included then they must be
+in this order (it would be too hard to allow for random ordering).
+
+The awk script GALAXY_OUTPUT_3_HDF5.awk writes the file io_hdf5.h which contains
+all the information required to create the data tables that are stored in the
+HDF5 output.  This information is read in by io_hdf5.c and interpreted to create
+datasets.  A table is created for each snalshot with one row for each galaxy.
+Each variable then corresponds to a column in that table.  Structs and arrays
+are flattened to vectors with dimension
+[RNUM]*[SFH_NBIN]*[NUM_ELEMENTS]*[3]*[NMAG]*[sizeof(struct <type>)/sizeof(float)]
+where only the items actually relevant for that variable are included.
+
+In addition to the above, GALAXY_OUTPUT_prop_2_HDF5_proptable.awk creates a file
+input/hdf5_field_props.txt that contains a list of variables, units and
+descriptions: this is then copied into the HDF5 output.
+
+Also copied are My_Makefile_options and the input.par file.
