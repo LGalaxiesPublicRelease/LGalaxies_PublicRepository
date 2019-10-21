@@ -1,7 +1,8 @@
+#include "../HaloModel/read_fofs.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "read_fofs.h"
 
 long get_number_of_fofs(char *filename) {
   int np;

@@ -16,11 +16,12 @@
    $Id: mpfit.c,v 1.20 2010/11/13 08:15:35 craigm Exp $
  */
 
+#include "../HaloModel/mpfit.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include "mpfit.h"
 
 /* Forward declarations of functions in this module */
 static int mp_fdjac2(mp_func funct,
