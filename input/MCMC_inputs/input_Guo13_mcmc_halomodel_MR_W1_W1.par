@@ -1,3 +1,7 @@
+%create symbolic links to other directories if you don't ahve then in the code folder
+%e.g. ln -s /export/Workspace/SpecPhotTables/ ./SpecPhotTables
+%ln -sfn to change the link
+
 %------------------------------------------
 %----- SA model inputs       --------------
 %------------------------------------------
@@ -48,7 +52,7 @@ MCMCTreeSampleFile               56000         ;Sample of Dark Matter trees
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	          ./MergerTrees/MCMC/
+SimulationDir	          ./MergerTrees_MCMC/
 
 LastDarkMatterSnapShot    63
 Hashbits                  8     ; needed for Peano hilbert key output with the GALAXYTREE option

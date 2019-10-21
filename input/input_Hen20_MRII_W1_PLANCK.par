@@ -1,15 +1,15 @@
 %create symbolic links to other directories if you don't ahve then in the code folder
-%e.g. ln -s /export/data1/Workspace/SpecPhotTables/ ./SpecPhotTables
+%e.g. ln -s /export/Workspace/SpecPhotTables/ ./SpecPhotTables
 %ln -sfn to change the link
-% unlink to remove link
+% unlink to remove link unlink ./SpecPhotTables
 
 %------------------------------------------
 %----- SA model inputs       --------------
 %------------------------------------------
 
 FileNameGalaxies          SA
-FirstFile         0
-LastFile          99
+FirstFile         40
+LastFile          79
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
 McFile				      ./input/Mc.txt
@@ -25,20 +25,15 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        /scratch-ssd/Millennium/modified_trees/
+SimulationDir	        /virgo/galformod/data/L-Galaxies/MergerTrees/Millennium2/BigRun/modified_trees/
 
-LastDarkMatterSnapShot  63
+LastDarkMatterSnapShot  67
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
+OutputDir              ./output/
+MinGalOutputMass	    0.0
 
-%OutputDir               ./output/
-%OutputDir               /scratch-ssd/SAM/test3/NoFeedback_NoInflow/MR/
-OutputDir                /scratch-ssd/SAM/test0/MR/
-%OutputDir               /scratch3/SAM/Henriques2019/Snaps/MR/
-%OutputDir               /scratch3/SAM/Henriques2019/GalTree/MR/
-MinGalOutputMass	0.01
-
-MaxMemSize              20000
+MaxMemSize             45000 ; 50000 ; 100000 galtree
 
 %-------------------------------------------------
 %----- Scaling options  ------------
@@ -46,25 +41,25 @@ MaxMemSize              20000
 
 ScalePos            0.960558
 ScaleMass           1.11671
- 
-%------------------------------------------
+
+------------------------------------------
 %----- Cosmological paramters ------------
 %------------------------------------------
 
 %NEW COSMOLOGY: PLANCK1
 BaryonFrac      0.155
 Sigma8          0.826
-FileWithZList   ./input/zlists/zlist_planck_MR.txt 
-PartMass        0.0961104    ;should be changed according to the dark matter simulation being used ;new
-BoxSize         480.279  
+FileWithZList   ./input/zlists/zlist_planck_MRII.txt 
+PartMass        0.000768884   ;should be changed according to the dark matter simulation being used ;new
+BoxSize         96.0558  
 Omega           0.315 
 OmegaLambda     0.685 
 Hubble_h        0.673
 
 %ORIGINAL COSMOLOGY: WMAP1
-FileWithZList_OriginalCosm    ./input/zlists/zlist_MR.txt
-PartMass_OriginalCosm         0.0860657 ;should be changed according to the dark matter simulation being used
-BoxSize_OriginalCosm          500.
+FileWithZList_OriginalCosm    ./input/zlists/zlist_MRII.txt
+PartMass_OriginalCosm         0.000688526 ;should be changed according to the dark matter simulation being used
+BoxSize_OriginalCosm          100.
 Omega_OriginalCosm            0.25 
 OmegaLambda_OriginalCosm      0.75 
 Hubble_h_OriginalCosm         0.73
@@ -101,7 +96,7 @@ SFRtdyn                           1  ;*0 -- constant SFE
                                      % 1 -- SFE inversly proportional to tdyn: introduced in Fu2012 ((eq. 3 and 5))		
 		
 FeedbackReheatingModel            0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
-				                      % 1 -- Alternative reheating model	
+				                      % 1 -- Alternative reheating model
 				                      
 FeedbackReheatingDeansityScaling  0  ;%*0 -- no scaling with local density
 				                      % 1 -- Scaling with local density as eq. 35 in Fu2010
@@ -171,11 +166,9 @@ MetallicityOption                 1  ;Photometric tables from SPS models
                                       %*1 -- range of metallicities; 
 
 
-
 %------------------------------------------
 %----- Parameters of physical model -------
 %------------------------------------------
-
 
 %-------------------------------------------
 %% Reionization ;NOT USED if ReionizationModel=0
@@ -188,7 +181,7 @@ Reionization_zr	            7.0  ;using the analytic fit of Kravtsov et al. 2004
 %% Star formation
 %-------------------------------------------
 %1e7 larger when using tdyn tdyn 
-SfrEfficiency                0.06    ;(eq. S14 in Doc)
+SfrEfficiency               0.06     ;(eq. S14 in Doc)
 
 SfrColdCrit                 0.14     ;(eq. S15 in Doc) In units of 10^10Msun  
 									   % there is a factor 3 difference between the eq in Hen15 and in Guo10 because 
@@ -213,7 +206,7 @@ SfrBurstSlope               0.38     ;(eq. S33 in Doc)
 % BH growth and AGN feedback
 %-------------------------------------------
 AgnEfficiency               0.0025   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
-BlackHoleGrowthRate	        0.066    ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                       
+BlackHoleGrowthRate	         0.066   ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                       
 BlackHoleCutoffVelocity     700.     ;(eq. S23 in Henriques15)
 BlackHoleSeedMass           1e-7     ;10^10 Msun/h
 
@@ -221,13 +214,13 @@ BlackHoleSeedMass           1e-7     ;10^10 Msun/h
 %% SN feedback
 %-------------------------------------------
 % Heating of cold gas to hot
-FeedbackReheatingEpsilon    5.6     ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
-ReheatPreVelocity	        110.    ;(eq. S19 in Henriques15) Normalization of SN feedback
-ReheatSlope		            2.9     ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
+FeedbackReheatingEpsilon    5.6      ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
+ReheatPreVelocity	        110.     ;(eq. S19 in Henriques15) Normalization of SN feedback
+ReheatSlope		            2.9      ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
 % Ejection of gas from halo
-FeedbackEjectionEfficiency  5.5     ;(eq. S16 in Henriques15) Fraction SN energy used in reheat and eject 
-EjectPreVelocity	        220.    ;(eq. S17 in Henriques15) Normalization of total SN 
-EjectSlope		            2.0     ;(eq. S17 in Henriques15) Slope of total SN
+FeedbackEjectionEfficiency  5.5      ;(eq. S16 in Henriques15) Fraction SN energy used in reheat and eject 
+EjectPreVelocity	        220.     ;(eq. S17 in Henriques15) Normalization of total SN 
+EjectSlope		            2.0      ;(eq. S17 in Henriques15) Slope of total SN
 
 ReIncorporationFactor	    1.2e+10  ;(eq. S22 in Henriques15) Fraction of ejected mass reincorporated per dynamical time to hot
 
@@ -242,8 +235,8 @@ FracZSNIatoHot				0.3  	;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fracti
 %-------------------------------------------
 %% IMF
 %-------------------------------------------
-Yield			            0.03    ;(section 1.9 in Henriques15) Fraction of metals instantaneously returned after SF (produced by short lived massive stars)
-RecycleFraction             0.43    ;(section 1.6 in Henriques15) Fraction of SF mass instantaneously recycled back to cold - IMF dependent
+Yield			            0.03     ;(section 1.9 in Henriques15) Fraction of metals instantaneously returned after SF (produced by short lived massive stars)
+RecycleFraction             0.43     ;(section 1.6 in Henriques15) Fraction of SF mass instantaneously recycled back to cold - IMF dependent
 
 
 %-------------------------------------------

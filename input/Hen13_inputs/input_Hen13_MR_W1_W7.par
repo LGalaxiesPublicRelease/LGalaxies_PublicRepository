@@ -1,22 +1,17 @@
-%create symbolic links to other directories if you don't ahve then in the code folder
-%e.g. ln -s /export/data1/Workspace/SpecPhotTables/ ./SpecPhotTables
-%ln -sfn to change the link
-% unlink to remove link
-
 %------------------------------------------
 %----- SA model inputs       --------------
 %------------------------------------------
 
 FileNameGalaxies          SA
-FirstFile         0
-LastFile          99
+FirstFile         40
+LastFile          40
 
 FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               /scratch-ssd/SpecPhotTables/
-PhotPrefix                PLANCK ; WMAP7 ;WMAP7
+SpecPhotDir               /net/bootes/export/data1/Workspace/SpecPhotTables/
+PhotPrefix                WMAP7
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/Filter_Names.txt
 
@@ -25,41 +20,35 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        /scratch-ssd/Millennium/modified_trees/
+SimulationDir	        /net/bootes/export/data1/Millennium/modified_trees/
 
 LastDarkMatterSnapShot  63
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
+OutputDir               ./output/
 
-%OutputDir               ./output/
-%OutputDir               /scratch-ssd/SAM/test3/NoFeedback_NoInflow/MR/
-OutputDir                /scratch-ssd/SAM/test0/MR/
-%OutputDir               /scratch3/SAM/Henriques2019/Snaps/MR/
-%OutputDir               /scratch3/SAM/Henriques2019/GalTree/MR/
-MinGalOutputMass	0.01
-
-MaxMemSize              20000
+MaxMemSize              3000
 
 %-------------------------------------------------
 %----- Scaling options  ------------
 %-------------------------------------------------
 
-ScalePos            0.960558
-ScaleMass           1.11671
+ScalePos            1.04311
+ScaleMass           1.23488
  
-%------------------------------------------
+------------------------------------------
 %----- Cosmological paramters ------------
 %------------------------------------------
 
-%NEW COSMOLOGY: PLANCK1
-BaryonFrac      0.155
-Sigma8          0.826
-FileWithZList   ./input/zlists/zlist_planck_MR.txt 
-PartMass        0.0961104    ;should be changed according to the dark matter simulation being used ;new
-BoxSize         480.279  
-Omega           0.315 
-OmegaLambda     0.685 
-Hubble_h        0.673
+%NEW COSMOLOGY: WMAP7
+BaryonFrac      0.167
+Sigma8          0.807
+FileWithZList   ./input/zlists/zlist_wmap7_MR.txt 
+PartMass        0.106281   ;should be changed according to the dark matter simulation being used ;new
+BoxSize         521.555
+Omega           0.272 
+OmegaLambda     0.728 
+Hubble_h        0.704
 
 %ORIGINAL COSMOLOGY: WMAP1
 FileWithZList_OriginalCosm    ./input/zlists/zlist_MR.txt
@@ -74,63 +63,44 @@ Hubble_h_OriginalCosm         0.73
 %----- Switches for different physical models -------
 %----------------------------------------------------
 
-
 ReionizationModel          	      0	 ;%*0 -- Okamoto 2008 (Guo2010)                                      
                                       % 1 -- Gnedin reionization (Delucia2007) 
 				                      % 2 -- no reionization 
 
-									  %option 0 is different if H2_AND_RINGS is ON or OFF (if on we only follow the mass in each ring (and therefore rd) if ON we follow each component of the spin (x,y & z))
 DiskRadiusModel          	      0	 ;%*0 -- use each component (stellar or gas) spin to get disk radius                                      
                                       % 1 -- use halo spin parameter to get disk scale radius, 
                                       % 2 -- disk_radius = Gal[p].Rvir / 10.0, 
 
-%Fu 2010 - StarFormationModel 4, H2FractionRecipe 0 & 2
-%Fu 2010 - StarFormationModel 3 & 4 with SFRtdyn 0 + StarFormationModel 2 & 4 with SFRtdyn 1, H2FractionRecipe 0 & 2
-H2FractionRecipe                  0 ;choice of H2 mass fraction recipe 
-                                      %*0 -- KMT 2009 (introduced in FU2010, updated in Fu2013 (eq 11 and 12))
-                                      % 1 -- Krumholz et al. 2008 - NOT SUPPORTED ANYMORE
-                                      % 2 -- pressure recipe, Blitz & Rosolowsky 2006 (introduced in FU2010)
-
-StarFormationModel                4  ;%*0 -- Croton2006, Delucia2007, Guo2011, Henriques2015 
+StarFormationModel                0  ;%*0 -- Croton2006, Delucia2007, Guo2011, Henriques2015 
 				                      % 1 -- Alternative SF law
-		                              % 2 -- if OPT += -DH2_AND_RINGS: Kennicutt law (set SFRtdyn=1 to have the old SF law, eq 3 in Fu2012)
-									  % 3 -- if OPT += -DH2_AND_RINGS: introduce in Fu2012 - Krumholz et al. 2009 (eq. 6)
-									  %*4 -- if OPT += -DH2_AND_RINGS: introduce in Fu2010 - BIGIEL only one mode now (eq 33)
-		
-SFRtdyn                           1  ;*0 -- constant SFE
-                                     % 1 -- SFE inversly proportional to tdyn: introduced in Fu2012 ((eq. 3 and 5))		
-		
+		                              % 2 -- Availavle if OPT += -DH2_AND_RINGS: sf proportional to tdyn
+									  % 3 -- Availavle if OPT += -DH2_AND_RINGS: Krumholz et al. 2009
+									  % 4 -- Availavle if OPT += -DH2_AND_RINGS: Fu et al. 2010
+									  
 FeedbackReheatingModel            0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
 				                      % 1 -- Alternative reheating model	
-				                      
-FeedbackReheatingDeansityScaling  0  ;%*0 -- no scaling with local density
-				                      % 1 -- Scaling with local density as eq. 35 in Fu2010
 	
 FeedbackEjectionModel             0  ;%*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
                                       % 1 -- Constant velocity model
-                                      
-FeedbackEagleScaling 	          0  ;%*0 -- no rescaling
-                                      % 1 -- Rescaling as in Eagle - local density and metallicity (eq. 7 in Schaye et al. 2015)	
-	
 	
 FateOfSatellitesGas               0   ;choice of ejection of satellite galaxies. 
                                       %*0 -- ejected gas of satellites distribute between type 1 and type 0, 
                                            % according to the fraction of dark matter retained in subhalos (Guo2010).
                                       % 1 -- ejected gas of satellite galaxies contributes to 
                                            % the ejected component of type 0 (Delucia2007); 	
-	
+
 ReIncorporationModel              0  ;%*0 -- Henriques2012 (Mdot_eject=-gama_ej*M_ejected*M_vir)
 				                      % 1 -- Guo2010 (suppression in small halos)
 				                      % 2 -- Delucia2007, 
-		
+				                      
 BlackHoleGrowth                   0  ;How black hole growth from quasar mode is handled
                                        %*0 -- instantaneous; accretion rate reported averaged over step ([...],Guo2011, Henriques2015) 
                                        % 1 -- via accretion disk at some fraction of Eddington rate
 					
-AGNRadioModeModel             	  0	;if > 0 grow black hole during mergers,                                      
-                                      %*0 -- Phenomenological AGN feedback scaling with Mhot*Mbh 
+AGNRadioModeModel             	  1	;if > 0 grow black hole during mergers,                                      
+                                      % 0 -- Phenomenological AGN feedback scaling with Mhot*Mbh 
                                            % as in Henriques2013b + AGN heating from satellites,
-                                      % 1 -- Phenomenological accretion & AGN feedback as in Croton 2006, 
+                                      %*1 -- Phenomenological accretion & AGN feedback as in Croton 2006, 
                                       % 2 -- Bondi-Hoyle accretion, 
                                       % 3 -- Cold cloud accretion 				                    
                                       % 4 -- No cooling supression, 
@@ -139,10 +109,10 @@ DiskInstabilityModel		      0  ;allow bulges to form when the stellar disks beco
                                       %*0 -- stability criteria of the stellar disk from Mo, Mao & White (1998)
                                       % 1 -- no disk instabilities
 
-BHGrowthInDiskInstabilityModel    1  ;accretion of gas into the BH due to disk instabilities
+BHGrowthInDiskInstabilityModel    0  ;accretion of gas into the BH due to disk instabilities
                                       %*0 -- no BH growth in disk instabilities
-                                      % 1 -- cold gas moved into the BH in the same fraction as disk stars moved to bulge
-
+                                      % 1 -- cold gas moved into the BH in the same fraction as disk stars moved to bulge   
+                                    
 HotGasStripingModel               0  ;choice of stripping of satellite galaxies                                       
                                       %*0 -- gradual stripping (cooling in type 1's) (Guo2010) 
 				                           % Ejected gas of satellites distributed between type 1 and type 0, 
@@ -151,7 +121,7 @@ HotGasStripingModel               0  ;choice of stripping of satellite galaxies
                                            % (maybe it should be a different option).
 	                                  % 1 -- immediate stripping (Delucia2007)
 				                           % Ejected gas of satellite galaxies contributes to the 
-					                       % ejected component of type 0 if within Rvir
+					                       % ejected component of type 0 if within Rvir                                      
 
 HotGasOnType2Galaxies             0  ;allowing hot gas to remain even on type two galaxies 
                                       % 0 -- no hot gas on type 2's - normal tidal striping implmentation
@@ -160,22 +130,21 @@ HotGasOnType2Galaxies             0  ;allowing hot gas to remain even on type tw
 
 
 StarBurstModel           	      0  ;recipe for starbursts during mergers
-                                      %*0 -- starbursts in major AND minor mergers as in Somerville 2001
-
+                                      %*0 -- starbursts in major AND minor mergers as in Somerville 2001  
+                                                 
 BulgeFormationInMinorMergersOn    1	 ;option for bulges to form in minor mergers as well as major
                                       % 0 -- bulges only formed in major mergers 
                                       %*1 -- bulge formation in major AND minor mergers
 
 MetallicityOption                 1  ;Photometric tables from SPS models 
                                       % 0 -- only solar metallicity, 
-                                      %*1 -- range of metallicities; 
-
+                                      %*1 -- range of metallicities;    
+                                      
 
 
 %------------------------------------------
 %----- Parameters of physical model -------
 %------------------------------------------
-
 
 %-------------------------------------------
 %% Reionization ;NOT USED if ReionizationModel=0
@@ -187,80 +156,59 @@ Reionization_zr	            7.0  ;using the analytic fit of Kravtsov et al. 2004
 %-------------------------------------------
 %% Star formation
 %-------------------------------------------
-%1e7 larger when using tdyn tdyn 
-SfrEfficiency                0.06    ;(eq. S14 in Doc)
-
-SfrColdCrit                 0.14     ;(eq. S15 in Doc) In units of 10^10Msun  
-									   % there is a factor 3 difference between the eq in Hen15 and in Guo10 because 
-									   % one use Rgas and the other Rgas,d
-
-Clumpingfactor              1.0      ;clumping factor in Krumholz' H2 fraction recipe 
-									   % Our values in rings are an average over the ring. The clumping factor
-									   % corrects for the fact that material is not uniformly distributed but
-									   % instead concentrated in spiral arms
-									   % for KMT09 H2 formation there is an additional pow((1.0/metallicityr),0.7)
-									   % dependence to solve issues with low-metallicity galaxies
-
-GasInflowVel                900.      ;km/s/Mpc
+SfrEfficiency               0.055    ;(eq. S14 in Doc)
+SfrColdCrit                 0.38     ;(eq. S15 in Doc) In units of 10^10Msun 
 
 %-------------------------------------------
 %% Star formation bursts during mergers
 %-------------------------------------------
-SfrBurstEfficiency          0.5      ;(eq. S33 in Doc)
-SfrBurstSlope               0.38     ;(eq. S33 in Doc)
+SfrBurstEfficiency          0.56     ;(eq. S33 in Doc)
+SfrBurstSlope               0.7      ;(eq. S33 in Doc)
 
 %-------------------------------------------
 % BH growth and AGN feedback
 %-------------------------------------------
-AgnEfficiency               0.0025   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
-BlackHoleGrowthRate	        0.066    ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                       
-BlackHoleCutoffVelocity     700.     ;(eq. S23 in Henriques15)
+AgnEfficiency               3.2e-3   ;(eq. S24 in Doc) Quiescent accretion in the radio mode                                                                                                                                                                
+BlackHoleGrowthRate	        0.015    ;(eq. S23 in Doc) Fraction of cold gas added to the BH during mergers 
+BlackHoleCutoffVelocity     280.     ;(eq. S23 in Doc)
 BlackHoleSeedMass           1e-7     ;10^10 Msun/h
-
+                 
 %-------------------------------------------
 %% SN feedback
 %-------------------------------------------
 % Heating of cold gas to hot
-FeedbackReheatingEpsilon    5.6     ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
-ReheatPreVelocity	        110.    ;(eq. S19 in Henriques15) Normalization of SN feedback
-ReheatSlope		            2.9     ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
+FeedbackReheatingEpsilon    2.1      ;(eq. S18 in Doc) Mass of cold gas reheated due to SF (see Martin 1999) 
+ReheatPreVelocity	        410.     ;(eq. S19 in Doc) Normalization of SN feedback
+ReheatSlope		            0.92     ;(eq. S19 in Doc) Slope of the dependence of  SN feedback on Vvir 
 % Ejection of gas from halo
-FeedbackEjectionEfficiency  5.5     ;(eq. S16 in Henriques15) Fraction SN energy used in reheat and eject 
-EjectPreVelocity	        220.    ;(eq. S17 in Henriques15) Normalization of total SN 
-EjectSlope		            2.0     ;(eq. S17 in Henriques15) Slope of total SN
+FeedbackEjectionEfficiency  0.65     ;(eq. S16 in Doc) Fraction SN energy used in reheat and eject 
+EjectPreVelocity	        340.     ;(eq. S17 in Doc) Normalization of total SN 
+EjectSlope		            0.46     ;(eq. S17 in Doc) Slope of total SN
 
-ReIncorporationFactor	    1.2e+10  ;(eq. S22 in Henriques15) Fraction of ejected mass reincorporated per dynamical time to hot
-
-%-------------------------------------------
-%%Fraction of Metals returned to Hot component
-%-------------------------------------------
-FracZSNIItoHot				0.3		;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNII metals put into hot gas from the disc
-									%(in situations where DETAILED_METALS_AND_MASS_RETURN is not on, FracSNIItoHot is assumed for all metals)
-FracZSNIatoHot				0.3  	;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNIa metals put into hot gas from the disc
-
+ReIncorporationFactor	   1.8e+10   ;(eq. S22 in Doc) Fraction of ejected mass reincorporated per dynamical time to hot
 
 %-------------------------------------------
 %% IMF
 %-------------------------------------------
-Yield			            0.03    ;(section 1.9 in Henriques15) Fraction of metals instantaneously returned after SF (produced by short lived massive stars)
-RecycleFraction             0.43    ;(section 1.6 in Henriques15) Fraction of SF mass instantaneously recycled back to cold - IMF dependent
-
+Yield			            0.047    ;(section 1.9 in Doc) Fraction of metals instantaneously returned after SF (produced by short lived massive stars)
+RecycleFraction             0.43     ;(section 1.6 in Doc) Fraction of SF mass instantaneously recycled back to cold - IMF dependent
 
 %-------------------------------------------
 %% Mergers
 %-------------------------------------------
-ThreshMajorMerger	        0.33      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
-MergerTimeMultiplier        1.8       ;(eq. S32 in Henriques15) Adjust the dynamical friction merging time
+ThreshMajorMerger	        0.3      ;(section 1.12.2 in Doc) Major merger when mass ratio gt this
+MergerTimeMultiplier        2.0      ;(eq. S32 in Doc) Adjust the dynamical friction merging time
 
 %-------------------------------------------
 %%Hot Gas stripping
 %-------------------------------------------
-RamPressureStrip_CutOffMass  5.1e+4  ;(section 1.11.1 in Henriques15) In code Units of 10^10 (mass above which there is stripping)
+RamPressureStrip_CutOffMass  0.0     ;(section 1.11.1 in Doc) In code Units of 10^10 (mass above which there is stripping)
+
 
 %-------------------------------------------
 %% Total SN energy available
 %-------------------------------------------
-EnergySN		    5.0e51           ;(section 1.7 in Doc)
+EnergySN		    1.0e51           ;(section 1.7 in Doc)
 EtaSN			    8.0e-3
 
 
@@ -298,9 +246,14 @@ BlackHoleDisruptGrowthRate  0.0
 ReincZpower                 2.41
 ReincVelocitypower          3.26
 
-
+%-------------------------------------------
+%%Fraction of Metals returned to Hot component
+%-------------------------------------------
+FracZtoHot                  0.0	    
 
 %-------------------------------------------
 %%Hot Gas stripping
 %-------------------------------------------
 RamPressureRadiusThreshold      0.0  ;efficiency of ram pressure stripping
+
+

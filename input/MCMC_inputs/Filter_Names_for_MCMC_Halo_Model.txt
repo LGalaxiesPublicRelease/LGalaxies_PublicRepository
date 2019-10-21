@@ -1,0 +1,10 @@
+5
+c_johnson_U.dat 0.36 U
+c_johnson_V.dat 0.55 V
+vista_johnson_J.dat 1.26 J
+u_band_trans.dat 0.3551 us
+r_band_trans.dat 0.6165 rs
+
+
+1
+c_johnson_V.dat 0.55 V

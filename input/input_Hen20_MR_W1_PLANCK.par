@@ -25,17 +25,13 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        /scratch-ssd/Millennium/modified_trees/
+SimulationDir	        /virgo/galformod/data/L-Galaxies/MergerTrees/Millennium/modified_trees/
 
 LastDarkMatterSnapShot  63
 Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
 
 
-%OutputDir               ./output/
-%OutputDir               /scratch-ssd/SAM/test3/NoFeedback_NoInflow/MR/
-OutputDir                /scratch-ssd/SAM/test0/MR/
-%OutputDir               /scratch3/SAM/Henriques2019/Snaps/MR/
-%OutputDir               /scratch3/SAM/Henriques2019/GalTree/MR/
+OutputDir               ./output/
 MinGalOutputMass	0.01
 
 MaxMemSize              20000

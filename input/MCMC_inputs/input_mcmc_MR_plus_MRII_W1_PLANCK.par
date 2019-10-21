@@ -1,79 +1,120 @@
 %create symbolic links to other directories if you don't ahve then in the code folder
-%e.g. ln -s /export/data1/Workspace/SpecPhotTables/ ./SpecPhotTables
+%e.g. ln -s /export/Workspace/SpecPhotTables/ ./SpecPhotTables
 %ln -sfn to change the link
-% unlink to remove link
 
 %------------------------------------------
-%----- SA model inputs       --------------
+%----- SA model output files --------------
 %------------------------------------------
 
 FileNameGalaxies          SA
-FirstFile         0
-LastFile          99
 
-FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
+FileWithOutputRedshifts   ./input/MCMC_inputs/desired_output_redshifts_for_MCMC.txt
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               /scratch-ssd/SpecPhotTables/
-PhotPrefix                PLANCK ; WMAP7 ;WMAP7
+SpecPhotDir              /scratch-ssd/SpecPhotTables/
+PhotPrefix                PLANCK ; WMAP7
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
-FileWithFilterNames       ./input/Filter_Names.txt
+FileWithFilterNames       ./input/MCMC_inputs/Filter_Names_for_MCMC.txt
+
+
+%-------------------------------------------------
+%---     Variables needed for the MCMC         ---
+%-------------------------------------------------
+
+MCMCParameterPriorsAndSwitches   ./input/MCMC_inputs/MCMCParameterPriorsAndSwitches.txt
+MCMCStartingParFile              ./input/MCMC_inputs/MCMCStartingPar.txt
+MCMCObsConstraints               ./input/MCMC_inputs/MCMCObsConstraints.txt
+MCMCWeightsObsConstraints        ./input/MCMC_inputs/MCMCWeightsObsConstraints.txt
+ObsConstraintsDir                ./MCMC/ObsConstraints/
+CosmologyTablesDir               ./CosmologyTables/
+MCMCHaloModelDir                 ./MCMC/HaloModel/ 
+                                     
+ChainLength                      1      ;length of MCMC chains
+Sample_Physical_Parameters       1      ;set to zero to keep physical parameters at initial values
+Sample_Cosmological_Parameters   0      ;set to zero to keep cosmological parameters at initial values
+Time_Dependant_PhysPar           0      ;set to zero to have the same physical parameters at all z 
+MCMCMode                         0      ;acceptance rate option
+                                           %*0 for normal MCMC -> AcceptanceLogic = (ran < AcceptanceProbability) 
+                                           % 1 find a high likelihood -> AcceptanceLogic = (lhood2 > lhood1)
+                                          
+MCMC_LogStep_Size                0.0   ;size of log_normal step when proposing new parameters
+MCMC_Initial_Par_Displacement    0.0    ;size of log_normal displacement for the initial parameters in each chain
+MCMC_Minimum_Obs_Error           0.3   ;minimum value allowed for observation error bars (maximum level of agreement required)
+AddedErrOnMass                   0.08  ;observational scatter on masses with which theoretical masses are convolved to compensate for Eddignton bias
+
+%sample files read in read_sample_info(), files available: 210070, 230070, 2500300 
+MCMCSampleDir                    ./MCMC/Samples/
+MCMCSampleFilePrefix_MRII        optimal_MRII 
+MCMCSampleFilePrefix_MR          cut_optimal  ; %*cut_optimal (MCMCSampleFileType = 2)       
+MCMCSampleFile_MR                100          ;File with IDs of sample of Dark matter trees to use as input 
+MCMCSampleFile_MRII              70           ;File with IDs of sample of Dark matter trees to use as input                          
+MCMCTreeSampleFile               210070       ;Sample of Dark Matter trees
+
 
 
 %-------------------------------------------------
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        /scratch-ssd/Millennium/modified_trees/
+SimulationDir	             /scratch-ssd/MergerTrees_MCMC/
+LastDarkMatterSnapShot_MR    63
+LastDarkMatterSnapShot_MRII  67
+Hashbits                     8     ; needed for Peano hilbert key output with the GALAXYTREE option
+OutputDir                    ./output/
 
-LastDarkMatterSnapShot  63
-Hashbits                8    ;needed for Peano hilbert key output with the GALAXYTREE option
+MaxMemSize                30000
 
-
-%OutputDir               ./output/
-%OutputDir               /scratch-ssd/SAM/test3/NoFeedback_NoInflow/MR/
-OutputDir                /scratch-ssd/SAM/test0/MR/
-%OutputDir               /scratch3/SAM/Henriques2019/Snaps/MR/
-%OutputDir               /scratch3/SAM/Henriques2019/GalTree/MR/
-MinGalOutputMass	0.01
-
-MaxMemSize              20000
+MachineTimeOut            71.5        ;time out for the computer cluster in hours
+JobSubmitCommand          qsub        ;qsub or bsub
+JobSubmitPipe             <      
+JobSubmitFile             odin        ;L-Galaxies.bash, odin.bash or cosma.bash
 
 %-------------------------------------------------
-%----- Scaling options  ------------
+%-----   Scaling options    ----------------------
 %-------------------------------------------------
 
 ScalePos            0.960558
 ScaleMass           1.11671
- 
-%------------------------------------------
-%----- Cosmological paramters ------------
-%------------------------------------------
+
+--------------------------------------------------
+%----- Cosmological paramters --------------------
+%-------------------------------------------------
 
 %NEW COSMOLOGY: PLANCK1
 BaryonFrac      0.155
 Sigma8          0.826
-FileWithZList   ./input/zlists/zlist_planck_MR.txt 
-PartMass        0.0961104    ;should be changed according to the dark matter simulation being used ;new
-BoxSize         480.279  
-Omega           0.315 
-OmegaLambda     0.685 
-Hubble_h        0.673
+FileWithZList_MR    ./input/zlists/zlist_planck_MR.txt
+PartMass_MR         0.0961104    ;should be changed according to the dark matter simulation being used ;new
+BoxSize_MR          480.279   ;new
+
+FileWithZList_MRII  ./input/zlists/zlist_planck_MRII.txt
+PartMass_MRII       0.000768884   ;should be changed according to the dark matter simulation being used
+BoxSize_MRII        96.0558
+
+Omega               0.315 
+OmegaLambda         0.685 
+Hubble_h            0.673
+
 
 %ORIGINAL COSMOLOGY: WMAP1
-FileWithZList_OriginalCosm    ./input/zlists/zlist_MR.txt
-PartMass_OriginalCosm         0.0860657 ;should be changed according to the dark matter simulation being used
-BoxSize_OriginalCosm          500.
-Omega_OriginalCosm            0.25 
-OmegaLambda_OriginalCosm      0.75 
-Hubble_h_OriginalCosm         0.73
+FileWithZList_OriginalCosm_MR    ./input/zlists/zlist_MR.txt
+PartMass_OriginalCosm_MR         0.0860657 ;should be changed according to the dark matter simulation being used
+BoxSize_OriginalCosm_MR          500.
+
+FileWithZList_OriginalCosm_MRII  ./input/zlists/zlist_MRII.txt
+PartMass_OriginalCosm_MRII       0.000688526   ;should be changed according to the dark matter simulation being used
+BoxSize_OriginalCosm_MRII        100.
+
+Omega_OriginalCosm               0.25 
+OmegaLambda_OriginalCosm         0.75 
+Hubble_h_OriginalCosm            0.73
+
 
 
 %----------------------------------------------------
 %----- Switches for different physical models -------
 %----------------------------------------------------
-
 
 ReionizationModel          	      0	 ;%*0 -- Okamoto 2008 (Guo2010)                                      
                                       % 1 -- Gnedin reionization (Delucia2007) 
@@ -171,11 +212,9 @@ MetallicityOption                 1  ;Photometric tables from SPS models
                                       %*1 -- range of metallicities; 
 
 
-
 %------------------------------------------
 %----- Parameters of physical model -------
 %------------------------------------------
-
 
 %-------------------------------------------
 %% Reionization ;NOT USED if ReionizationModel=0
@@ -188,7 +227,9 @@ Reionization_zr	            7.0  ;using the analytic fit of Kravtsov et al. 2004
 %% Star formation
 %-------------------------------------------
 %1e7 larger when using tdyn tdyn 
-SfrEfficiency                0.06    ;(eq. S14 in Doc)
+%SfrEfficiency               2.e-9    ;(eq. S14 in Doc)
+SfrEfficiency               0.053    ;(eq. S14 in Doc)
+%SfrEfficiency               0.073    ;(eq. S14 in Doc)
 
 SfrColdCrit                 0.14     ;(eq. S15 in Doc) In units of 10^10Msun  
 									   % there is a factor 3 difference between the eq in Hen15 and in Guo10 because 
@@ -200,62 +241,65 @@ Clumpingfactor              1.0      ;clumping factor in Krumholz' H2 fraction r
 									   % instead concentrated in spiral arms
 									   % for KMT09 H2 formation there is an additional pow((1.0/metallicityr),0.7)
 									   % dependence to solve issues with low-metallicity galaxies
-
+%GasInflowVel                1500.      ;km/s/Mpc
 GasInflowVel                900.      ;km/s/Mpc
 
 %-------------------------------------------
 %% Star formation bursts during mergers
 %-------------------------------------------
-SfrBurstEfficiency          0.5      ;(eq. S33 in Doc)
-SfrBurstSlope               0.38     ;(eq. S33 in Doc)
+SfrBurstEfficiency          0.14     ;(eq. S33 in Doc)
+SfrBurstSlope               0.62      ;(eq. S33 in Doc)
 
 %-------------------------------------------
 % BH growth and AGN feedback
 %-------------------------------------------
-AgnEfficiency               0.0025   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
-BlackHoleGrowthRate	        0.066    ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                       
-BlackHoleCutoffVelocity     700.     ;(eq. S23 in Henriques15)
+AgnEfficiency               0.001   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
+BlackHoleGrowthRate	        0.015   ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                                              
+BlackHoleCutoffVelocity     300.     ;(eq. S23 in Henriques15)
+
+%AgnEfficiency               0.0006   ;(eq. S24 in Doc) Quiescent accretion in the radio mode 
+%BlackHoleGrowthRate	        0.0154   ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers                                                                                                                                                              
+%BlackHoleCutoffVelocity     300.     ;(eq. S23 in Henriques15)
 BlackHoleSeedMass           1e-7     ;10^10 Msun/h
 
 %-------------------------------------------
 %% SN feedback
 %-------------------------------------------
 % Heating of cold gas to hot
-FeedbackReheatingEpsilon    5.6     ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
-ReheatPreVelocity	        110.    ;(eq. S19 in Henriques15) Normalization of SN feedback
-ReheatSlope		            2.9     ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
+FeedbackReheatingEpsilon    2.2    ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
+ReheatPreVelocity	        200.     ;(eq. S19 in Henriques15) Normalization of SN feedback
+ReheatSlope		            1.9     ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
 % Ejection of gas from halo
-FeedbackEjectionEfficiency  5.5     ;(eq. S16 in Henriques15) Fraction SN energy used in reheat and eject 
-EjectPreVelocity	        220.    ;(eq. S17 in Henriques15) Normalization of total SN 
-EjectSlope		            2.0     ;(eq. S17 in Henriques15) Slope of total SN
+FeedbackEjectionEfficiency  4.0      ;(eq. S16 in Henriques15) Fraction SN energy used in reheat and eject 
+EjectPreVelocity	        180.     ;(eq. S17 in Henriques15) Normalization of total SN 
+EjectSlope		            1.8     ;(eq. S17 in Henriques15) Slope of total SN
 
-ReIncorporationFactor	    1.2e+10  ;(eq. S22 in Henriques15) Fraction of ejected mass reincorporated per dynamical time to hot
+ReIncorporationFactor	    2.4e+10  ;(eq. S22 in Henriques15) Fraction of ejected mass reincorporated per dynamical time to hot
 
 %-------------------------------------------
 %%Fraction of Metals returned to Hot component
 %-------------------------------------------
 FracZSNIItoHot				0.3		;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNII metals put into hot gas from the disc
 									%(in situations where DETAILED_METALS_AND_MASS_RETURN is not on, FracSNIItoHot is assumed for all metals)
-FracZSNIatoHot				0.3  	;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNIa metals put into hot gas from the disc
-
+FracZSNIatoHot				0.3		;if FEEDBACK_COUPLED_WITH_MASS_RETURN this is the fraction of SNIa metals put into hot gas from the disc
 
 %-------------------------------------------
 %% IMF
 %-------------------------------------------
 Yield			            0.03    ;(section 1.9 in Henriques15) Fraction of metals instantaneously returned after SF (produced by short lived massive stars)
-RecycleFraction             0.43    ;(section 1.6 in Henriques15) Fraction of SF mass instantaneously recycled back to cold - IMF dependent
+RecycleFraction             0.43     ;(section 1.6 in Henriques15) Fraction of SF mass instantaneously recycled back to cold - IMF dependent
 
 
 %-------------------------------------------
 %% Mergers
 %-------------------------------------------
-ThreshMajorMerger	        0.33      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
-MergerTimeMultiplier        1.8       ;(eq. S32 in Henriques15) Adjust the dynamical friction merging time
+ThreshMajorMerger	        0.37      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
+MergerTimeMultiplier        1.4      ;(eq. S32 in Henriques15) Adjust the dynamical friction merging time
 
 %-------------------------------------------
 %%Hot Gas stripping
 %-------------------------------------------
-RamPressureStrip_CutOffMass  5.1e+4  ;(section 1.11.1 in Henriques15) In code Units of 10^10 (mass above which there is stripping)
+RamPressureStrip_CutOffMass  4.5e+3  ;(section 1.11.1 in Henriques15) In code Units of 10^10 (mass above which there is stripping)
 
 %-------------------------------------------
 %% Total SN energy available

@@ -1,5 +1,5 @@
 %------------------------------------------
-%----- SA model output files --------------
+%----- SA model inputs       --------------
 %------------------------------------------
 
 FileNameGalaxies          SA
@@ -10,8 +10,8 @@ FileWithOutputRedshifts   ./input/desired_output_redshifts.txt
 McFile				      ./input/Mc.txt
 CoolFunctionsDir          ./CoolFunctions/
 
-SpecPhotDir               ./SpecPhotTables/
-PhotPrefix                WMAP7_M05 ; WMAP7_BC03 ;WMAP7_CB07
+SpecPhotDir               /net/bootes/export/data1/Workspace/SpecPhotTables/
+PhotPrefix                PLANCK ; WMAP7 
 SpecPhotIMF               Chabrier ; Salpeter ; Kroupa 
 FileWithFilterNames       ./input/Filter_Names.txt
 
@@ -20,43 +20,44 @@ FileWithFilterNames       ./input/Filter_Names.txt
 %----- Simulation input/output files  ------------
 %-------------------------------------------------
 
-SimulationDir	        ./MergerTrees/MRII/
+SimulationDir	        /net/bootes/export/data1/Caterpillar/new_H5320_LX14/tree/
 
-LastDarkMatterSnapShot  67
-Hashbits                8     ;needed for Peano hilbert key output with the GALAXYTREE option
+LastDarkMatterSnapShot  319
+Hashbits                8     ; needed for Peano hilbert key output with the GALAXYTREE option
 
-OutputDir               ./output/
+OutputDir              /net/bootes/scratch2/SAM/test2/MR/
 
-MaxMemSize              4000
+
+MaxMemSize              15000 ; 70000 
 
 %-------------------------------------------------
 %----- Scaling options  ------------
 %-------------------------------------------------
 
-ScalePos            1.04311
-ScaleMass           1.23488
+ScalePos            1.0
+ScaleMass           1.0
 
 ------------------------------------------
 %----- Cosmological paramters ------------
 %------------------------------------------
 
-%NEW COSMOLOGY: WMAP7
-BaryonFrac      0.167
-Sigma8          0.807
-FileWithZList   ./input/zlists/zlist_wmap7_MRII.txt 
-PartMass        0.00085025.    ;should be changed according to the dark matter simulation being used
-BoxSize         104.3  
-Omega           0.272 
-OmegaLambda     0.728 
-Hubble_h        0.704
+%NEW COSMOLOGY: PLANCK1
+BaryonFrac      0.155
+Sigma8          0.83
+FileWithZList   ./input/zlists/zlist_planck_Caterpillar.txt 
+PartMass        0.000128000    ;should be changed according to the dark matter simulation being used
+BoxSize         1.   
+Omega           0.31 
+OmegaLambda     0.68 
+Hubble_h        0.67
 
 %ORIGINAL COSMOLOGY: WMAP1
-FileWithZList_OriginalCosm   ./input/zlists/zlist_MRII.txt
-PartMass_OriginalCosm        0.000688526 ;should be changed according to the dark matter simulation being used
-BoxSize_OriginalCosm         100.
-Omega_OriginalCosm           0.25 
-OmegaLambda_OriginalCosm     0.75 
-Hubble_h_OriginalCosm        0.73
+FileWithZList_OriginalCosm    ./input/zlists/zlist_planck_Caterpillar.txt
+PartMass_OriginalCosm         0.000128000 ;should be changed according to the dark matter simulation being used
+BoxSize_OriginalCosm          1.
+Omega_OriginalCosm            0.31
+OmegaLambda_OriginalCosm      0.68
+Hubble_h_OriginalCosm         0.67
 
 
 
@@ -79,7 +80,7 @@ StarFormationModel             0   ;
 				                      % 1 -- Alternative SF law
 				                 
 FeedbackReheatingModel         0   ; 				                 
-				                      %*0 -- Guo 2010 (ejection scheme used in delucia 2007, plus Vmax dependence)
+				                      %*0 -- Guo 2010 (reheating scheme used in delucia 2007, plus Vmax dependence)
 				                      % 1 -- Alternative reheating model
 				                 
 FeedbackEjectionModel          0   ; 
@@ -97,6 +98,11 @@ ReIncorporationModel           0   ;reincorporation time scale
 				                      %*0 -- Henriques2012 (Mdot_eject=-gama_ej*M_ejected*M_vir)
 				                      % 1 -- Guo2010 (suppression in small halos)
 				                      % 2 -- Delucia2007
+				                      
+BlackHoleGrowth                 0  ;How black hole growth from quasar mode is handled
+                                      %*0 -- instantaneous; accretion rate reported averaged over step ([...],Guo2011, Henriques2015) 
+                                      % 1 -- via accretion disk at some fraction of Eddington rate
+
 
 AGNRadioModeModel              0   ;if > 0 grow black hole during mergers,                                     
                                       %*0 -- Phenomenological AGN feedback scaling with Mhot*Mbh 
@@ -123,11 +129,12 @@ HotGasStripingModel            0   ;choice of stripping of satellite galaxies
                                       % 1-- immediate stripping (Delucia2007)
 				                           % Ejected gas of satellite galaxies contributes to the 
 					                       % ejected component of type 0 if within Rvir
-                                     
-DisruptionModel                0   ;tidal disruption of type 2 galaxies
-                                      %*0 -- disruption of stars and cold gas in type 2 galaxies as in Guo11
-                                      % 1-- no disruption
-                                      
+                                           
+HotGasOnType2Galaxies           0  ;allowing hot gas to remain even on type two galaxies 
+                                      % 0 -- no hot gas on type 2's - normal tidal striping implmentation
+                                          % removes all the hot gas once the dark matter halo has been striped
+                                      % 1 -- allow hot gas on type 2's - only makes sense if tidal striping is modified                                           
+                                                                                                                                                                                      
 StarBurstModel          	   0   ;recipe for starbursts during mergers
                                        %*0 -- starbursts in major AND minor mergers as in Somerville 2001
 
@@ -137,7 +144,7 @@ BulgeFormationInMinorMergersOn 1   ;option for bulges to form in minor mergers a
 
 MetallicityOption              1   ;Photometric tables from SPS models 
                                       % 0 -- only solar metallicity, 
-                                      %*1 -- range of metallicities; 
+                                      %*1 -- range of metallicities;
 
 
 %------------------------------------------
@@ -147,14 +154,15 @@ MetallicityOption              1   ;Photometric tables from SPS models
 %-------------------------------------------
 %% Reionization ;NOT USED if ReionizationModel=0
 %-------------------------------------------
-Reionization_z0	            8.0  
-Reionization_zr	            7.0  
+Reionization_z0	            7.0  
+Reionization_zr	            6.0  
 
 %-------------------------------------------
 %% Star formation
 %-------------------------------------------
-SfrEfficiency               0.035    ; (eq. S14 in Henriques15)
-SfrColdCrit                 0.24     ; (eq. S15 in Henriques15) In units of 10^10Msun 
+SfrEfficiency               0.025    ;(eq. S14 in Henriques15)
+%SfrColdCrit                 0.24     ;(eq. S15 in Henriques15) In units of 10^10Msun 
+SfrColdCrit                 0.04     ;(eq. S15 in Henriques15) In units of 10^10Msun 
 
 %-------------------------------------------
 %% Star formation bursts during mergers
@@ -165,10 +173,11 @@ SfrBurstSlope               1.9      ;(eq. S33 in Henriques15)
 %-------------------------------------------
 % BH growth and AGN feedback
 %-------------------------------------------
-AgnEfficiency               5.3e-3    ;(eq. S24 in Henriques15) Quiescent accretion in the radio mode                                                                                                                                                                
-BlackHoleGrowthRate	        0.041     ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers 
-BlackHoleCutoffVelocity     750.      ;(eq. S23 in Henriques15)
-BlackHoleSeedMass           1e-7      ;10^10 Msun/h
+AgnEfficiency               5.3e-3   ;(eq. S24 in Henriques15) Quiescent accretion in the radio mode   
+%AgnEfficiency               0.   ;(eq. S24 in Henriques15) Quiescent accretion in the radio mode                                                                                                                                                                              
+BlackHoleGrowthRate	        0.041    ;(eq. S23 in Henriques15) Fraction of cold gas added to the BH during mergers 
+BlackHoleCutoffVelocity     750.     ;(eq. S23 in Henriques15)
+BlackHoleSeedMass           1e-7     ;10^10 Msun/h
 
 
 %-------------------------------------------
@@ -176,33 +185,88 @@ BlackHoleSeedMass           1e-7      ;10^10 Msun/h
 %-------------------------------------------
 % Heating of cold gas to hot
 FeedbackReheatingEpsilon    2.6      ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
+%FeedbackReheatingEpsilon    0.0      ;(eq. S18 in Henriques15) Mass of cold gas reheated due to SF (see Martin 1999) 
 ReheatPreVelocity	        480.     ;(eq. S19 in Henriques15) Normalization of SN feedback
 ReheatSlope		            0.72     ;(eq. S19 in Henriques15) Slope of the dependence of  SN feedback on Vvir 
 % Ejection of gas from halo
-FeedbackEjectionEfficiency  0.62     ;(eq. S16 in Henriques15) Fraction of energy available for ejection of gas
+FeedbackEjectionEfficiency  0.62     ;(eq. S16 in Henriques15) Fraction SN energy used in reheat and eject 
+%FeedbackEjectionEfficiency  0.0     ;(eq. S16 in Henriques15) Fraction SN energy used in reheat and eject 
 EjectPreVelocity	        100.     ;(eq. S17 in Henriques15) Normalization of total SN 
 EjectSlope		            0.80     ;(eq. S17 in Henriques15) Slope of total SN
 
 ReIncorporationFactor	   3.0e+10   ;(eq. S22 in Henriques15) Fraction of ejected mass reincorporated per dynamical time to hot
+%ReIncorporationFactor	   .0   ;(eq. S22 in Henriques15) Fraction of ejected mass reincorporated per dynamical time to hot
 
 %-------------------------------------------
 %% IMF
 %-------------------------------------------
-Yield			            0.03     ;(section 1.9 in Henriques15) Fraction of metals instantaneously returned after SF (produced by short lived massive stars)
+Yield			            0.046    ;(section 1.9 in Henriques15) Fraction of metals instantaneously returned after SF (produced by short lived massive stars)
 RecycleFraction             0.43     ;(section 1.6 in Henriques15) Fraction of SF mass instantaneously recycled back to cold - IMF dependent
 
 %-------------------------------------------
 %% Mergers
 %-------------------------------------------
-ThreshMajorMerger	        0.3      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
-MergerTimeMultiplier        2.0      ;(eq. S32 in Henriques15) Adjust the dynamical friction merging time
+ThreshMajorMerger	        0.1      ;(section 1.12.2 in Henriques15) Major merger when mass ratio gt this
+MergerTimeMultiplier        2.5      ;(eq. S32 in Henriques15) Adjust the dynamical friction merging time
+%MergerTimeMultiplier        0.5      ;(eq. S32 in Henriques15) Adjust the dynamical friction merging time
 
 %-------------------------------------------
-%%Hot Gas stripping - only one of the next two parameters is used
+%%Hot Gas stripping
 %-------------------------------------------
 RamPressureStrip_CutOffMass  1.2e+4  ;(section 1.11.1 in Henriques15) In code Units of 10^10 (mass above which there is stripping)
 
 
 EnergySN		    1.0e51           ;(section 1.7 in Henriques15)
 EtaSN			    8.0e-3
+
+
+
+UnitLength_in_cm                   3.08568e+24		;Mpc - WATCH OUT, distances in the code are in Mpc/h
+UnitMass_in_g                      1.989e+43		;10^10Msun - WATCH OUT, masses in the code are in 10^10Msun/h
+UnitVelocity_in_cm_per_s           100000		    ;Km/s - WATCH OUT, this are the correct units in the code km/s
+
+
+
+
+
+
+%---------------------------------------------------------
+% Additional parameters not used by the default model
+%---------------------------------------------------------  
+
+%-------------------------------------------
+% BH growth 
+%-------------------------------------------                                                                               
+BlackHoleAccretionRate      3.      ;fraction of M_BH/t_Edd.  If Eddington limited then = (1-e)/e where e is radiation efficiency.
+BlackHoleDisruptGrowthRate  0.0
+
+%-------------------------------------------
+%% Total SN energy available
+%-------------------------------------------
+%EnergySNII		    1.0e51
+%EnergySNIA		    1.0e51
+%EnergyAGB		    1.0e51
+
+%-------------------------------------------
+%% Gas Reincorporation
+%-------------------------------------------
+ReincZpower                 2.41
+ReincVelocitypower          3.26
+
+%-------------------------------------------
+%%Fraction of Metals returned to Hot component
+%-------------------------------------------
+FracZtoHot                  0.0	    
+
+%-------------------------------------------
+%%Hot Gas stripping
+%-------------------------------------------
+RamPressureRadiusThreshold      0.0  ;efficiency of ram pressure stripping
+
+
+
+
+
+
+
 
