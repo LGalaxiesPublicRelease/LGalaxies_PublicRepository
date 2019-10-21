@@ -12,6 +12,7 @@ BEGIN{
 
     type=fields[1]
     name=fields[2]
+    original_name=name
     arraysize=1
 
     if(type == "long" || type == "double") 
@@ -31,7 +32,15 @@ BEGIN{
     	type="numpy.int64"
     	name=fields[3]
     }
-    
+    else if(type == "struct" && name == "metals") {
+    	type="numpy.float32,[Nmetals"
+    	name=fields[3]
+    }
+    else if(type == "struct" && name == "elements") {
+    	type="numpy.float32,[Nelements"
+    	name=fields[3]
+    }
+
     ia=match(line,/\[.*\]/)
     if(ia>0) 
     {
@@ -48,7 +57,14 @@ BEGIN{
 	name=substr(name,0,ia-1)
 
     size += arraysize * dsize
-    print "('" name "'," type "," arraysize "),"
+    if(original_name == "metals" || original_name == "elements") 
+	{
+ 	   print "('" name "'," type "," arraysize "]),"
+	}
+	else
+	{
+   	 print "('" name "'," type "," arraysize "),"
+	}
     n+=1
 }
 END{

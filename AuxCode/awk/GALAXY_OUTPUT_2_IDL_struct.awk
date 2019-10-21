@@ -12,7 +12,8 @@ size=0
     split(line,fields)
 
 	type=fields[1]
-	name=fields[2]
+	name=fields[2]	
+	original_name=name
 	arraysize=1
 
     if(type == "long" || type == "double") 
@@ -30,6 +31,14 @@ size=0
     else if(type == "int"){type= "0L"}
     else if(type == "long" && name == "long") {
     	type="0LL"
+    	name=fields[3]
+    }
+    else if(type == "struct" && name == "metals") {
+    	type="fltarr(Nmetals)"
+    	name=fields[3]
+    }
+    else if(type == "struct" && name == "elements") {
+    	type="fltarr(Nelements)"
     	name=fields[3]
     }
     
@@ -50,6 +59,8 @@ size=0
 	if(arraysize > 1)
 	{
 	  if(type=="0.0"){type="fltarr(" arraysize ")"}
+	  else if(original_name=="metals"){type="fltarr(Nmetals,"arraysize ")" }
+	  else if(original_name=="elements"){type="fltarr(Nelements,"arraysize ")" }
 	}
 	print ", " name " : " type " $ "
 	n+=1
