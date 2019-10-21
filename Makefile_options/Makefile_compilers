@@ -3,7 +3,7 @@
 # Note that most entries currently in place will need editing to
 # accept the DEBUG flag
 
-# SYSTYPE = "MyMachine"
+# SYSTYPE = "Mac"
 # SYSTYPE = "COSM"
 # SYSTYPE = "ODIN"
 # SYSTYPE = "Darwin"
@@ -27,9 +27,12 @@ OPTIMIZE =   -g -O3 -Wall	# optimization, debugging and warning flags
 else
 OPTIMIZE = -O3                  # optimization
 endif
+GSL_INCL = -I/usr/include/gsl/
+GSL_LIBS = -L/usr/lib 
+HDF5_LIBS = -L/usr/local/hdf5/lib
+HDF5_INCL = -I/usr/local/hdf5/include 
 
-
-ifeq ($(SYSTYPE),"MyMachine")
+ifeq ($(SYSTYPE),"Mac")
 ifeq (PARALLEL,$(findstring PARALLEL,$(OPT)))
 CC       =  mpicc
 GSL_INCL = -I/usr/local/Cellar/open-mpi/1.10.1/include
@@ -41,11 +44,32 @@ GSL_LIBS = -L/usr/local/lib
 endif
 endif
 
+ifeq ($(SYSTYPE),"ETH")
+ifeq (PARALLEL,$(findstring PARALLEL,$(OPT)))
+CC       =   mpicc -Wall -Wno-unused-result
+HDF5_INCL = -I/usr/include/hdf5/parallel/
+else
+HDF5_INCL = -I/usr/include/hdf5/serial/
+CC       =   cc -Wall -Wno-unused-result
+endif
+ifeq (DEBUG,$(findstring DEBUG,$(OPT)))
+OPTIMIZE =  -O3 -Wall -pg
+else
+OPTIMIZE =  -O3  
+endif
+GSL_INCL = -I/usr/include/gsl/
+GSL_LIBS = -L/usr/lib/ 
+
+HDF5_LIBS = -L/usr/lib/x86_64-linux-gnu/
+
+
+
+endif
 
 
 ifeq ($(SYSTYPE),"Sussex")
 ifeq (PARALLEL,$(findstring PARALLEL,$(OPT)))
-CC       =   gcc -pg
+CC       =   gcc 
 else
 CC       =   cc 
 #CC       =   /opt/pgi/osx86/9.0-4/bin/pgcc

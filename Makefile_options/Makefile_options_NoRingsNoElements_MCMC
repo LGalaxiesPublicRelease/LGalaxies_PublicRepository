@@ -1,4 +1,7 @@
 OPT += -DUPDATETYPETWO       #  This updates the positions of type 2 galaxies when the galaxies are written to file
+OPT += -DDISRUPTION          # Instantaneously and completely disrupt type 2s
+OPT += -DMERGE01             # allows type 1s to merge with type 0s
+
 
 # Options that control speed and memory usage
 OPT += -DPRELOAD_TREES       # this will load all the trees of a file in memory, and cache them (useful for MCMC)
@@ -10,8 +13,7 @@ OPT += -DLOADIDS             # Load dbids files
 OPT += -DOVERWRITE_OUTPUT    # overwrite output files if they exist (otherwise will quit without overwriting)
 OPT += -DNOUT=5              # sets the number of output snaps. IGNORED IN GALAXYTREE MODE. VALUE CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE
 
-#OPT += -DGUO10
-#OPT += -DGUO13
+#OPT += -DHALOMODEL
 
 OPT += -DMRII        
 
@@ -21,13 +23,22 @@ ifeq (MCMC,$(findstring MCMC,$(OPT)))
 OPT += -DMR_PLUS_MRII
 OBJS  += ./code/mcmc.o
 OBJS  += ./code/mcmc_likelihood.o 
-OBJS  += ./code/mcmc_save.o 
+OBJS  += ./code/save_mcmc.o 
 INCL  += ./code/mcmc_vars.h 
 INCL  += ./code/mcmc_proto.h
+
+#to compute correlation functions for MCMC
+ifeq (HALOMODEL,$(findstring HALOMODEL,$(OPT)))
+OBJS  += ./code/mcmc_halomodel.o
+OBJS  += ./code/mcmc_mpfit.o
+INCL  += ./code/mcmc_halomodel.h
+INCL  += ./code/mcmc_mpfit.h
+endif
+
 endif # end MCMC
 
 # record star formation histories - used for post-process mags and detailed chemical enrichment
-OPT += -DSTAR_FORMATION_HISTORY
+#OPT += -DSTAR_FORMATION_HISTORY
 ifeq (STAR_FORMATION_HISTORY,$(findstring STAR_FORMATION_HISTORY,$(OPT)))
 OBJS  += ./code/star_formation_history.o
 endif
@@ -37,7 +48,12 @@ OPT += -DCOMPUTE_SPECPHOT_PROPERTIES
 ifeq (COMPUTE_SPECPHOT_PROPERTIES,$(findstring COMPUTE_SPECPHOT_PROPERTIES,$(OPT)))
 OBJS  += ./code/model_spectro_photometric.o
 
-OPT += -DNMAG=5
+ifeq (HALOMODEL,$(findstring HALOMODEL,$(OPT)))
+OPT += -DNMAG=5  #Normal MCMC mode
+else
+OPT += -DNMAG=5 #HALOMODEL mode
+endif
+
 
 # Options that control the Spectral synthesis
 OPT += -DM05 #use Maraston 2005 stellar populations need to change input.par
@@ -62,12 +78,13 @@ endif
 
 ### POST PROCESS MAGS
 ifeq (STAR_FORMATION_HISTORY,$(findstring STAR_FORMATION_HISTORY,$(OPT)))
-OPT += -DPOST_PROCESS_MAGS
+#OPT += -DPOST_PROCESS_MAGS
 ifeq (POST_PROCESS_MAGS,$(findstring POST_PROCESS_MAGS,$(OPT)))
 OBJS  += ./code/post_process_spec_mags.o
 endif
 endif # STAR_FORMATION_HISTORY
 
 endif # COMPUTE_PHOTOMETRY
+
 
 
