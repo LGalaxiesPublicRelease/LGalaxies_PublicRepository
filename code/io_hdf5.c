@@ -252,7 +252,7 @@ void write_prop_table(void ){
   const char d[2]=",";
   char filename[30]="input/hdf5_field_props.txt";
 
-    fp=fopen(filename,"r");
+  fp=fopen(filename,"r");
 
   if(fp==NULL){
     printf("could not open the file %s \n", filename);
@@ -292,7 +292,8 @@ void write_prop_table(void ){
   } 
 
   H5Tclose( string_type ); 
-
+  fclose(fp);
+  
 }
 
 void write_input_table(char *filename){
@@ -353,11 +354,9 @@ void write_input_table(char *filename){
   } 
 
   H5Tclose( string_type ); 
-   
+  fclose(fp);
 
 }
 
 
 #endif //HDF5
-
-
