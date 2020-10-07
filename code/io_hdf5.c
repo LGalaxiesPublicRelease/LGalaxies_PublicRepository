@@ -52,6 +52,11 @@ for(ifield=0;ifield<nfields;ifield++){
 	field_ndim++;
     }
 #endif
+    if (flagMetals[ifield]>0) {
+	dims[field_ndim]=NUM_METAL_CHANNELS;
+	dimProd*=NUM_METAL_CHANNELS;
+	field_ndim++;
+    }
 #ifdef DETAILED_METALS_AND_MASS_RETURN
     if (flagElements[ifield]>0) {
 	dims[field_ndim]=NUM_ELEMENTS;
