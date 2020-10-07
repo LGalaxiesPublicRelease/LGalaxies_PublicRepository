@@ -8,8 +8,6 @@
 
 #ifdef GALAXYTREE
 
-
-
 void create_galaxy_tree_file(int filenr)
 {
 
