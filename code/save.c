@@ -121,12 +121,19 @@ void save_galaxy_append(int tree, int i, int n)
   prepare_galaxy_for_output(n, &HaloGal[i], &galaxy_output);
 
 #ifdef HDF5_OUTPUT
-  if(b[n]<NRECORDS_APP ){
-      //printf("%d  %d \n",n,b[n]);
-      galaxy_output_hdf5[n][b[n]]=galaxy_output;
-      b[n]++;
-  }
-  else {
+//  if(b[n]<NRECORDS_APP ){
+//      //printf("%d  %d \n",n,b[n]);
+//      galaxy_output_hdf5[n][b[n]]=galaxy_output;
+//      b[n]++;
+//  }
+//  else {
+//      // Append the data to the HDF5 table if b[n]==NRECORDS_APP
+//      hdf5_append_data(n,galaxy_output_hdf5[n],NRECORDS_APP);
+//      b[n]=0;
+//  }
+  galaxy_output_hdf5[n][b[n]]=galaxy_output;
+  b[n]++;
+  if(b[n]==NRECORDS_APP ){
       // Append the data to the HDF5 table if b[n]==NRECORDS_APP
       hdf5_append_data(n,galaxy_output_hdf5[n],NRECORDS_APP);
       b[n]=0;

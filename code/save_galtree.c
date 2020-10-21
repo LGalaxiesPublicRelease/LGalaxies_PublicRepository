@@ -103,11 +103,18 @@ void save_galaxy_tree_append(int i)
 
 #ifdef HDF5_OUTPUT
 
-  if(b[0]<NRECORDS_APP ){
-      galaxy_output_hdf5[0][b[0]]=galaxy_output;
-      b[0]++;
-  }
-  else {
+  /* if(b[0]<NRECORDS_APP ){ */
+  /*     galaxy_output_hdf5[0][b[0]]=galaxy_output; */
+  /*     b[0]++; */
+  /* } */
+  /* else { */
+  /*     hdf5_append_data(0,galaxy_output_hdf5[0],NRECORDS_APP); */
+  /*     b[0]=0; */
+  /* } */
+  galaxy_output_hdf5[0][b[0]]=galaxy_output;
+  b[0]++;
+  if(b[0]==NRECORDS_APP ){
+      // Append the data to the HDF5 table if b[n]==NRECORDS_APP
       hdf5_append_data(0,galaxy_output_hdf5[0],NRECORDS_APP);
       b[0]=0;
   }
