@@ -286,26 +286,26 @@ struct GALAXY_OUTPUT {
 #ifdef OUTPUT_ELEMENTS
     //All: [H][He][Cb][N][O][Ne][Mg][Si][S][Ca][Fe] or //Only [H][He][O][Mg][Fe]
 #ifdef OUTPUT_SFH
-    float sfh_DiskMass_elements[SFH_NBIN][NUM_ELEMENTS]; // 10^10 Msun/h // History of mass of elements locked up in stars in disk.
-    float sfh_BulgeMass_elements[SFH_NBIN][NUM_ELEMENTS]; // 10^10 Msun/h // History of mass of elements locked up in stars in bulge.
-    float sfh_ICM_elements[SFH_NBIN][NUM_ELEMENTS]; // 10^10 Msun/h // History of mass of elements locked up in stars in the ICM.
+    float sfh_DiskMass_elements[SFH_NBIN][NUM_ELEMENTS]; // Msun // History of mass of elements locked up in stars in disk.
+    float sfh_BulgeMass_elements[SFH_NBIN][NUM_ELEMENTS]; // Msun // History of mass of elements locked up in stars in bulge.
+    float sfh_ICM_elements[SFH_NBIN][NUM_ELEMENTS]; // Msun // History of mass of elements locked up in stars in the ICM.
 #endif
-    float DiskMass_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in disk.
-    float BulgeMass_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in bulge.
+    float DiskMass_elements[NUM_ELEMENTS]; // Msun // Mass of elements locked up in stars in disk.
+    float BulgeMass_elements[NUM_ELEMENTS]; // Msun // Mass of elements locked up in stars in bulge.
 #ifdef OUTPUT_RINGS
-    float DiskMassRings_elements[RNUM][NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in each annular ring.
-    float BulgeMassRings_elements[RNUM][NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in each annular ring.
+    float DiskMassRings_elements[RNUM][NUM_ELEMENTS]; // Msun // Mass of elements locked up in stars in each annular ring.
+    float BulgeMassRings_elements[RNUM][NUM_ELEMENTS]; // Msun // Mass of elements locked up in stars in each annular ring.
 #endif     //H2_AND_RINGS
-    float ColdGas_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in cold gas.
+    float ColdGas_elements[NUM_ELEMENTS]; // Msun // Mass of elements locked up in stars in cold gas.
 #ifdef OUTPUT_RINGS
-    float ColdGasRings_elements[RNUM][NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in cold gas in each annular ring.
+    float ColdGasRings_elements[RNUM][NUM_ELEMENTS]; // Msun // Mass of elements locked up in cold gas in each annular ring.
 #endif     //H2_AND_RINGS
-    float HotGas_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in hot gas.
-    /* float ReheatedGas_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in reheated gas. */
-    float ICM_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in stars in the ICM
-    float EjectedMass_elements[NUM_ELEMENTS]; // 10^10 Msun/h // Mass of elements locked up in ejected gas.
+    float HotGas_elements[NUM_ELEMENTS]; // Msun // Mass of elements locked up in hot gas.
+    /* float ReheatedGas_elements[NUM_ELEMENTS]; // Msun // Mass of elements locked up in reheated gas. */
+    float ICM_elements[NUM_ELEMENTS]; // Msun // Mass of elements locked up in stars in the ICM
+    float EjectedMass_elements[NUM_ELEMENTS]; // Msun // Mass of elements locked up in ejected gas.
 #ifdef     EXCESS_MASS
-    float ExcessMass_elements[NUM_ELEMENTS]; // 10^10/h Msun // Mass in elements associated with ExcessMass component
+    float ExcessMass_elements[NUM_ELEMENTS]; // Msun // Mass in elements associated with ExcessMass component
 #endif     //EXCESS_MASS
 #endif   //OUTPUT_ELEMENTS
 };
